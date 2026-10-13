@@ -20,6 +20,7 @@ The M-Care Patient Mobile Application is delivered using a **Horizontal Layers**
 ## Phase Details
 
 ### Phase 1: Database Schema & Patient Data Layer
+
 **Goal**: Extend the existing Phase 1 SQLite database and Prisma schema with patient authentication fields, account linking, and notification persistence without modifying existing staff tables.
 **Depends on**: Nothing (first phase)
 **Requirements**: AUTH-02, PROF-01
@@ -28,13 +29,18 @@ The M-Care Patient Mobile Application is delivered using a **Horizontal Layers**
   1. Prisma schema contains patient credentials (hashed password, salt, session tokens) and Notification entity.
   2. Database migration runs cleanly on SQLite, preserving all existing staff, appointment, and medical records.
   3. Returning-patient lookup query reliably matches records on exact Name + Contact Number and flags unlinked profiles for staff review.
+
 **Plans**: 2 plans
 
 Plans:
+**Wave 1**
 - [ ] 01-01: Update Prisma schema with Patient auth fields, Notification model, and generate Prisma client
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 01-02: Implement returning-patient matching and patient account linkage service functions
 
 ### Phase 2: Backend API & Business Logic Layer
+
 **Goal**: Deliver patient-scoped Next.js API routes for registration, login, profile management, appointment booking with double-booking prevention (Algorithm 2), and payment balance retrieval.
 **Depends on**: Phase 1
 **Requirements**: AUTH-01, AUTH-03, AUTH-04, PROF-02, BOOK-01, BOOK-02, BOOK-03, BOOK-04, PAY-01
@@ -44,6 +50,7 @@ Plans:
   2. Available appointment slots endpoint generates valid intervals according to clinic operating hours and existing bookings.
   3. Double-booking prevention lock (Algorithm 2) strictly blocks conflicting appointment submissions.
   4. Patient can cancel pending or approved appointments and view read-only payment status and balances.
+
 **Plans**: 3 plans
 
 Plans:
@@ -52,6 +59,7 @@ Plans:
 - [ ] 02-03: Patient payment status and visit balance retrieval endpoint (`/api/patient/payments`)
 
 ### Phase 3: Real-Time Sync & In-App Notification Engine
+
 **Goal**: Build the Server-Sent Events (SSE) streaming infrastructure and event emitter service to broadcast appointment status transitions and persist in-app notifications.
 **Depends on**: Phase 2
 **Requirements**: SYNC-01, NOTIF-01, NOTIF-03
@@ -60,6 +68,7 @@ Plans:
   1. Next.js SSE endpoint (`/api/patient/events`) establishes persistent event stream for authenticated patient sessions.
   2. When clinic staff approves, rejects, or reschedules an appointment, an event is broadcast to the patient in real time.
   3. Every status change triggers creation of a persistent `Notification` record with unread status.
+
 **Plans**: 2 plans
 
 Plans:
@@ -67,6 +76,7 @@ Plans:
 - [ ] 03-02: Staff action webhook/hook integration to trigger notifications on status updates
 
 ### Phase 4: Mobile Application Core UI & Navigation
+
 **Goal**: Scaffold the React Native (Expo) mobile application, establishing authentication flows, persistent storage, theme system, clinic information, and appointment history screens.
 **Depends on**: Phase 3
 **Requirements**: HIST-01, HIST-02, CLINIC-01, CLINIC-02
@@ -75,6 +85,7 @@ Plans:
   1. User can register, log in, view/edit contact profile, and maintain session across app restarts.
   2. User can view clinic details (doctor specialization, contact, hours) and launch GPS directions in Google Maps.
   3. User can view past and upcoming appointments, with completed visits showing date, type, and doctor while excluding internal notes.
+
 **Plans**: 3 plans
 
 Plans:
@@ -83,6 +94,7 @@ Plans:
 - [ ] 04-03: Clinic information, interactive map/directions, and appointment history screens
 
 ### Phase 5: Mobile Booking & Notification Workflows
+
 **Goal**: Implement the end-to-end interactive booking wizard, appointment cancellation flow, real-time SSE listener, and Notification Center with badge counts.
 **Depends on**: Phase 4
 **Requirements**: NOTIF-02
@@ -91,6 +103,7 @@ Plans:
   1. Patient can browse calendar dates, select available time slots, choose appointment type (`Check-Up` or `Ultrasound`), and submit booking.
   2. Patient can cancel upcoming pending or approved appointments directly from the app.
   3. Notification Center displays real-time alerts, unread counts, and appointment status update messages.
+
 **Plans**: 2 plans
 
 Plans:
@@ -98,6 +111,7 @@ Plans:
 - [ ] 05-02: Real-time SSE client hook, Notification Center screen, and badge counter
 
 ### Phase 6: End-to-End System Integration & Evaluation Readiness
+
 **Goal**: Verify cross-client workflows between the web dashboard and mobile app, conduct concurrency stress tests, and prepare evaluation instrumentation for thesis defense.
 **Depends on**: Phase 5
 **Requirements**: Full coverage validation of AUTH-01 through CLINIC-02
@@ -107,6 +121,7 @@ Plans:
   2. Double-booking prevention algorithm withstands simulated concurrent booking attempts.
   3. Returning patient auto-matching correctly resolves existing Phase 1 records without duplicating patient IDs.
   4. System is completely self-contained for local offline/network thesis presentation and defense.
+
 **Plans**: 2 plans
 
 Plans:
