@@ -1,0 +1,125 @@
+// Prisma schema for SQLite
+// Note: SQLite connector does not support native enums; String fields are used with TypeScript constants.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id           String          @id @default(cuid())
+  username     String          @unique
+  passwordHash String
+  name         String
+  role         String          // ADMIN, DOCTOR, RECEPTIONIST
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  appointments Appointment[]
+  records      MedicalRecord[]
+}
+
+model ClinicSettings {
+  id                  String   @id @default("default")
+  clinicName          String   @default("M-Care OB-GYNE Clinic & Ultrasound")
+  doctorName          String   @default("Dr. Maria Corazon")
+  specialization      String   @default("Obstetrics & Gynecology, Ultrasound Specialist")
+  contactNumber       String   @default("0917-555-0199")
+  email               String?  @default("info@mcareclinic.ph")
+  address             String   @default("MacArthur Highway, Balibago, Angeles City, Pampanga")
+  operatingDays       String   @default("Monday,Tuesday,Wednesday,Thursday,Friday,Saturday")
+  operatingHoursOpen  String   @default("09:00")
+  operatingHoursClose String   @default("17:00")
+  appointmentInterval Int      @default(30)
+  latitude            Float    @default(15.1685)
+  longitude           Float    @default(120.5901)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Patient {
+  id                 String          @id @default(cuid())
+  patientId          String          @unique // MC-XXXX format
+  firstName          String
+  lastName           String
+  middleName         String?
+  contactNumber      String          // Canonical 09XXXXXXXXX
+  email              String?
+  address            String?
+  birthDate          DateTime?
+  emergencyContact   String?
+  isAppUser          Boolean         @default(false)
+  passwordHash       String?
+  verificationStatus String          @default("UNVERIFIED") // UNVERIFIED, PENDING, VERIFIED
+  appRegisteredAt    DateTime?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  appointments       Appointment[]
+  medicalRecords     MedicalRecord[]
+  payments           Payment[]
+  notifications      Notification[]
+}
+
+model Appointment {
+  id              String        @id @default(cuid())
+  appointmentId   String        @unique // AP-XXXX format
+  patientId       String
+  patient         Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId        String?
+  doctor          User?         @relation(fields: [doctorId], references: [id])
+  appointmentDate DateTime
+  timeSlot        String        // "09:00 AM", etc.
+  appointmentType String        @default("CHECKUP") // CHECKUP, ULTRASOUND
+  status          String        @default("PENDING") // PENDING, APPROVED, COMPLETED, REJECTED, CANCELLED
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  payment         Payment?
+}
+
+model Payment {
+  id            String      @id @default(cuid())
+  paymentId     String      @unique // PAY-XXXX
+  appointmentId String      @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  patientId     String
+  patient       Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  totalAmount   Float
+  amountPaid    Float       @default(0.0)
+  balance       Float
+  status        String      @default("PENDING") // PENDING, PARTIAL, PAID, REFUNDED
+  paymentMethod String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model MedicalRecord {
+  id            String   @id @default(cuid())
+  recordId      String   @unique // MR-XXXX
+  patientId     String
+  patient       Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId      String
+  doctor        User     @relation(fields: [doctorId], references: [id])
+  visitDate     DateTime @default(now())
+  diagnosis     String
+  prescription  String?
+  clinicalNotes String?  // Staff-only; strictly omitted from patient app API
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  title       String
+  message     String
+  type        String   @default("GENERAL") // STATUS_UPDATE, REMINDER, GENERAL
+  isRead      Boolean  @default(false)
+  referenceId String?  // Optional AP-XXXX
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
