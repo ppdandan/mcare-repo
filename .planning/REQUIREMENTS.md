@@ -83,25 +83,25 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
+| AUTH-01 | Phase 2 | Pending |
 | AUTH-02 | Phase 1 | Pending |
-| AUTH-03 | Phase 1 | Pending |
-| AUTH-04 | Phase 1 | Pending |
+| AUTH-03 | Phase 2 | Pending |
+| AUTH-04 | Phase 2 | Pending |
 | PROF-01 | Phase 1 | Pending |
-| PROF-02 | Phase 1 | Pending |
+| PROF-02 | Phase 2 | Pending |
 | BOOK-01 | Phase 2 | Pending |
 | BOOK-02 | Phase 2 | Pending |
 | BOOK-03 | Phase 2 | Pending |
 | BOOK-04 | Phase 2 | Pending |
 | SYNC-01 | Phase 3 | Pending |
-| HIST-01 | Phase 3 | Pending |
-| HIST-02 | Phase 3 | Pending |
-| NOTIF-01 | Phase 4 | Pending |
-| NOTIF-02 | Phase 4 | Pending |
-| NOTIF-03 | Phase 4 | Pending |
-| PAY-01 | Phase 5 | Pending |
-| CLINIC-01 | Phase 5 | Pending |
-| CLINIC-02 | Phase 5 | Pending |
+| HIST-01 | Phase 4 | Pending |
+| HIST-02 | Phase 4 | Pending |
+| NOTIF-01 | Phase 3 | Pending |
+| NOTIF-02 | Phase 5 | Pending |
+| NOTIF-03 | Phase 3 | Pending |
+| PAY-01 | Phase 2 | Pending |
+| CLINIC-01 | Phase 4 | Pending |
+| CLINIC-02 | Phase 4 | Pending |
 
 **Coverage:**
 - v1 requirements: 18 total
