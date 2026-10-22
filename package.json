@@ -1,23 +1,17 @@
 {
-  "name": "m-care-patient-app",
+  "name": "m-care",
   "version": "1.0.0",
-  "description": "M-Care Patient Mobile Application - Phase 2 extension of M-Care OB-GYNE Clinic Management System",
   "private": true,
+  "workspaces": [
+    "mobile",
+    "web",
+    "shared"
+  ],
   "scripts": {
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:seed": "ts-node prisma/seed.ts",
-    "test": "ts-node tests/patientMatching.test.ts"
-  },
-  "dependencies": {
-    "@prisma/client": "^5.22.0",
-    "bcryptjs": "^2.4.3"
-  },
-  "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/node": "^20.17.0",
-    "prisma": "^5.22.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.6.3"
+    "dev:web": "npm --workspace=web run dev",
+    "build:web": "npm --workspace=web run build",
+    "start:web": "npm --workspace=web run start",
+    "dev:mobile": "npm --workspace=mobile run start",
+    "typecheck": "tsc -b shared"
   }
 }

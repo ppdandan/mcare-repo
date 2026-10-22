@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "M-Care",
+    "slug": "m-care",
+    "scheme": "mcare",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E91E8C"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.mcare.patient"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#E91E8C"
+      },
+      "package": "com.mcare.patient"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "841b9a7e-b07d-4e6d-ad12-f24f0a87a63a"
+      }
+    },
+    "owner": "dandan03s-team"
+  }
+}

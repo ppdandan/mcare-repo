@@ -10,13 +10,13 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Authentication & Patient Linking
 
 - [ ] **AUTH-01**: User can register an account with name, contact number, and password with contact verification
-- [ ] **AUTH-02**: System automatically matches returning patients by exact Name and Phone against existing MC-XXXX patient records, linking the account or flagging for receptionist confirmation
+- [x] **AUTH-02**: System automatically matches returning patients by exact Name and Phone against existing MC-XXXX patient records, linking the account or flagging for receptionist confirmation
 - [ ] **AUTH-03**: User can log in with contact number and password, maintaining secure token session persistence
 - [ ] **AUTH-04**: User can log out securely and request password recovery/reset
 
 ### Patient Profile
 
-- [ ] **PROF-01**: User can view their patient profile including assigned Patient ID (MC-XXXX) and personal details
+- [x] **PROF-01**: User can view their patient profile including assigned Patient ID (MC-XXXX) and personal details
 - [ ] **PROF-02**: User can update their contact information (phone number, residential address, emergency contact)
 
 ### Appointment Booking
@@ -84,10 +84,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | AUTH-01 | Phase 2 | Pending |
-| AUTH-02 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Complete |
 | AUTH-03 | Phase 2 | Pending |
 | AUTH-04 | Phase 2 | Pending |
-| PROF-01 | Phase 1 | Pending |
+| PROF-01 | Phase 1 | Complete |
 | PROF-02 | Phase 2 | Pending |
 | BOOK-01 | Phase 2 | Pending |
 | BOOK-02 | Phase 2 | Pending |

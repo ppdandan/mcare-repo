@@ -10,7 +10,7 @@ The M-Care Patient Mobile Application is delivered using a **Horizontal Layers**
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Database Schema & Patient Data Layer** - Extend Prisma schema for patient credentials, account linkage, and notification tables
+- [x] **Phase 1: Database Schema & Patient Data Layer** - Extend Prisma schema for patient credentials, account linkage, and notification tables
 - [ ] **Phase 2: Backend API & Business Logic Layer** - Patient auth endpoints, slot generation, double-booking prevention, and appointment endpoints
 - [ ] **Phase 3: Real-Time Sync & In-App Notification Engine** - Server-Sent Events (SSE) pipeline and real-time notification dispatch
 - [ ] **Phase 4: Mobile Application Core UI & Navigation** - React Native (Expo) app scaffolding, auth flow, clinic info, and appointment history screens
@@ -34,10 +34,10 @@ The M-Care Patient Mobile Application is delivered using a **Horizontal Layers**
 
 Plans:
 **Wave 1**
-- [ ] 01-01: Update Prisma schema with Patient auth fields, Notification model, and generate Prisma client
+- [x] 01-01: Update Prisma schema with Patient auth fields, Notification model, and generate Prisma client
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 01-02: Implement returning-patient matching and patient account linkage service functions
+- [x] 01-02: Implement returning-patient matching and patient account linkage service functions
 
 ### Phase 2: Backend API & Business Logic Layer
 
@@ -135,7 +135,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Database Schema & Patient Data Layer | 0/2 | Not started | - |
+| 1. Database Schema & Patient Data Layer | 2/2 | Complete | 2026-10-14 |
 | 2. Backend API & Business Logic Layer | 0/3 | Not started | - |
 | 3. Real-Time Sync & In-App Notification Engine | 0/2 | Not started | - |
 | 4. Mobile Application Core UI & Navigation | 0/3 | Not started | - |

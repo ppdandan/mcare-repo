@@ -1,0 +1,43 @@
+{
+  "contract": "1.0.0",
+  "flavor": "core",
+  "milestone": null,
+  "phases": [
+    {
+      "number": "1",
+      "name": "Database Schema & Patient Data Layer",
+      "status": "pending"
+    },
+    {
+      "number": "2",
+      "name": "Backend API & Business Logic Layer",
+      "status": "pending"
+    },
+    {
+      "number": "3",
+      "name": "Real-Time Sync & In-App Notification Engine",
+      "status": "pending"
+    },
+    {
+      "number": "4",
+      "name": "Mobile Application Core UI & Navigation",
+      "status": "pending"
+    },
+    {
+      "number": "5",
+      "name": "Mobile Booking & Notification Workflows",
+      "status": "pending"
+    },
+    {
+      "number": "6",
+      "name": "End-to-End System Integration & Evaluation Readiness",
+      "status": "pending"
+    }
+  ],
+  "next": {
+    "command": "/gsd:progress --next",
+    "label": "Advance to the next step",
+    "reason": "Phase 1 of 6 · 17% · executing"
+  },
+  "updated_at": "2026-10-13T22:18:23.057Z"
+}
