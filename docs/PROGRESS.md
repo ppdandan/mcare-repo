@@ -21,4 +21,11 @@
 - `npm run typecheck`, mobile TypeScript check, and web production build passed. No simulator/device flow test was run.
 - Added `docs/ACCOUNT_DELETION_PLAN.md` and `docs/PLAY_CONSOLE_WORKSHEET.md`. The clinic must approve the policy, placeholders, retention period, retained fields, and handling of identifiers in historical free-text and audit payloads. The purge helper is not scheduled.
 - There is no public web signup screen in the current app; the privacy link is on the web login, while the mobile login and registration screens link to it. A mobile simulator review remains outstanding.
-- Phase 4 changes are ready for a phase-scoped commit; phase 0 files and other existing work remain unstaged.
+- Committed Phase 4 as `e74e802` (`feat: add privacy policy and account deletion`). Phase 0 files and other existing work remain unstaged.
+
+## Phase 5 — Next.js patch and audit
+
+- Upgraded web Next.js from 15.0.0 to 15.5.29, the current latest 15.x patch, and added matching `eslint-config-next` 15.5.29 as a dev dependency. React and React DOM remain 18.3.1.
+- Web TypeScript check and production build passed. A dev API smoke test passed password sign-in, booking a valid slot, reading it, cancelling it, and test-data cleanup. No browser UI sign-in/booking session was run.
+- `npm audit` reported 10 web issues (9 moderate, 1 high) and 28 mobile issues (1 low, 18 moderate, 8 high, 1 critical). Non-forced `npm audit fix` could not resolve the Expo workspace peer tree: npm tried to resolve Expo 57 while this app is on SDK 52. The web-only safe fix reported no compatible updates. Force fixes would require Next 16 or Expo 58, so none were applied.
+- Phase 5 dependency and lockfile changes remain uncommitted pending a phase-scoped commit.
