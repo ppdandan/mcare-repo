@@ -6,6 +6,8 @@ import { supabase } from './supabase';
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
   }),
@@ -18,6 +20,15 @@ export async function registerForPushNotificationsAsync(userId: string): Promise
   let token: string | null = null;
 
   try {
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'M-Care Clinic Notifications',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#E91E8C',
+      });
+    }
+
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
 
@@ -51,15 +62,6 @@ export async function registerForPushNotificationsAsync(userId: string): Promise
       }
     }
 
-    // Android channel configuration
-    if (Platform.OS === 'android') {
-      await Notifications.setNotificationChannelAsync('default', {
-        name: 'M-Care Clinic Notifications',
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#E91E8C',
-      });
-    }
   } catch (err) {
     console.warn('Push notification setup skipped (e.g. running on web preview/simulator):', err);
   }

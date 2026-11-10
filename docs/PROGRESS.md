@@ -28,4 +28,12 @@
 - Upgraded web Next.js from 15.0.0 to 15.5.29, the current latest 15.x patch, and added matching `eslint-config-next` 15.5.29 as a dev dependency. React and React DOM remain 18.3.1.
 - Web TypeScript check and production build passed. A dev API smoke test passed password sign-in, booking a valid slot, reading it, cancelling it, and test-data cleanup. No browser UI sign-in/booking session was run.
 - `npm audit` reported 10 web issues (9 moderate, 1 high) and 28 mobile issues (1 low, 18 moderate, 8 high, 1 critical). Non-forced `npm audit fix` could not resolve the Expo workspace peer tree: npm tried to resolve Expo 57 while this app is on SDK 52. The web-only safe fix reported no compatible updates. Force fixes would require Next 16 or Expo 58, so none were applied.
-- Phase 5 dependency and lockfile changes remain uncommitted pending a phase-scoped commit.
+- Committed Phase 5 as `003078e` (`chore(web): patch Next.js 15`).
+
+## Phase 6 — Expo SDK upgrade (SDK 53 step)
+
+- Waived the Phase 0–3 completion gate at the user's direction. Created branch `expo-sdk-upgrade` from `release-hardening`.
+- Upgraded the mobile app from Expo SDK 52 to SDK 53 with SDK-compatible dependencies (React 19.0.0, React Native 0.79.6). Expo Doctor passed all 18 checks. The mobile TypeScript check passed after adapting the timer type and notification handler to the new types.
+- Android notification channel creation now happens before checking/requesting notification permission and before requesting a push token.
+- Android 16 emulator review and runtime behavior checks remain for the SDK 54 step. No EAS build was run.
+- SDK 53 step is ready for its required commit.

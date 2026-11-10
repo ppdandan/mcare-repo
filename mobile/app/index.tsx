@@ -61,7 +61,7 @@ export default function IndexScreen() {
 
   useEffect(() => {
     let isMounted = true;
-    let timer: NodeJS.Timeout | null = null;
+    let timer: ReturnType<typeof setTimeout> | null = null;
 
     if (!loading) {
       timer = setTimeout(() => {
