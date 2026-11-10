@@ -358,4 +358,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#FEF2F2',
   },
   signOutText: { color: '#DC2626', fontSize: 14, fontWeight: '700' },
+  deleteCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 18,
+    marginTop: 4,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#FECACA',
+  },
+  deleteDescription: { fontSize: 12, color: Colors.textSecondary, marginBottom: 12, lineHeight: 17 },
+  deleteBtn: {
+    height: 46,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#DC2626',
+  },
+  deleteBtnText: { color: '#FFFFFF', fontSize: 14, fontWeight: '700' },
 });
