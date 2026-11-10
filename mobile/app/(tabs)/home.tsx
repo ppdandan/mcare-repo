@@ -169,6 +169,22 @@ export default function HomeScreen() {
               </Text>
             </View>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.secondaryActionCard}
+            onPress={() => router.push('/inquiry')}
+            activeOpacity={0.85}
+          >
+            <View style={[styles.actionIconBoxAlt, { backgroundColor: '#EDE9FE' }]}>
+              <Text style={styles.actionIcon}>💬</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.actionTitleAlt}>Message Clinic Staff</Text>
+              <Text style={styles.actionDescAlt}>
+                Direct inquiries to attending clinic nurse & staff
+              </Text>
+            </View>
+          </TouchableOpacity>
         </View>
 
         {/* Next Appointment Section */}

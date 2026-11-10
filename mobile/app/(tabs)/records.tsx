@@ -182,14 +182,14 @@ export default function RecordsScreen() {
               <View style={styles.modalContent}>
                 {/* Modal Header */}
                 <View style={styles.modalHeader}>
-                  <div>
+                  <View>
                     <Text style={styles.modalTitle}>Consultation Record</Text>
                     <Text style={styles.modalSub}>
                       {new Date(selectedRecord.visit_date).toLocaleDateString('en-US', {
                         dateStyle: 'full',
                       })}
                     </Text>
-                  </div>
+                  </View>
                   <TouchableOpacity
                     onPress={() => setSelectedRecord(null)}
                     style={styles.closeBtn}

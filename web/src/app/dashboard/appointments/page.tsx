@@ -58,11 +58,19 @@ export default function AppointmentsPage() {
   }, [supabase]);
 
   const fetchDoctors = useCallback(async () => {
-    const { data } = await supabase
-      .from("doctors")
-      .select(`*, profile:profiles (*)`)
-      .order("specialty");
-    if (data) setDoctors(data as unknown as DoctorWithProfile[]);
+    try {
+      const { fetchWithCache } = await import("@/lib/cache");
+      const list = await fetchWithCache("clinic_doctors_web", async () => {
+        const { data } = await supabase
+          .from("doctors")
+          .select(`*, profile:profiles (*)`)
+          .order("specialty");
+        return (data as unknown as DoctorWithProfile[]) || [];
+      });
+      if (list) setDoctors(list);
+    } catch (e) {
+      console.error("Error fetching doctors:", e);
+    }
   }, [supabase]);
 
   useEffect(() => {

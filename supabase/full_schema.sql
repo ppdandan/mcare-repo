@@ -201,16 +201,33 @@ CREATE INDEX idx_appointments_patient_id  ON appointments(patient_id);
 CREATE INDEX idx_appointments_doctor_id   ON appointments(doctor_id);
 CREATE INDEX idx_appointments_start_time  ON appointments(start_time);
 CREATE INDEX idx_appointments_status      ON appointments(status);
+CREATE INDEX idx_appointments_patient_status_start ON appointments(patient_id, status, start_time);
+CREATE INDEX idx_appointments_doctor_start ON appointments(doctor_id, start_time);
+CREATE INDEX idx_appointments_service_id ON appointments(service_id);
 
 -- Medical records indexes
 CREATE INDEX idx_medical_records_patient_id ON medical_records(patient_id);
 CREATE INDEX idx_medical_records_doctor_id  ON medical_records(doctor_id);
+CREATE INDEX idx_medical_records_visit_date ON medical_records(visit_date DESC);
+CREATE INDEX idx_medical_records_appointment_id ON medical_records(appointment_id);
 
 -- Notifications composite index
 CREATE INDEX idx_notifications_user_read ON notifications(user_id, is_read);
 
 -- Doctor schedules index
 CREATE INDEX idx_doctor_schedules_doctor_id ON doctor_schedules(doctor_id);
+CREATE INDEX idx_doctor_schedules_doc_weekday ON doctor_schedules(doctor_id, weekday);
+
+-- Schedule exceptions index
+CREATE INDEX idx_schedule_exceptions_doc_date ON schedule_exceptions(doctor_id, exception_date);
+
+-- Profiles & Services search/filter indexes
+CREATE INDEX idx_profiles_role ON profiles(role);
+CREATE INDEX idx_profiles_full_name ON profiles(full_name);
+CREATE INDEX idx_profiles_phone ON profiles(phone);
+CREATE INDEX idx_services_is_active ON services(is_active);
+CREATE INDEX idx_services_name ON services(name);
+CREATE INDEX idx_push_tokens_user_id ON push_tokens(user_id);
 
 -- Audit logs indexes
 CREATE INDEX idx_audit_logs_user_id    ON audit_logs(user_id);

@@ -13,41 +13,32 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/constants/Config';
 
 // ── SecureStore Adapter ─────────────────────────────────────
 // Supabase needs a storage adapter to persist auth tokens.
-// On mobile, we use SecureStore instead of localStorage for security.
+// Expo SecureStore keys only permit alphanumeric characters, ".", "-", and "_".
+const sanitizeKey = (key: string) => key.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+
 const SecureStoreAdapter = {
-  /**
-   * Retrieve an item from secure storage.
-   * Returns null if the item doesn't exist or on error.
-   */
   getItem: async (key: string): Promise<string | null> => {
     try {
-      return await SecureStore.getItemAsync(key);
+      return await SecureStore.getItemAsync(sanitizeKey(key));
     } catch (error) {
-      console.error('SecureStore getItem error:', error);
+      console.warn('SecureStore getItem error:', error);
       return null;
     }
   },
 
-  /**
-   * Store an item in secure storage.
-   * SecureStore encrypts data at rest on the device.
-   */
   setItem: async (key: string, value: string): Promise<void> => {
     try {
-      await SecureStore.setItemAsync(key, value);
+      await SecureStore.setItemAsync(sanitizeKey(key), value);
     } catch (error) {
-      console.error('SecureStore setItem error:', error);
+      console.warn('SecureStore setItem error:', error);
     }
   },
 
-  /**
-   * Remove an item from secure storage.
-   */
   removeItem: async (key: string): Promise<void> => {
     try {
-      await SecureStore.deleteItemAsync(key);
+      await SecureStore.deleteItemAsync(sanitizeKey(key));
     } catch (error) {
-      console.error('SecureStore removeItem error:', error);
+      console.warn('SecureStore removeItem error:', error);
     }
   },
 };

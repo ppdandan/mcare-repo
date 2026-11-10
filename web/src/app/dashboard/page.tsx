@@ -94,13 +94,20 @@ export default function DashboardOverviewPage() {
     }
   };
 
-  // Metrics
-  const todayStr = new Date().toISOString().split("T")[0];
+  // Metrics computed using Asia/Manila clinic local time (UTC+8)
+  const todayStr = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Manila",
+  }).format(new Date());
+
   const pendingAppointments = appointments.filter((a) => a.status === "pending");
   const approvedAppointments = appointments.filter((a) => a.status === "approved");
-  const todayAppointments = appointments.filter(
-    (a) => a.start_time.split("T")[0] === todayStr
-  );
+  const todayAppointments = appointments.filter((a) => {
+    if (!a.start_time) return false;
+    const apptDate = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Manila",
+    }).format(new Date(a.start_time));
+    return apptDate === todayStr;
+  });
 
   return (
     <div className="space-y-8">

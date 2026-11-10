@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import Colors from '@/constants/Colors';
+import { fetchWithCache } from '@/lib/cache';
 import type { Service, DoctorWithProfile, AvailableSlot } from '@m-care/shared';
 
 export default function BookScreen() {
@@ -38,26 +39,32 @@ export default function BookScreen() {
   const [loadingSlots, setLoadingSlots] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
 
-  // Fetch services and doctors on mount
+  // Fetch services and doctors on mount (cached for fast repeated loads)
   useEffect(() => {
     async function loadCatalog() {
       setLoading(true);
       try {
-        const { data: servicesData } = await supabase
-          .from('services')
-          .select('*')
-          .eq('is_active', true)
-          .order('name');
-        if (servicesData) setServices(servicesData as Service[]);
+        const servicesData = await fetchWithCache('clinic_services_active', async () => {
+          const { data } = await supabase
+            .from('services')
+            .select('*')
+            .eq('is_active', true)
+            .order('name');
+          return (data as Service[]) || [];
+        }, 15 * 60 * 1000); // 15 mins
+        if (servicesData) setServices(servicesData);
 
-        const { data: doctorsData } = await supabase
-          .from('doctors')
-          .select(`
-            *,
-            profile:profiles (*)
-          `)
-          .order('specialty');
-        if (doctorsData) setDoctors(doctorsData as unknown as DoctorWithProfile[]);
+        const doctorsData = await fetchWithCache('clinic_doctors_catalog', async () => {
+          const { data } = await supabase
+            .from('doctors')
+            .select(`
+              *,
+              profile:profiles (*)
+            `)
+            .order('specialty');
+          return (data as unknown as DoctorWithProfile[]) || [];
+        }, 15 * 60 * 1000); // 15 mins
+        if (doctorsData) setDoctors(doctorsData);
       } catch (err) {
         console.error('Error loading services/doctors:', err);
       } finally {

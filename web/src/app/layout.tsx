@@ -1,16 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-
-/**
- * Inter font — clean, modern, great for dashboards.
- * We load the latin subset to keep the bundle small.
- */
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-});
 
 /**
  * Page metadata for the M-Care admin dashboard.
@@ -22,7 +11,7 @@ export const metadata: Metadata = {
 
 /**
  * Root layout wraps the entire application.
- * Applies the Inter font and global styles to all pages.
+ * Uses clean system font stack for instant zero-dependency loading.
  */
 export default function RootLayout({
   children,
@@ -30,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className={`${inter.className} min-h-screen`}>{children}</body>
+    <html lang="en">
+      <body className="min-h-screen font-sans antialiased text-gray-900 bg-gray-50">{children}</body>
     </html>
   );
 }
