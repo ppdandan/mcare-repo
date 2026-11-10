@@ -302,6 +302,8 @@ function LoginForm() {
 
         {/* Regulatory footer */}
         <div className="mt-6 pt-5 border-t border-gray-100 text-center space-y-1.5">
+          <a href="/privacy" className="text-sm font-semibold text-pink-700 underline">Privacy Policy</a>
+          <p><a href="/delete-account" className="text-sm text-pink-700 underline">Request account deletion</a></p>
           <p className="text-xs text-gray-400">
             Republic Act No. 10173 • Philippine Data Privacy Act of 2012
           </p>

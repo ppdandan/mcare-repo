@@ -343,6 +343,9 @@ export default function RegisterScreen() {
               <Text style={styles.loginLink}>Sign In Here</Text>
             </TouchableOpacity>
           </View>
+          <TouchableOpacity onPress={() => router.push('/privacy' as never)} accessibilityRole="link" style={{ marginTop: 14 }}>
+            <Text style={{ color: Colors.primary, textAlign: 'center', textDecorationLine: 'underline' }}>Privacy Policy</Text>
+          </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

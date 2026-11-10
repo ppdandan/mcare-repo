@@ -367,6 +367,9 @@ export default function LoginScreen() {
                 <Text style={styles.registerLink}>Create Account</Text>
               </TouchableOpacity>
             </View>
+            <TouchableOpacity onPress={() => router.push('/privacy' as never)} accessibilityRole="link" style={{ marginTop: 14 }}>
+              <Text style={{ color: Colors.primary, textAlign: 'center', textDecorationLine: 'underline' }}>Privacy Policy</Text>
+            </TouchableOpacity>
 
             {/* Staff Disclaimer */}
             <View style={styles.staffDisclaimer}>

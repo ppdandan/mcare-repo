@@ -33,6 +33,8 @@ export default function ProfileScreen() {
   const [obstetricHistory, setObstetricHistory] = useState('');
 
   const [saving, setSaving] = useState(false);
+  const [deletionPassword, setDeletionPassword] = useState('');
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (profile) {
@@ -92,6 +94,35 @@ export default function ProfileScreen() {
   const handleSignOut = async () => {
     await signOut();
     router.replace('/(auth)/welcome');
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete your account?',
+      'Your login and direct contact details will be removed, push tokens and notifications erased, and future appointments cancelled. Clinical records and audit history may be retained without direct identifiers for the clinic’s approved retention period. This cannot be undone.',
+      [
+        { text: 'Keep account', style: 'cancel' },
+        {
+          text: 'Delete account',
+          style: 'destructive',
+          onPress: async () => {
+            setDeleting(true);
+            try {
+              const { error } = await supabase.functions.invoke('delete-account', {
+                body: { password: deletionPassword || undefined },
+              });
+              if (error) throw error;
+              await signOut();
+              router.replace('/(auth)/welcome');
+            } catch (error) {
+              Alert.alert('Deletion could not be completed', error instanceof Error ? error.message : 'Contact the clinic for help.');
+            } finally {
+              setDeleting(false);
+            }
+          },
+        },
+      ],
+    );
   };
 
   return (
@@ -227,6 +258,25 @@ export default function ProfileScreen() {
           <TouchableOpacity style={styles.signOutBtn} onPress={handleSignOut}>
             <Text style={styles.signOutText}>Sign Out of Patient Account</Text>
           </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/privacy' as never)} accessibilityRole="link" style={{ padding: 14 }}>
+            <Text style={{ color: Colors.primary, textAlign: 'center', textDecorationLine: 'underline' }}>Privacy Policy</Text>
+          </TouchableOpacity>
+          <View style={styles.deleteCard}>
+            <Text style={styles.cardSectionTitle}>Delete account</Text>
+            <Text style={styles.deleteDescription}>Enter your password if you have not signed in within the last 10 minutes. You can also sign out and sign in again before continuing.</Text>
+            <TextInput
+              style={styles.input}
+              value={deletionPassword}
+              onChangeText={setDeletionPassword}
+              placeholder="Password (optional for recent sign-in)"
+              secureTextEntry
+              autoCapitalize="none"
+              editable={!deleting}
+            />
+            <TouchableOpacity style={[styles.deleteBtn, deleting && styles.btnDisabled]} onPress={handleDeleteAccount} disabled={deleting}>
+              {deleting ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.deleteBtnText}>Delete my account</Text>}
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -235,7 +285,7 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFF7F9' },
-  container: { padding: 20, paddingBottom: 40 },
+  container: { flexGrow: 1, padding: 20, paddingBottom: 40 },
   header: { marginBottom: 16 },
   title: { fontSize: 22, fontWeight: '700', color: Colors.text },
   subtitle: { fontSize: 13, color: Colors.textSecondary, marginTop: 2 },
