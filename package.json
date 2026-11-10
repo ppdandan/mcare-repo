@@ -1,0 +1,17 @@
+{
+  "name": "m-care",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "mobile",
+    "web",
+    "shared"
+  ],
+  "scripts": {
+    "dev:web": "npm --workspace=web run dev",
+    "build:web": "npm --workspace=web run build",
+    "start:web": "npm --workspace=web run start",
+    "dev:mobile": "npm --workspace=mobile run start",
+    "typecheck": "tsc -b shared"
+  }
+}

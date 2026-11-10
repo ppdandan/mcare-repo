@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "M-Care",
+    "slug": "m-care",
+    "scheme": "mcare",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E91E8C"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.mcare.patient"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#E91E8C"
+      },
+      "package": "com.mcare.patient"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "supabaseUrl": "https://luccnwicirfnmyzgemzj.supabase.co",
+      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1Y2Nud2ljaXJmbm15emdlbXpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1OTg5NTcsImV4cCI6MjEwODE3NDk1N30.mNPjIm7Jw4l9sD1U7S6fWVvjI1cRRhCU-zdkLM4txIw",
+      "eas": {
+        "projectId": "841b9a7e-b07d-4e6d-ad12-f24f0a87a63a"
+      }
+    },
+    "owner": "dandan03s-team"
+  }
+}
