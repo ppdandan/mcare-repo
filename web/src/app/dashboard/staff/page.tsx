@@ -81,10 +81,10 @@ export default function StaffManagementPage() {
 
     setSubmitting(true);
     try {
-      const defaultPassword = "Password123!";
+      const temporaryPassword = crypto.randomUUID();
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
-        password: defaultPassword,
+        password: temporaryPassword,
         options: {
           data: {
             full_name: fullName.trim(),
@@ -105,7 +105,9 @@ export default function StaffManagementPage() {
         });
       }
 
-      alert(`Staff account created for ${fullName}! Initial password: ${defaultPassword}`);
+      alert(
+        `Staff account created for ${fullName}. Share this temporary password securely; it will not be shown again: ${temporaryPassword}`
+      );
       setShowModal(false);
       setFullName("");
       setEmail("");
@@ -354,4 +356,3 @@ export default function StaffManagementPage() {
     </div>
   );
 }
-

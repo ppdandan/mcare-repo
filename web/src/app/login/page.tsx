@@ -208,7 +208,7 @@ function LoginForm() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value.trim())}
-                placeholder="e.g. admin@mcare.clinic"
+                placeholder="staff@yourclinic.com"
                 className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition"
               />
             </div>
@@ -249,7 +249,7 @@ function LoginForm() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value.trim())}
-                placeholder="e.g. dr.dizon@mcare.clinic"
+                placeholder="doctor@yourclinic.com"
                 className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition"
               />
             </div>
@@ -299,41 +299,6 @@ function LoginForm() {
             )}
           </form>
         )}
-
-        {/* Demo Credentials Section */}
-        <div className="mt-6 pt-5 border-t border-gray-100">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 text-center">
-            Demo Credentials (1-Click Fill)
-          </p>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setEmail("admin@mcare.clinic");
-                setPassword("Password123!");
-                setError(null);
-                setSuccess(null);
-                setMode("password");
-              }}
-              className="px-3 py-1.5 text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 font-medium rounded-lg border border-rose-200 transition"
-            >
-              👩‍💼 Clinic Staff / Admin
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setEmail("dr.dizon@mcare.clinic");
-                setPassword("Password123!");
-                setError(null);
-                setSuccess(null);
-                setMode("password");
-              }}
-              className="px-3 py-1.5 text-xs bg-purple-50 hover:bg-purple-100 text-purple-700 font-medium rounded-lg border border-purple-200 transition"
-            >
-              🩺 Attending Doctor
-            </button>
-          </div>
-        </div>
 
         {/* Regulatory footer */}
         <div className="mt-6 pt-5 border-t border-gray-100 text-center space-y-1.5">

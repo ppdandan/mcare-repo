@@ -35,13 +35,6 @@ export default function LoginScreen() {
   const passwordInputRef = useRef<TextInput>(null);
   const otpInputRef = useRef<TextInput>(null);
 
-  const fillDemoPatient = () => {
-    setEmail('patient1@mcare.ph');
-    setPassword('Password123!');
-    setErrorMessage(null);
-    setSuccessMessage(null);
-  };
-
   const handlePasswordLogin = async () => {
     const cleanEmail = email.trim().toLowerCase();
 
@@ -367,16 +360,6 @@ export default function LoginScreen() {
               </View>
             )}
 
-            {/* Quick Demo Fill Button */}
-            <TouchableOpacity
-              style={styles.demoFillButton}
-              onPress={fillDemoPatient}
-              activeOpacity={0.75}
-            >
-              <Ionicons name="sparkles-outline" size={15} color={Colors.primaryDark} style={{ marginRight: 6 }} />
-              <Text style={styles.demoFillText}>Fill Demo Patient (Bea Alonzo)</Text>
-            </TouchableOpacity>
-
             {/* Registration Link */}
             <View style={styles.registerPrompt}>
               <Text style={styles.promptText}>New patient at M-Care? </Text>
@@ -635,22 +618,6 @@ const styles = StyleSheet.create({
     color: Colors.textOnPrimary,
     fontSize: 16,
     fontWeight: '700',
-  },
-  demoFillButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 12,
-    paddingVertical: 10,
-    borderRadius: 12,
-    backgroundColor: '#FDF2F8',
-    borderWidth: 1,
-    borderColor: '#FCE7F3',
-  },
-  demoFillText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: Colors.primaryDark,
   },
   registerPrompt: {
     flexDirection: 'row',

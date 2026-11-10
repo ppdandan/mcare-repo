@@ -61,9 +61,7 @@ export default function PatientsPage() {
 
     setSaving(true);
     try {
-      // 1. Create user via auth.signUp or generate profile
-      // In staff portal, we register a patient user account with a default password
-      const tempPassword = "Password123!";
+      const tempPassword = crypto.randomUUID();
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
         password: tempPassword,
@@ -86,7 +84,9 @@ export default function PatientsPage() {
 
       if (authError) throw authError;
 
-      alert(`Walk-in Patient registered successfully! Temporary password: ${tempPassword}`);
+      alert(
+        `Walk-in patient registered. Share this temporary password securely; it will not be shown again: ${tempPassword}`
+      );
       setShowCreateModal(false);
       resetForm();
       await fetchPatients();
@@ -536,4 +536,3 @@ export default function PatientsPage() {
     </div>
   );
 }
-
