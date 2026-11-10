@@ -35,5 +35,13 @@
 - Waived the Phase 0–3 completion gate at the user's direction. Created branch `expo-sdk-upgrade` from `release-hardening`.
 - Upgraded the mobile app from Expo SDK 52 to SDK 53 with SDK-compatible dependencies (React 19.0.0, React Native 0.79.6). Expo Doctor passed all 18 checks. The mobile TypeScript check passed after adapting the timer type and notification handler to the new types.
 - Android notification channel creation now happens before checking/requesting notification permission and before requesting a push token.
-- Android 16 emulator review and runtime behavior checks remain for the SDK 54 step. No EAS build was run.
-- SDK 53 step is ready for its required commit.
+- SDK 53 was committed as `a39c182` (`chore(mobile): upgrade Expo SDK 53`).
+- Starting-point check found four missing style keys in `mobile/app/(tabs)/profile.tsx`; restored them and committed as `b09d228` so the SDK 54 step started with a clean TypeScript check.
+
+## Phase 6 — Expo SDK upgrade (SDK 54 step)
+
+- Upgraded the mobile app from Expo SDK 53 to 54: Expo 54.0.38, React 19.1.0, React DOM 19.1.0, React Native 0.81.5, React Native Web 0.21.x, and SDK-matched Expo packages. Added explicit `react-dom@19.1.0` and updated `@types/react` to ~19.1.10 and TypeScript to ~5.9.2 to satisfy npm peer resolution.
+- Regenerated the workspace install tree so npm hoists the mobile React 19 tree and nests the web workspace's React 18 copies; this cleared Expo Doctor's duplicate-dependency check while `web/` remains on React 18.3.1 and Next.js 15.5.29.
+- Expo Doctor passed all 18 checks and the mobile TypeScript check passed. No Android or iOS folder is tracked.
+- Committed SDK 54 as `637b52c` (`chore(mobile): upgrade Expo SDK 54`).
+- Remaining Phase 6 work: expo-notifications config plugin and `POST_NOTIFICATIONS` in the resolved manifest, remove legacy storage permissions with `blockedPermissions`, verify target SDK 36 via `expo config --type introspect`, Android 16 emulator layout review, `eas.json` profile ref check (production currently still points to dev and must be corrected), and the full dev regression test. No EAS build was run.
