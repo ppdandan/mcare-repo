@@ -145,3 +145,7 @@
 
 - Updated the shared policy to explain that M-Care does not collect payments or payment card/wallet details; the clinic records the in-person amount and plain payment-method label after a completed service. The retention section now explicitly includes transaction records after account deletion.
 - The policy still requires clinic approval of its effective date, official contact/complaint channels, processor names and locations, and retention schedule.
+
+## Follow-up — production EAS command accuracy
+
+- Checked the Expo EAS app-store release instructions and corrected the owner-run commands in `PRODUCTION_RUNBOOK.md` to invoke the documented `eas-cli` package and submit the latest Android build. These commands were not run.

@@ -48,8 +48,8 @@ After the clinic has configured and reviewed the EAS `production` environment an
 
 ```sh
 cd mobile
-npx eas build --platform android --profile production
-npx eas submit --platform android --profile production
+npx eas-cli@latest build --platform android --profile production
+npx eas-cli@latest submit --platform android --profile production --latest
 ```
 
 These EAS commands were intentionally not run for this readiness task. Complete the Play Console declarations, store listing, privacy and deletion URLs, screenshots, content rating, data-safety answers, and review submission manually.
