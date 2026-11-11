@@ -29,12 +29,15 @@ function nextManilaDateForDay(targetDay) {
 let failure;
 try {
   const [{ data: doctors, error: doctorError }, { data: services, error: serviceError }] = await Promise.all([
-    admin.from('doctors').select('id, profile:profiles!inner(full_name)').eq('profile.full_name', 'Dr. Bernice Paule'),
+    admin.from('doctors').select('id, specialty, profile:profiles!inner(full_name)'),
     admin.from('services').select('id, duration_minutes').eq('is_active', true).order('name').limit(1),
   ]);
   if (doctorError) throw doctorError;
   if (serviceError) throw serviceError;
-  assert.equal(doctors?.length, 1, 'Expected exactly one canonical doctor on dev');
+  assert.equal(doctors?.length, 1, 'Expected exactly one doctor total on dev');
+  assert.equal(doctors[0].profile.full_name, 'Dr. Bernice Paule', 'The only dev doctor must be Dr. Bernice Paule');
+  assert.equal(doctors[0].specialty, 'OB-GYNE / Sonologist');
+  report('dev has only Dr. Bernice Paule, OB-GYNE / Sonologist');
   assert.ok(services?.length, 'An active service is required for weekend booking checks');
 
   const email = `mcare-weekend-${randomUUID()}@example.test`;

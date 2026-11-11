@@ -161,6 +161,7 @@
 - Re-ran `supabase/tests/transactions.test.mjs` on dev; all 14 transaction authorization, ownership, lifecycle, audit, correction, and void checks passed, including cleanup.
 - Re-ran `supabase/tests/cross-platform-sync.test.mjs` on dev; profile sharing, mobile-to-web booking, staff reschedule, web-to-mobile booking, cancellation refresh, and matching transaction history passed with identical Asia/Manila displays. Temporary users, appointments, transactions, and audit rows were removed.
 - Added `supabase/tests/booking-weekend.test.mjs`. On dev it confirmed that Saturday and Sunday bookings are rejected both through `book_appointment` and by the database trigger on direct inserts; the temporary account was removed. `node --check` passed.
+- Strengthened and reran that test after re-listing projects: it now asserts the entire dev doctors table contains exactly one row, Dr. Bernice Paule, `OB-GYNE / Sonologist`, in addition to the Saturday/Sunday rejections. Cleanup passed.
 
 ## Follow-up — user-facing error states
 
