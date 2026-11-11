@@ -149,3 +149,9 @@
 ## Follow-up — production EAS command accuracy
 
 - Checked the Expo EAS app-store release instructions and corrected the owner-run commands in `PRODUCTION_RUNBOOK.md` to invoke the documented `eas-cli` package and submit the latest Android build. These commands were not run.
+
+## Follow-up — web React type alignment
+
+- After explicit user authorization, aligned the web workspace's React, React DOM, and type declarations to the existing Expo workspace versions: React/React DOM 19.1.0, `@types/react` 19.1.17, and `@types/react-dom` 19.1.9. This removes the split React 18/19 resolution that caused website JSX/ReactNode errors. Updated only `web/package.json` and the root `package-lock.json`.
+- Web `npx tsc --noEmit` passed; mobile `npx tsc --noEmit -p tsconfig.json` passed. The local Next.js website build passed lint/type checking, generated all 22 static pages, and completed successfully. No EAS/Android production build was run.
+- `npm install` reported 8 workspace audit findings (7 moderate, 1 high); no automatic audit fix was run. Review them separately before release.
