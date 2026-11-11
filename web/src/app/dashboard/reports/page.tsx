@@ -401,8 +401,8 @@ export default function ReportsPage() {
           <div className="text-right flex flex-col items-end">
             <p className="font-semibold text-gray-800">Medical Director Approval:</p>
             <div className="mt-10 border-b border-gray-400 w-48" />
-            <p className="mt-1 font-bold text-gray-900">Dr. Carmela Dizon, MD, FPOGS</p>
-            <p className="text-[10px] text-gray-500">License No: PRC-OBGYN-09214</p>
+            <p className="mt-1 font-bold text-gray-900">Dr. Bernice Paule</p>
+            <p className="text-[10px] text-gray-500">OB-GYNE / Sonologist</p>
           </div>
         </div>
       </div>

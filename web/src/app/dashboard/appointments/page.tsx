@@ -2,21 +2,19 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { AppointmentWithDetails, AppointmentStatus, DoctorWithProfile } from "@m-care/shared";
+import type { AppointmentWithDetails, AppointmentStatus } from "@m-care/shared";
 
 type ViewMode = "list" | "calendar";
 type CalendarViewType = "month" | "week" | "day";
 
 export default function AppointmentsPage() {
   const [appointments, setAppointments] = useState<AppointmentWithDetails[]>([]);
-  const [doctors, setDoctors] = useState<DoctorWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Filters & Views
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [calendarView, setCalendarView] = useState<CalendarViewType>("week");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [doctorFilter, setDoctorFilter] = useState<string>("all");
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
   // Reschedule Modal
@@ -57,25 +55,8 @@ export default function AppointmentsPage() {
     }
   }, [supabase]);
 
-  const fetchDoctors = useCallback(async () => {
-    try {
-      const { fetchWithCache } = await import("@/lib/cache");
-      const list = await fetchWithCache("clinic_doctors_web", async () => {
-        const { data } = await supabase
-          .from("doctors")
-          .select(`*, profile:profiles (*)`)
-          .order("specialty");
-        return (data as unknown as DoctorWithProfile[]) || [];
-      });
-      if (list) setDoctors(list);
-    } catch (e) {
-      console.error("Error fetching doctors:", e);
-    }
-  }, [supabase]);
-
   useEffect(() => {
     fetchAppointments();
-    fetchDoctors();
 
     // Supabase Realtime Sync: calendar updates when mobile patient books or updates!
     const channel = supabase
@@ -96,7 +77,7 @@ export default function AppointmentsPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [fetchAppointments, fetchDoctors, supabase]);
+  }, [fetchAppointments, supabase]);
 
   const handleUpdateStatus = async (id: string, newStatus: AppointmentStatus) => {
     setUpdating(true);
@@ -159,8 +140,7 @@ export default function AppointmentsPage() {
   // Filtered List
   const filtered = appointments.filter((a) => {
     const matchesStatus = statusFilter === "all" || a.status === statusFilter;
-    const matchesDoctor = doctorFilter === "all" || a.doctor_id === doctorFilter;
-    return matchesStatus && matchesDoctor;
+    return matchesStatus;
   });
 
   const getStatusBadge = (status: AppointmentStatus) => {
@@ -247,23 +227,6 @@ export default function AppointmentsPage() {
             </select>
           </div>
 
-          <div>
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
-              Attending Doctor
-            </label>
-            <select
-              value={doctorFilter}
-              onChange={(e) => setDoctorFilter(e.target.value)}
-              className="text-xs font-medium border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500"
-            >
-              <option value="all">All Doctors</option>
-              {doctors.map((doc) => (
-                <option key={doc.id} value={doc.id}>
-                  {doc.profile.full_name} ({doc.specialty})
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
 
         {viewMode === "calendar" && (

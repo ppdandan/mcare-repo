@@ -22,8 +22,6 @@ export default function StaffManagementPage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState<UserRole>("nurse");
-  const [specialty, setSpecialty] = useState("");
-  const [room, setRoom] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const supabase = createClient();
@@ -82,7 +80,7 @@ export default function StaffManagementPage() {
     setSubmitting(true);
     try {
       const temporaryPassword = crypto.randomUUID();
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      const { error: authError } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
         password: temporaryPassword,
         options: {
@@ -96,15 +94,6 @@ export default function StaffManagementPage() {
 
       if (authError) throw authError;
 
-      // If doctor role, register in doctors table
-      if (role === "doctor" && authData.user) {
-        await supabase.from("doctors").insert({
-          profile_id: authData.user.id,
-          specialty: specialty.trim() || "General OB-GYN",
-          room: room.trim() || "Consultation Suite",
-        });
-      }
-
       alert(
         `Staff account created for ${fullName}. Share this temporary password securely; it will not be shown again: ${temporaryPassword}`
       );
@@ -112,8 +101,6 @@ export default function StaffManagementPage() {
       setFullName("");
       setEmail("");
       setPhone("");
-      setSpecialty("");
-      setRoom("");
       await fetchStaff();
     } catch (err: unknown) {
       alert(err instanceof Error ? err.message : "Failed to create staff account");
@@ -250,7 +237,7 @@ export default function StaffManagementPage() {
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100">
             <h3 className="text-lg font-bold text-gray-900 mb-1">Provision Staff Account</h3>
             <p className="text-xs text-gray-500 mb-4">
-              Create credentials for Doctors, Nurses, Receptionists, or Administrators
+              Create credentials for Nurses, Receptionists, or Administrators
             </p>
 
             <form onSubmit={handleCreateStaff} className="space-y-3 text-xs">
@@ -259,7 +246,7 @@ export default function StaffManagementPage() {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Dr. Jennifer Ramos, MD"
+                  placeholder="e.g. Maria Santos"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   className="w-full border border-gray-300 rounded-lg p-2 text-xs"
@@ -286,7 +273,6 @@ export default function StaffManagementPage() {
                     onChange={(e) => setRole(e.target.value as UserRole)}
                     className="w-full border border-gray-300 rounded-lg p-2 text-xs bg-white font-bold"
                   >
-                    <option value="doctor">Doctor</option>
                     <option value="nurse">Nurse</option>
                     <option value="receptionist">Receptionist</option>
                     <option value="admin">Administrator</option>
@@ -303,31 +289,6 @@ export default function StaffManagementPage() {
                   />
                 </div>
               </div>
-
-              {role === "doctor" && (
-                <div className="space-y-3 pt-1 border-t border-gray-100">
-                  <div>
-                    <label className="font-bold text-purple-700 block mb-1">Medical Specialty</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. High-Risk Pregnancy & Perinatology"
-                      value={specialty}
-                      onChange={(e) => setSpecialty(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg p-2 text-xs"
-                    />
-                  </div>
-                  <div>
-                    <label className="font-bold text-purple-700 block mb-1">Clinic Room / Suite</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Room 204 - Ultrasound A"
-                      value={room}
-                      onChange={(e) => setRoom(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg p-2 text-xs"
-                    />
-                  </div>
-                </div>
-              )}
 
               <div className="p-3 bg-pink-50 rounded-lg text-[11px] text-pink-700 leading-relaxed">
                 ℹ️ The account will be granted role permissions according to clinic Row Level Security policies.

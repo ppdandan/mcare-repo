@@ -64,3 +64,10 @@
 - Added the supplied `logo.svg` as the Next.js app icon/favicon and removed `PregnantWomanLogo.tsx`.
 - No email templates exist in this repository.
 - Mobile TypeScript check passed. Web TypeScript check remains blocked by existing workspace type conflicts (React 18/19 `ReactNode` incompatibilities), stale `.next/types` references to missing `src/app/book/page`, and Recharts JSX type errors; no packages were changed.
+
+### Task 2 — Canonical OB doctor
+
+- Read the existing canonicalization migrations and checked dev before changes. Dev had exactly one doctor: Dr. Bernice Paule, `OB-GYNE / Sonologist`.
+- Added idempotent migration `00023_ensure_canonical_ob_doctor.sql`; a dry run showed only 00023 pending, and it was applied to dev ref `luccnwicirfnmyzgemzj`. A follow-up read confirmed exactly one doctor with the requested name and specialty. Production ref was not queried.
+- Mobile booking now assigns Dr. Bernice automatically. Removed doctor filtering from web appointments, the schedule selector, the records physician selector, and doctor account creation from staff management. Replaced the stale report sign-off name.
+- Mobile TypeScript check passed. Web TypeScript still fails on the existing React 18/19 type conflict in Next/Link and Recharts components. The stale `.next` cache was isolated for the check and restored; package files were not changed.

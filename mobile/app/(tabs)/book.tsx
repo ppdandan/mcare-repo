@@ -21,11 +21,10 @@ export default function BookScreen() {
   const router = useRouter();
   const { patient } = useAuth();
 
-  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
 
   // Data collections
   const [services, setServices] = useState<Service[]>([]);
-  const [doctors, setDoctors] = useState<DoctorWithProfile[]>([]);
   const [slots, setSlots] = useState<AvailableSlot[]>([]);
 
   // Selection states
@@ -54,17 +53,17 @@ export default function BookScreen() {
         }, 15 * 60 * 1000); // 15 mins
         if (servicesData) setServices(servicesData);
 
-        const doctorsData = await fetchWithCache('clinic_doctors_catalog', async () => {
-          const { data } = await supabase
+        const { data: doctorData, error: doctorError } = await supabase
             .from('doctors')
             .select(`
               *,
               profile:profiles (*)
             `)
-            .order('specialty');
-          return (data as unknown as DoctorWithProfile[]) || [];
-        }, 15 * 60 * 1000); // 15 mins
-        if (doctorsData) setDoctors(doctorsData);
+            .eq('profile.full_name', 'Dr. Bernice Paule')
+            .eq('specialty', 'OB-GYNE / Sonologist')
+            .maybeSingle();
+        if (doctorError) throw doctorError;
+        setSelectedDoctor(doctorData as unknown as DoctorWithProfile | null);
       } catch (err) {
         console.error('Error loading services/doctors:', err);
       } finally {
@@ -101,7 +100,7 @@ export default function BookScreen() {
       }
     }
 
-    if (step === 4) {
+    if (step === 3) {
       fetchSlots();
     }
   }, [step, selectedDoctor, selectedDate, selectedService]);
@@ -160,7 +159,6 @@ export default function BookScreen() {
               // Reset booking wizard and navigate to appointments
               setStep(1);
               setSelectedService(null);
-              setSelectedDoctor(null);
               setSelectedDate('');
               setSelectedSlot(null);
               setNotes('');
@@ -188,9 +186,9 @@ export default function BookScreen() {
         {/* Header with Step Indicator */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Book Clinic Visit</Text>
-          <Text style={styles.stepSubtitle}>Step {step} of 5</Text>
+              <Text style={styles.stepSubtitle}>Step {step} of 4</Text>
           <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: `${(step / 5) * 100}%` }]} />
+            <View style={[styles.progressFill, { width: `${(step / 4) * 100}%` }]} />
           </View>
         </View>
 
@@ -233,46 +231,13 @@ export default function BookScreen() {
                 </View>
               )}
 
-              {/* STEP 2: SELECT DOCTOR */}
+              {/* STEP 2: SELECT DATE; Dr. Bernice Paule is assigned automatically. */}
               {step === 2 && (
-                <View>
-                  <Text style={styles.sectionHeading}>Select Specialist</Text>
-                  <Text style={styles.sectionSub}>
-                    Choose an attending OB-GYN physician for {selectedService?.name}.
-                  </Text>
-                  {doctors.map((doc) => (
-                    <TouchableOpacity
-                      key={doc.id}
-                      style={[
-                        styles.card,
-                        selectedDoctor?.id === doc.id && styles.cardActive,
-                      ]}
-                      onPress={() => setSelectedDoctor(doc)}
-                      activeOpacity={0.8}
-                    >
-                      <View style={styles.doctorHeader}>
-                        <View style={styles.doctorAvatar}>
-                          <Text style={styles.doctorAvatarText}>
-                            {doc.profile.full_name.charAt(4) || 'D'}
-                          </Text>
-                        </View>
-                        <View style={{ flex: 1 }}>
-                          <Text style={styles.cardTitle}>{doc.profile.full_name}</Text>
-                          <Text style={styles.docSpecialty}>{doc.specialty}</Text>
-                          <Text style={styles.docRoom}>📍 {doc.room ?? 'Consultation Suite'}</Text>
-                        </View>
-                      </View>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
-
-              {/* STEP 3: SELECT DATE */}
-              {step === 3 && (
                 <View>
                   <Text style={styles.sectionHeading}>Choose Appointment Date</Text>
                   <Text style={styles.sectionSub}>
-                    Available clinic days for {selectedDoctor?.profile.full_name}:
+                    {selectedService?.name} · {selectedDoctor?.profile.full_name} · {selectedDoctor?.specialty}
+                    {'\n'}Available at {selectedDoctor?.room ?? 'Consultation Room'}
                   </Text>
                   <View style={styles.dateGrid}>
                     {nextDates.map((d) => (
@@ -306,8 +271,8 @@ export default function BookScreen() {
                 </View>
               )}
 
-              {/* STEP 4: SELECT AVAILABLE TIME SLOT */}
-              {step === 4 && (
+              {/* STEP 3: SELECT AVAILABLE TIME SLOT */}
+              {step === 3 && (
                 <View>
                   <Text style={styles.sectionHeading}>Available Time Slots</Text>
                   <Text style={styles.sectionSub}>
@@ -331,7 +296,7 @@ export default function BookScreen() {
                       </Text>
                       <TouchableOpacity
                         style={styles.backStepButton}
-                        onPress={() => setStep(3)}
+                        onPress={() => setStep(2)}
                       >
                         <Text style={styles.backStepText}>Choose Another Date</Text>
                       </TouchableOpacity>
@@ -363,8 +328,8 @@ export default function BookScreen() {
                 </View>
               )}
 
-              {/* STEP 5: REVIEW & CONFIRM */}
-              {step === 5 && (
+              {/* STEP 4: REVIEW & CONFIRM */}
+              {step === 4 && (
                 <View>
                   <Text style={styles.sectionHeading}>Review & Confirm Visit</Text>
                   <Text style={styles.sectionSub}>
@@ -431,30 +396,28 @@ export default function BookScreen() {
           {step > 1 && (
             <TouchableOpacity
               style={styles.prevButton}
-              onPress={() => setStep((s) => (s - 1) as 1 | 2 | 3 | 4 | 5)}
+              onPress={() => setStep((s) => (s - 1) as 1 | 2 | 3 | 4)}
               disabled={submitting}
             >
               <Text style={styles.prevButtonText}>Back</Text>
             </TouchableOpacity>
           )}
 
-          {step < 5 ? (
+          {step < 4 ? (
             <TouchableOpacity
               style={[
                 styles.nextButton,
                 ((step === 1 && !selectedService) ||
-                  (step === 2 && !selectedDoctor) ||
-                  (step === 3 && !selectedDate) ||
-                  (step === 4 && !selectedSlot)) &&
+                  (step === 2 && (!selectedDate || !selectedDoctor)) ||
+                  (step === 3 && !selectedSlot)) &&
                   styles.buttonDisabled,
               ]}
               disabled={
                 (step === 1 && !selectedService) ||
-                (step === 2 && !selectedDoctor) ||
-                (step === 3 && !selectedDate) ||
-                (step === 4 && !selectedSlot)
+                (step === 2 && (!selectedDate || !selectedDoctor)) ||
+                (step === 3 && !selectedSlot)
               }
-              onPress={() => setStep((s) => (s + 1) as 1 | 2 | 3 | 4 | 5)}
+              onPress={() => setStep((s) => (s + 1) as 1 | 2 | 3 | 4)}
             >
               <Text style={styles.nextButtonText}>Next</Text>
             </TouchableOpacity>

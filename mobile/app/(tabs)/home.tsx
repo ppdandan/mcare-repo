@@ -158,7 +158,7 @@ export default function HomeScreen() {
             <View style={{ flex: 1 }}>
               <Text style={styles.actionTitle}>Book Appointment</Text>
               <Text style={styles.actionDesc}>
-                Choose doctor, date, and live available slots
+                Choose a service, date, and live available slots
               </Text>
             </View>
           </TouchableOpacity>

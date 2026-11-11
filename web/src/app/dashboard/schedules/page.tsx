@@ -139,26 +139,6 @@ export default function SchedulesPage() {
         </button>
       </div>
 
-      {/* Doctor Selector Chips */}
-      <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center space-x-3 overflow-x-auto">
-        <span className="text-xs font-bold text-gray-400 uppercase tracking-wider shrink-0">
-          Physician:
-        </span>
-        {doctors.map((doc) => (
-          <button
-            key={doc.id}
-            onClick={() => setSelectedDoctorId(doc.id)}
-            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition shrink-0 ${
-              selectedDoctorId === doc.id
-                ? "bg-pink-600 text-white shadow-sm"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            {doc.profile.full_name}
-          </button>
-        ))}
-      </div>
-
       {/* Content Columns: Weekly Schedule vs Schedule Exceptions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Weekly Consultation Hours */}

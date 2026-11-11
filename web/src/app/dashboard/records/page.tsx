@@ -506,18 +506,10 @@ export default function MedicalRecordsPage() {
                 </div>
 
                 <div>
-                  <label className="font-bold text-gray-700 block mb-1">Attending Physician *</label>
-                  <select
-                    value={doctorId}
-                    onChange={(e) => setDoctorId(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-2 text-xs bg-white"
-                  >
-                    {doctors.map((d) => (
-                      <option key={d.id} value={d.id}>
-                        {d.profile.full_name}
-                      </option>
-                    ))}
-                  </select>
+                  <span className="font-bold text-gray-700 block mb-1">Attending Physician</span>
+                  <p className="w-full border border-gray-200 rounded-lg p-2 text-xs bg-gray-50 text-gray-800">
+                    {doctors.find((doctor) => doctor.id === doctorId)?.profile.full_name ?? "Dr. Bernice Paule"}
+                  </p>
                 </div>
               </div>
 
