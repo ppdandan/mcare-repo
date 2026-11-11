@@ -43,3 +43,9 @@
 
 - Read `shared/theme.ts` and the website `mcare` theme. Added `mobile/theme.ts` as the app token entry point, using the shared palette, spacing, type scale, radii, and sizes. Replaced the mobile `Colors` constant and moved screen token imports to the mobile theme; no styling framework or package was added.
 - `cd mobile && npx tsc --noEmit` passed. Step 1 complete.
+
+### Step 2 — Shared mobile components
+
+- Added dependency-free React Native `Button`, `Card`, `TextField`, `Badge`, `ScreenHeader`, `EmptyState`, `ErrorState`, `LoadingState`, and `ListRow` primitives. Buttons have four variants, pressed/disabled/loading states, accessibility state and a 48px minimum. Controls retain system font scaling and have explicit accessible roles/names where applicable.
+- Kept the existing safe-area provider and screen-level safe areas. The login screen and app splash use `assets/logo.png`; the welcome and route splash screens already used it. Updated the native splash image reference to the same logo.
+- `cd mobile && npx tsc --noEmit` passed. Step 2 complete.
