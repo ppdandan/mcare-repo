@@ -172,3 +172,9 @@
 
 - Replaced the analytics dashboard's remaining unrelated chart colors and 10–11px axis labels with shared semantic colors and the shared caption type size. Moved the remaining mobile shadow and web focus/input/placeholder values into theme-backed tokens.
 - A source scan found no raw hex colors in mobile screens or web app pages/styles. Mobile and web TypeScript checks passed, and the local web build again generated all 22 static pages successfully.
+
+## Follow-up — dependency security review
+
+- After the user's authorization for safe updates, ran `npm audit fix` without `--force`; npm reported the workspace already up to date and made no package or lockfile changes.
+- A read-only full `npm audit` reports 25 findings: 5 high, 19 moderate, and 1 low. Remaining high findings include `query-string`/`decode-uri-component` (the listed `query-string` fix is v10, a major), `expo-router` and related Expo packages (the listed fixes require Expo SDK 58; downgrading Expo to 52 is also suggested by some advisories), `postcss` under Next 15 (the listed fix is Next 16), and `image-size` (transitive; npm did not apply a safe update). No forced or major upgrades were made.
+- This remains a release security review item. The user authorized safe updates only; no further package changes are authorized without a separate decision.
