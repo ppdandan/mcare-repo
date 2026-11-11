@@ -1,4 +1,4 @@
-import { spacing, typography, radius } from '@m-care/shared';
+import { spacing, typography, radius, userFacingErrorMessage } from '@m-care/shared';
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
@@ -107,7 +107,7 @@ export default function InquiryScreen() {
       setShowForm(false);
       await fetchInquiries();
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : 'Failed to send inquiry');
+      Alert.alert('Inquiry not sent', userFacingErrorMessage(err, 'We couldn’t send your inquiry. Check your connection and try again.'));
     } finally {
       setSubmitting(false);
     }

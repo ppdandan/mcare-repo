@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { userFacingErrorMessage } from "@m-care/shared";
 
 type LoginMode = "password" | "otp";
 
@@ -49,7 +50,7 @@ function LoginForm() {
         await verifyRoleAndRedirect(data.user.id);
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An unexpected authentication error occurred.");
+      setError(userFacingErrorMessage(err, "We couldn’t sign you in. Check your details and try again."));
     } finally {
       setLoading(false);
     }
@@ -79,7 +80,7 @@ function LoginForm() {
       setOtpSent(true);
       setSuccess("A 6-digit OTP code has been sent to your email.");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to send OTP code.");
+      setError(userFacingErrorMessage(err, "We couldn’t send a sign-in code. Check your email address and try again."));
     } finally {
       setLoading(false);
     }
@@ -111,7 +112,7 @@ function LoginForm() {
         await verifyRoleAndRedirect(data.user.id);
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Invalid or expired OTP code.");
+      setError(userFacingErrorMessage(err, "We couldn’t verify that code. Request a new code and try again."));
     } finally {
       setLoading(false);
     }

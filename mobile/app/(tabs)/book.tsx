@@ -1,4 +1,4 @@
-import { spacing, typography, radius } from '@m-care/shared';
+import { spacing, typography, radius, userFacingErrorMessage } from '@m-care/shared';
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
@@ -29,10 +29,7 @@ import type { Service, DoctorWithProfile, AvailableSlot, DoctorSchedule } from '
 type BookingSlot = AvailableSlot & { available: boolean };
 
 function getErrorMessage(error: unknown, fallback: string): string {
-  if (error && typeof error === 'object' && 'message' in error) {
-    return String(error.message);
-  }
-  return error instanceof Error ? error.message : fallback;
+  return userFacingErrorMessage(error, fallback);
 }
 
 export default function BookScreen() {
@@ -205,7 +202,7 @@ export default function BookScreen() {
       if (error) {
         // Check for exclusion constraint violation (PostgreSQL code 23P01)
         if (error.code === '23P01' || error.message.includes('no_doctor_double_booking')) {
-          setBookingError(error.message);
+          setBookingError(getErrorMessage(error, 'That appointment time is no longer available. Choose another time.'));
           setStep(3);
           setSlotRetry((count) => count + 1);
           return;

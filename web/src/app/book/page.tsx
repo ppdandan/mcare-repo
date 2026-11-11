@@ -305,7 +305,7 @@ export default function PatientBookingPage() {
                 </div>
               )}
 
-              {bookingError && <div role="alert" className="mt-4 rounded-xl border border-red-300 bg-red-50 p-4 text-red-950"><p>{bookingError}</p><button type="button" disabled={submitting} onClick={() => setBookingError(null)} className="mt-3 rounded-lg bg-rose-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">Choose another time</button></div>}
+              {bookingError && <div role="alert" className="mt-4 rounded-xl border border-red-300 bg-red-50 p-4 text-red-950"><p>{bookingError}</p><button type="button" disabled={submitting} onClick={() => void submitBooking()} className="mt-3 rounded-lg bg-rose-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">{submitting ? "Retrying…" : "Retry"}</button></div>}
               <button type="button" disabled={!selectedSlot || submitting} onClick={() => void submitBooking()} className="mt-5 w-full rounded-xl bg-rose-800 px-5 py-3 font-bold text-white hover:bg-rose-900 focus:outline-none focus:ring-2 focus:ring-rose-800 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400">
                 {submitting ? "Submitting…" : "Request appointment"}
               </button>

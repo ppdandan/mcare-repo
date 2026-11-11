@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Icon from "@/components/Icon";
 import type { Profile, UserRole } from "@m-care/shared";
-import { formatManilaDate } from "@m-care/shared";
+import { formatManilaDate, userFacingErrorMessage } from "@m-care/shared";
 
 interface StaffMember extends Profile {
   doctor_details?: {
@@ -105,7 +105,7 @@ export default function StaffManagementPage() {
       setPhone("");
       await fetchStaff();
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : "Failed to create staff account");
+      alert(userFacingErrorMessage(err, "We couldn’t create this staff account. Check the details and try again."));
     } finally {
       setSubmitting(false);
     }

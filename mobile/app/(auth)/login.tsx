@@ -1,4 +1,4 @@
-import { spacing, typography, radius } from '@m-care/shared';
+import { spacing, typography, radius, userFacingErrorMessage } from '@m-care/shared';
 import React, { useState, useRef } from 'react';
 import {
   View,
@@ -50,11 +50,7 @@ export default function LoginScreen() {
       await signIn(cleanEmail, password);
       router.replace('/(tabs)/home');
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setErrorMessage(err.message);
-      } else {
-        setErrorMessage('Unable to log in. Please check your credentials.');
-      }
+      setErrorMessage(userFacingErrorMessage(err, 'Unable to log in. Please check your credentials.'));
     }
   };
 
@@ -76,11 +72,7 @@ export default function LoginScreen() {
         otpInputRef.current?.focus();
       }, 200);
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setErrorMessage(err.message);
-      } else {
-        setErrorMessage('Failed to send OTP code. Please try again.');
-      }
+      setErrorMessage(userFacingErrorMessage(err, 'We couldn’t send a sign-in code. Check your email address and try again.'));
     }
   };
 
@@ -99,11 +91,7 @@ export default function LoginScreen() {
       await verifyOtp(cleanEmail, cleanOtp);
       router.replace('/(tabs)/home');
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setErrorMessage(err.message);
-      } else {
-        setErrorMessage('Invalid or expired OTP code.');
-      }
+      setErrorMessage(userFacingErrorMessage(err, 'We couldn’t verify that code. Request a new code and try again.'));
     }
   };
 

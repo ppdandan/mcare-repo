@@ -1,4 +1,4 @@
-import { spacing, typography, radius } from '@m-care/shared';
+import { spacing, typography, radius, userFacingErrorMessage } from '@m-care/shared';
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -85,7 +85,7 @@ export default function ProfileScreen() {
       await refreshProfile();
       Alert.alert('Profile Updated', 'Your personal and clinical details have been saved.');
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to update profile';
+      const message = userFacingErrorMessage(err, 'We couldn’t save your profile. Check your connection and try again.');
       Alert.alert('Update Error', message);
     } finally {
       setSaving(false);
@@ -116,7 +116,7 @@ export default function ProfileScreen() {
               await signOut();
               router.replace('/(auth)/welcome');
             } catch (error) {
-              Alert.alert('Deletion could not be completed', error instanceof Error ? error.message : 'Contact the clinic for help.');
+              Alert.alert('Deletion could not be completed', userFacingErrorMessage(error, 'We couldn’t complete the request. Contact the clinic for help.'));
             } finally {
               setDeleting(false);
             }

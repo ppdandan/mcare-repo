@@ -11,6 +11,7 @@ import {
   manilaDateTimeIso,
   manilaTimeKey,
   weekdayForDateKey,
+  userFacingErrorMessage,
 } from "@m-care/shared";
 import type { AppointmentWithDetails, AppointmentStatus } from "@m-care/shared";
 
@@ -100,7 +101,7 @@ export default function AppointmentsPage() {
       if (error) throw error;
       await fetchAppointments();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to update appointment";
+      const message = userFacingErrorMessage(err, "We couldn’t update this appointment. Refresh and try again.");
       alert(message);
     } finally {
       setUpdating(false);
@@ -131,7 +132,7 @@ export default function AppointmentsPage() {
 
       if (error) {
         if (error.code === "23P01" || error.message.includes("no_doctor_double_booking")) {
-          alert("Double booking detected: Doctor is already occupied during this time window.");
+          alert(userFacingErrorMessage(error, "That appointment time is no longer available. Choose another time."));
           return;
         }
         throw error;
@@ -140,7 +141,7 @@ export default function AppointmentsPage() {
       setRescheduleAppt(null);
       await fetchAppointments();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Could not reschedule appointment";
+      const message = userFacingErrorMessage(err, "We couldn’t reschedule this appointment. Check the date and time, then try again.");
       alert(message);
     } finally {
       setUpdating(false);

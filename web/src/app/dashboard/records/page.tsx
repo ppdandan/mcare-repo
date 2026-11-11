@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { MedicalRecordWithDetails, PatientWithProfile, DoctorWithProfile, Profile } from "@m-care/shared";
-import { formatManilaDate, manilaDateKey } from "@m-care/shared";
+import { formatManilaDate, manilaDateKey, userFacingErrorMessage } from "@m-care/shared";
 
 export default function MedicalRecordsPage() {
   const [records, setRecords] = useState<MedicalRecordWithDetails[]>([]);
@@ -142,7 +142,7 @@ export default function MedicalRecordsPage() {
       resetRecordForm();
       await fetchMedicalRecords();
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : "Failed to save record");
+      alert(userFacingErrorMessage(err, "We couldn’t save this medical record. Check the details and try again."));
     } finally {
       setSaving(false);
     }

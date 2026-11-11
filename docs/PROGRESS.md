@@ -161,3 +161,9 @@
 - Re-ran `supabase/tests/transactions.test.mjs` on dev; all 14 transaction authorization, ownership, lifecycle, audit, correction, and void checks passed, including cleanup.
 - Re-ran `supabase/tests/cross-platform-sync.test.mjs` on dev; profile sharing, mobile-to-web booking, staff reschedule, web-to-mobile booking, cancellation refresh, and matching transaction history passed with identical Asia/Manila displays. Temporary users, appointments, transactions, and audit rows were removed.
 - Added `supabase/tests/booking-weekend.test.mjs`. On dev it confirmed that Saturday and Sunday bookings are rejected both through `book_appointment` and by the database trigger on direct inserts; the temporary account was removed. `node --check` passed.
+
+## Follow-up — user-facing error states
+
+- Added a shared error-to-message helper that maps weekend, unavailable-slot, authentication, permission, network, and transaction lifecycle failures to clear user-facing wording without exposing raw service/database messages.
+- Applied it to mobile booking/login/registration/profile/inquiry and website login, booking, dashboard appointment, patient, staff, schedule, record, inquiry, and transaction actions. Website booking errors now offer a Retry action that repeats the submission while retaining the selected slot.
+- Mobile and web TypeScript checks passed. The local web build passed lint/type validation and generated all 22 static pages. `git diff --check` passed.

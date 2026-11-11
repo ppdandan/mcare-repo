@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Icon from "@/components/Icon";
 import type { DoctorWithProfile, DoctorSchedule, ScheduleException } from "@m-care/shared";
-import { formatManilaDate, manilaDateKey } from "@m-care/shared";
+import { formatManilaDate, manilaDateKey, userFacingErrorMessage } from "@m-care/shared";
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -100,7 +100,7 @@ export default function SchedulesPage() {
       setReason("");
       await fetchDoctorSchedule();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to record schedule exception";
+      const message = userFacingErrorMessage(err, "We couldn’t block this time. Refresh the schedule and try again.");
       alert(message);
     } finally {
       setSaving(false);
@@ -114,7 +114,7 @@ export default function SchedulesPage() {
       if (error) throw error;
       await fetchDoctorSchedule();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to remove exception";
+      const message = userFacingErrorMessage(err, "We couldn’t remove this schedule block. Refresh and try again.");
       alert(message);
     }
   };

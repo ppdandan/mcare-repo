@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { formatManilaDate, formatManilaDateTime } from "@m-care/shared";
+import { formatManilaDate, formatManilaDateTime, userFacingErrorMessage } from "@m-care/shared";
 import type { AppointmentWithDetails, Transaction, UserRole } from "@m-care/shared";
 
 type TransactionRow = Transaction & {
@@ -23,11 +23,7 @@ function formatAmount(amount: number, currency: string) {
 }
 
 function friendlyError(cause: unknown, fallback: string) {
-  const message = cause instanceof Error ? cause.message : "";
-  if (/completed appointment/i.test(message)) return "Transactions can only be recorded after an appointment is completed.";
-  if (/already recorded/i.test(message)) return "This appointment already has a transaction. Refresh the list to see it.";
-  if (/admin access/i.test(message)) return "Only a clinic admin can correct or void a transaction.";
-  return fallback;
+  return userFacingErrorMessage(cause, fallback);
 }
 
 export default function AdminTransactionsPage() {

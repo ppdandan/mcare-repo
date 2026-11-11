@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Inquiry } from "@m-care/shared";
-import { formatManilaDateTime } from "@m-care/shared";
+import { formatManilaDateTime, userFacingErrorMessage } from "@m-care/shared";
 
 interface InquiryWithDetails extends Inquiry {
   patient?: {
@@ -81,7 +81,7 @@ export default function ReceptionInquiriesPage() {
       setReplyText("");
       await fetchInquiries();
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : "Failed to send reply");
+      alert(userFacingErrorMessage(err, "We couldn’t send the reply. Refresh the inquiry and try again."));
     } finally {
       setSending(false);
     }

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { PatientWithProfile } from "@m-care/shared";
+import { userFacingErrorMessage, type PatientWithProfile } from "@m-care/shared";
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState<PatientWithProfile[]>([]);
@@ -91,7 +91,7 @@ export default function PatientsPage() {
       resetForm();
       await fetchPatients();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to register patient";
+      const message = userFacingErrorMessage(err, "We couldn’t register this patient. Check the details and try again.");
       alert(message);
     } finally {
       setSaving(false);
@@ -132,7 +132,7 @@ export default function PatientsPage() {
       resetForm();
       await fetchPatients();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to update patient";
+      const message = userFacingErrorMessage(err, "We couldn’t update this patient. Refresh and try again.");
       alert(message);
     } finally {
       setSaving(false);

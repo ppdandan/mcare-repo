@@ -1,4 +1,4 @@
-import { spacing, typography, radius } from '@m-care/shared';
+import { spacing, typography, radius, userFacingErrorMessage } from '@m-care/shared';
 import React, { useState } from 'react';
 import {
   View,
@@ -94,9 +94,7 @@ export default function RegisterScreen() {
 
       router.replace('/(auth)/login');
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setErrorMsg(err.message);
-      }
+      setErrorMsg(userFacingErrorMessage(err, 'We couldn’t create your account. Check your details and try again.'));
     }
   };
 

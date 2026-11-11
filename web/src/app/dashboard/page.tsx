@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { AppointmentWithDetails } from "@m-care/shared";
-import { formatManilaDateTime } from "@m-care/shared";
+import { formatManilaDateTime, userFacingErrorMessage } from "@m-care/shared";
 import Icon from "@/components/Icon";
 
 export default function DashboardOverviewPage() {
@@ -73,7 +73,7 @@ export default function DashboardOverviewPage() {
       if (error) throw error;
       await fetchOverviewData();
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : "Failed to approve");
+      alert(userFacingErrorMessage(err, "We couldn’t approve this appointment. Refresh and try again."));
     } finally {
       setActionLoading(false);
     }
@@ -90,7 +90,7 @@ export default function DashboardOverviewPage() {
       if (error) throw error;
       await fetchOverviewData();
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : "Failed to cancel");
+      alert(userFacingErrorMessage(err, "We couldn’t cancel this appointment. Refresh and try again."));
     } finally {
       setActionLoading(false);
     }
