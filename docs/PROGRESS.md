@@ -155,3 +155,9 @@
 - After explicit user authorization, aligned the web workspace's React, React DOM, and type declarations to the existing Expo workspace versions: React/React DOM 19.1.0, `@types/react` 19.1.17, and `@types/react-dom` 19.1.9. This removes the split React 18/19 resolution that caused website JSX/ReactNode errors. Updated only `web/package.json` and the root `package-lock.json`.
 - Web `npx tsc --noEmit` passed; mobile `npx tsc --noEmit -p tsconfig.json` passed. The local Next.js website build passed lint/type checking, generated all 22 static pages, and completed successfully. No EAS/Android production build was run.
 - `npm install` reported 8 workspace audit findings (7 moderate, 1 high); no automatic audit fix was run. Review them separately before release.
+
+## Follow-up — final dev security and sync verification
+
+- Re-ran `supabase/tests/transactions.test.mjs` on dev; all 14 transaction authorization, ownership, lifecycle, audit, correction, and void checks passed, including cleanup.
+- Re-ran `supabase/tests/cross-platform-sync.test.mjs` on dev; profile sharing, mobile-to-web booking, staff reschedule, web-to-mobile booking, cancellation refresh, and matching transaction history passed with identical Asia/Manila displays. Temporary users, appointments, transactions, and audit rows were removed.
+- Added `supabase/tests/booking-weekend.test.mjs`. On dev it confirmed that Saturday and Sunday bookings are rejected both through `book_appointment` and by the database trigger on direct inserts; the temporary account was removed. `node --check` passed.
