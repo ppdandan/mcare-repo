@@ -174,7 +174,7 @@ function LoginForm() {
           </button>
         </div>
 
-        {error && <div className="mb-5"><ErrorState title="Sign-in error" description={error} /></div>}
+        {error && <div className="mb-5"><ErrorState title="" description={error} /></div>}
 
         {success && <div className="mb-5"><StatusAlert variant="success">{success}</StatusAlert></div>}
 
