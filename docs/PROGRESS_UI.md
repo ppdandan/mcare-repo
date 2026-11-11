@@ -21,7 +21,8 @@
 - Login: replaced the form shell, alerts, text fields, and submit actions with shared daisyUI components; removed example-value input placeholders. Preserved password/OTP behavior and the existing data calls. Web TypeScript check passed. No separate web signup route exists, so none was added. A follow-up commit removed a new error heading so the existing error text remains unchanged.
 - Home/landing: `/` only redirects to `/login` and renders no visible screen. Preserved its route and behavior; no visual change was needed. Recorded as a separate no-UI group commit.
 - Booking: restyled the service cards, calendar, slot states, confirmations, and retry/loading/empty/error presentation with the shared page container and daisyUI styles. Kept all RPCs, calendar rules, date/time logic, and state transitions unchanged. Removed no placeholder text from this page because it had none. Web TypeScript check passed. Group committed separately.
-- Appointments, transactions, profile, privacy, deletion, and staff/doctor dashboards: pending.
+- Appointments: converted the list cards, status labels, loading/error/empty feedback, refresh and cancel actions to the shared components and daisyUI theme. Preserved the existing query, cancel RPC, confirmations, and wording. Web TypeScript check passed. Group committed separately.
+- Transactions, profile, privacy, deletion, and staff/doctor dashboards: pending.
 
 ## Step 4 — Checks
 

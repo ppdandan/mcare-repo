@@ -5,17 +5,23 @@ import { formatManilaDateTime } from "@m-care/shared";
 import type { AppointmentWithDetails } from "@m-care/shared";
 import { createClient } from "@/lib/supabase/client";
 import PatientHeader from "@/components/PatientHeader";
+import Button from "@/components/ui/Button";
+import Badge from "@/components/ui/Badge";
+import Card, { CardBody } from "@/components/ui/Card";
+import PageContainer from "@/components/ui/PageContainer";
+import StatusAlert from "@/components/ui/StatusAlert";
+import { EmptyState, ErrorState, LoadingState } from "@/components/ui/AsyncStates";
 
 const cancelableStatuses = new Set(["pending", "approved", "rescheduled"]);
 
-function statusClass(status: string) {
+function statusVariant(status: string): "success" | "info" | "neutral" | "error" | "warning" {
   switch (status) {
-    case "approved": return "border-emerald-300 bg-emerald-50 text-emerald-900";
-    case "rescheduled": return "border-blue-300 bg-blue-50 text-blue-900";
-    case "completed": return "border-gray-300 bg-gray-100 text-gray-800";
-    case "cancelled": return "border-red-300 bg-red-50 text-red-900";
-    case "no_show": return "border-amber-300 bg-amber-50 text-amber-900";
-    default: return "border-amber-300 bg-amber-50 text-amber-900";
+    case "approved": return "success";
+    case "rescheduled": return "info";
+    case "completed": return "neutral";
+    case "cancelled": return "error";
+    case "no_show": return "warning";
+    default: return "warning";
   }
 }
 
@@ -87,51 +93,55 @@ export default function PatientAppointmentsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-rose-50/60 px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-4xl">
+    <div className="min-h-screen bg-base-200">
+      <PageContainer className="max-w-4xl">
         <PatientHeader active="/appointments" />
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">My Appointments</h1>
-            <p className="mt-2 text-base text-gray-700">Appointment dates and times are shown in Asia/Manila.</p>
+            <h1 className="text-3xl font-bold tracking-tight text-base-content">My Appointments</h1>
+            <p className="mt-2 text-base text-base-content/80">Appointment dates and times are shown in Asia/Manila.</p>
           </div>
-          <button type="button" onClick={() => void loadAppointments(true)} disabled={refreshing} className="rounded-xl border border-gray-400 bg-white px-4 py-2.5 font-semibold text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-rose-800 disabled:opacity-60">
+          <Button type="button" variant="outline" onClick={() => void loadAppointments(true)} loading={refreshing}>
             {refreshing ? "Refreshing…" : "Refresh appointments"}
-          </button>
+          </Button>
         </div>
 
-        {notice && <p role="status" className="mb-4 rounded-xl border border-emerald-300 bg-emerald-50 p-4 font-semibold text-emerald-950">{notice}</p>}
-        {actionError && <p role="alert" className="mb-4 rounded-xl border border-red-300 bg-red-50 p-4 text-red-950">{actionError}</p>}
+        {notice && <StatusAlert variant="success" className="mb-4">{notice}</StatusAlert>}
+        {actionError && <StatusAlert variant="error" className="mb-4">{actionError}</StatusAlert>}
 
         {loading ? (
-          <div role="status" className="rounded-2xl border border-gray-200 bg-white p-8 text-center text-gray-700 shadow-sm"><span className="mb-3 inline-block h-8 w-8 animate-spin rounded-full border-4 border-rose-800 border-t-transparent" /><p>Loading appointments…</p></div>
+          <LoadingState label="Loading appointments…" />
         ) : error ? (
-          <div role="alert" className="rounded-2xl border border-red-300 bg-white p-6 text-red-950 shadow-sm"><p>{error}</p><button type="button" onClick={() => void loadAppointments()} className="mt-4 rounded-lg bg-rose-800 px-4 py-2 font-semibold text-white">Retry</button></div>
+          <ErrorState title="" description={error} onRetry={() => void loadAppointments()} />
         ) : appointments.length === 0 ? (
-          <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm"><h2 className="text-xl font-bold text-gray-900">No appointments yet</h2><p className="mt-2 text-gray-700">Book a clinic visit to see it here.</p><a href="/book" className="mt-5 inline-flex rounded-xl bg-rose-800 px-5 py-3 font-bold text-white hover:bg-rose-900">Book an appointment</a></div>
+          <EmptyState title="No appointments yet" description="Book a clinic visit to see it here."><a href="/book" className="btn btn-primary mt-2 min-h-11 rounded-btn">Book an appointment</a></EmptyState>
         ) : (
           <ul className="space-y-4">
             {appointments.map((appointment) => (
-              <li key={appointment.id} className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
+              <li key={appointment.id} className="list-none">
+                <Card>
+                  <CardBody className="p-5 sm:p-6">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <h2 className="text-lg font-bold text-gray-900">{appointment.service?.name ?? "Clinic visit"}</h2>
-                    <p className="mt-1 text-sm text-gray-700">Dr. Bernice Paule · OB-GYNE / Sonologist</p>
-                    <p className="mt-1 text-sm font-semibold text-gray-900">{formatManilaDateTime(appointment.start_time)}</p>
+                    <h2 className="text-lg font-bold text-base-content">{appointment.service?.name ?? "Clinic visit"}</h2>
+                    <p className="mt-1 text-sm text-base-content/80">Dr. Bernice Paule · OB-GYNE / Sonologist</p>
+                    <p className="mt-1 text-sm font-semibold text-base-content">{formatManilaDateTime(appointment.start_time)}</p>
                   </div>
-                  <span className={`rounded-full border px-3 py-1 text-xs font-bold capitalize ${statusClass(appointment.status)}`}>{appointment.status.replace("_", " ")}</span>
+                  <Badge variant={statusVariant(appointment.status)} className="capitalize">{appointment.status.replace("_", " ")}</Badge>
                 </div>
-                <p className="mt-3 text-xs text-gray-600">Reference: MC-{appointment.id.slice(0, 8).toUpperCase()}</p>
+                <p className="mt-3 text-xs text-base-content/75">Reference: MC-{appointment.id.slice(0, 8).toUpperCase()}</p>
                 {cancelableStatuses.has(appointment.status) && (
-                  <button type="button" onClick={() => void cancelAppointment(appointment)} disabled={cancelingId === appointment.id} className="mt-4 rounded-lg border border-red-400 px-4 py-2 text-sm font-semibold text-red-900 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-800 disabled:opacity-60">
+                  <Button type="button" variant="destructive" onClick={() => void cancelAppointment(appointment)} disabled={cancelingId === appointment.id} loading={cancelingId === appointment.id} className="mt-4">
                     {cancelingId === appointment.id ? "Cancelling…" : "Cancel appointment"}
-                  </button>
+                  </Button>
                 )}
+                  </CardBody>
+                </Card>
               </li>
             ))}
           </ul>
         )}
-      </div>
-    </main>
+      </PageContainer>
+    </div>
   );
 }
