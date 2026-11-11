@@ -85,3 +85,12 @@
 - Re-ran `npx tsc --noEmit` in `mobile/`: passed.
 - Re-ran `npx tsc --noEmit` in `web/`: still fails on stale `.next/types` references to removed `src/app/book/page` and existing React 18/19 compatibility errors in Next layouts/links and Recharts JSX types. App manifests and packages were not changed.
 - Against dev ref `luccnwicirfnmyzgemzj`, authenticated an existing patient session, booked an available weekday slot through `book_appointment`, and confirmed the patient could read back the appointment with Dr. Bernice, the requested start time, and `pending` status. Deleted the temporary appointment after verification. Production was not contacted.
+
+## Google Play readiness — Phase 1: restore booking features
+
+- Replayed the reviewed logo, canonical-doctor, and booking commits on `recover-features`; the task commits remain separate, and `opencode-attempt` was not merged.
+- Added a patient-facing website `/book` route. Patient login now routes to it, middleware protects it by role, and the page selects Dr. Bernice automatically, loads services and weekday schedules, disables past/weekend dates and unavailable slots, displays Asia/Manila date/time, and submits through `book_appointment`. No direct appointment insert exists in either app.
+- Dev project list and migration list confirmed ref `luccnwicirfnmyzgemzj` with migrations 00001–00024. Read-only dev verification found exactly one doctor (Dr. Bernice Paule, `OB-GYNE / Sonologist`) and five active services.
+- Dev booking verification rejected a weekend request, accepted a weekday request through `book_appointment`, verified the patient's readback had Dr. Bernice and `pending` status, then removed the temporary appointment.
+- Mobile TypeScript check passed. Web TypeScript still reports existing React 18/19 incompatibilities in Next layouts/links and Recharts JSX. The added booking route reports no TypeScript errors. Browser-driven web booking could not be run because no browser automation package or browser binary is installed here.
+- Later transaction, sync, design, Play, privacy/runbook, and final-report phases remain unstarted.

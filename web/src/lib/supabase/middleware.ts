@@ -33,15 +33,39 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // If user is NOT authenticated and trying to access /dashboard, redirect to /login
-  if (!user && request.nextUrl.pathname.startsWith("/dashboard")) {
+  const isDashboardRoute = request.nextUrl.pathname.startsWith("/dashboard");
+  const isBookingRoute = request.nextUrl.pathname.startsWith("/book");
+
+  // Require a session before opening either the staff portal or patient booking.
+  if (!user && (isDashboardRoute || isBookingRoute)) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
-  // If user IS authenticated and trying to access /dashboard, verify they are staff
-  if (user && request.nextUrl.pathname.startsWith("/dashboard")) {
+  // Keep patient and staff areas separate while routing each role to its portal.
+  if (user && (isDashboardRoute || isBookingRoute)) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (isDashboardRoute && profile?.role === "patient") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/book";
+      return NextResponse.redirect(url);
+    }
+
+    if (isBookingRoute && profile?.role !== "patient") {
+      const url = request.nextUrl.clone();
+      url.pathname = profile ? "/dashboard" : "/login";
+      return NextResponse.redirect(url);
+    }
+  }
+
+  // Route an authenticated user to the matching portal from the login page.
+  if (user && request.nextUrl.pathname === "/login") {
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
@@ -50,19 +74,9 @@ export async function updateSession(request: NextRequest) {
 
     if (profile?.role === "patient") {
       const url = request.nextUrl.clone();
-      url.pathname = "/login";
-      url.searchParams.set("error", "patient_restricted");
+      url.pathname = "/book";
       return NextResponse.redirect(url);
     }
-  }
-
-  // If user IS authenticated and on /login, redirect to /dashboard
-  if (user && request.nextUrl.pathname === "/login") {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
 
     if (profile && profile.role !== "patient") {
       const url = request.nextUrl.clone();

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 type LoginMode = "password" | "otp";
 
@@ -16,18 +16,9 @@ function LoginForm() {
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
   const supabase = createClient();
 
-  useEffect(() => {
-    if (searchParams.get("error") === "patient_restricted") {
-      setError(
-        "Access Denied: Patients must access M-Care via the Patient Mobile App. Staff portal is restricted to clinic personnel."
-      );
-    }
-  }, [searchParams]);
-
-  const verifyStaffRoleAndRedirect = async (userId: string) => {
+  const verifyRoleAndRedirect = async (userId: string) => {
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("role, full_name")
@@ -35,17 +26,10 @@ function LoginForm() {
       .single();
 
     if (profileError || !profile) {
-      throw new Error("Unable to retrieve staff profile. Please contact the clinic administrator.");
+      throw new Error("Unable to retrieve your profile. Please contact the clinic.");
     }
 
-    if (profile.role === "patient") {
-      await supabase.auth.signOut();
-      throw new Error(
-        "Access Denied: Patients must use the M-Care Patient Mobile App. Staff portal is restricted."
-      );
-    }
-
-    router.push("/dashboard");
+    router.push(profile.role === "patient" ? "/book" : "/dashboard");
   };
 
   const handlePasswordLogin = async (e: React.FormEvent) => {
@@ -62,7 +46,7 @@ function LoginForm() {
 
       if (signInError) throw signInError;
       if (data.user) {
-        await verifyStaffRoleAndRedirect(data.user.id);
+        await verifyRoleAndRedirect(data.user.id);
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "An unexpected authentication error occurred.");
@@ -75,7 +59,7 @@ function LoginForm() {
     e.preventDefault();
     const cleanEmail = email.trim().toLowerCase();
     if (!cleanEmail) {
-      setError("Please enter your clinic staff email address.");
+      setError("Please enter your email address.");
       return;
     }
 
@@ -93,7 +77,7 @@ function LoginForm() {
 
       if (otpError) throw otpError;
       setOtpSent(true);
-      setSuccess("A 6-digit OTP code has been sent to your staff email.");
+      setSuccess("A 6-digit OTP code has been sent to your email.");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to send OTP code.");
     } finally {
@@ -107,7 +91,7 @@ function LoginForm() {
     const cleanOtp = otpCode.trim();
 
     if (!cleanEmail || !cleanOtp) {
-      setError("Please enter both your staff email and the 6-digit OTP code.");
+      setError("Please enter both your email and the 6-digit OTP code.");
       return;
     }
 
@@ -124,7 +108,7 @@ function LoginForm() {
 
       if (verifyError) throw verifyError;
       if (data.user) {
-        await verifyStaffRoleAndRedirect(data.user.id);
+        await verifyRoleAndRedirect(data.user.id);
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Invalid or expired OTP code.");
@@ -141,10 +125,10 @@ function LoginForm() {
           <img src="/logo.png" alt="M-Care" width={64} height={75} className="mx-auto mb-3 h-[75px] w-16 object-contain" />
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">M-CARE CLINIC</h1>
           <p className="text-sm font-semibold text-pink-600 uppercase tracking-wider mt-1">
-            Clinical & Administrative Portal
+            Patient & Clinic Portal
           </p>
           <p className="text-xs text-gray-500 mt-2">
-            Balibago, Angeles City • Doctors & Clinic Staff
+            Balibago, Angeles City • Patient and clinic access
           </p>
         </div>
 
@@ -199,7 +183,7 @@ function LoginForm() {
           <form onSubmit={handlePasswordLogin} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Staff Email Address
+                Email Address
               </label>
               <input
                 type="email"
@@ -240,7 +224,7 @@ function LoginForm() {
           <form onSubmit={otpSent ? handleVerifyOtp : handleSendOtp} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Staff Email Address
+                Email Address
               </label>
               <input
                 type="email"
@@ -314,16 +298,6 @@ function LoginForm() {
   );
 }
 
-export default function StaffLoginPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <p className="text-sm text-gray-500">Loading M-Care Portal...</p>
-        </div>
-      }
-    >
-      <LoginForm />
-    </Suspense>
-  );
+export default function LoginPage() {
+  return <LoginForm />;
 }
