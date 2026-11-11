@@ -35,16 +35,18 @@ export async function updateSession(request: NextRequest) {
 
   const isDashboardRoute = request.nextUrl.pathname.startsWith("/dashboard");
   const isBookingRoute = request.nextUrl.pathname.startsWith("/book");
+  const isTransactionRoute = request.nextUrl.pathname.startsWith("/transactions");
+  const isPatientRoute = isBookingRoute || isTransactionRoute;
 
   // Require a session before opening either the staff portal or patient booking.
-  if (!user && (isDashboardRoute || isBookingRoute)) {
+  if (!user && (isDashboardRoute || isPatientRoute)) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
   // Keep patient and staff areas separate while routing each role to its portal.
-  if (user && (isDashboardRoute || isBookingRoute)) {
+  if (user && (isDashboardRoute || isPatientRoute)) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
@@ -57,7 +59,7 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    if (isBookingRoute && profile?.role !== "patient") {
+    if (isPatientRoute && profile?.role !== "patient") {
       const url = request.nextUrl.clone();
       url.pathname = profile ? "/dashboard" : "/login";
       return NextResponse.redirect(url);

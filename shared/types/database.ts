@@ -154,6 +154,26 @@ export interface AppointmentWithDetails extends Appointment {
   service: Service;
 }
 
+// In-person transaction history recorded after a completed appointment.
+export interface Transaction {
+  id: string;
+  user_id: string;
+  appointment_id: string;
+  amount: number;
+  currency: string;
+  payment_method: string;
+  notes: string | null;
+  recorded_by: string;
+  created_at: string;
+  voided_at: string | null;
+  voided_by: string | null;
+  void_reason: string | null;
+}
+
+export interface TransactionWithAppointment extends Transaction {
+  appointment: (Appointment & { service: Service | null }) | null;
+}
+
 export interface MedicalRecordWithDetails extends MedicalRecord {
   patient: PatientWithProfile;
   doctor: DoctorWithProfile;

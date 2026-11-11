@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   formatManilaDate,
   formatManilaTime,
@@ -219,9 +220,12 @@ export default function PatientBookingPage() {
               <p className="text-sm text-gray-600">Patient booking</p>
             </div>
           </div>
-          <button type="button" onClick={signOut} className="rounded-lg px-3 py-2 text-sm font-semibold text-rose-800 hover:bg-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-700">
-            Sign out
-          </button>
+          <nav className="flex items-center gap-1" aria-label="Patient navigation">
+            <Link href="/transactions" className="rounded-lg px-3 py-2 text-sm font-semibold text-rose-900 hover:bg-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-700">Transactions</Link>
+            <button type="button" onClick={signOut} className="rounded-lg px-3 py-2 text-sm font-semibold text-rose-800 hover:bg-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-700">
+              Sign out
+            </button>
+          </nav>
         </header>
 
         <section className="mb-6">
