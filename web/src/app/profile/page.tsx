@@ -3,6 +3,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import PatientHeader from "@/components/PatientHeader";
+import PageContainer from "@/components/ui/PageContainer";
+import Card, { CardBody } from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
+import StatusAlert from "@/components/ui/StatusAlert";
+import { ErrorState, LoadingState } from "@/components/ui/AsyncStates";
+import TextField from "@/components/ui/TextField";
+import TextAreaField from "@/components/ui/TextAreaField";
 
 type ProfileForm = {
   full_name: string;
@@ -97,33 +104,34 @@ export default function PatientProfilePage() {
     }
   };
 
-  const inputClass = "mt-1 block w-full rounded-xl border border-gray-400 bg-white px-3 py-2.5 text-gray-950 placeholder:text-gray-600 focus:border-rose-800 focus:outline-none focus:ring-2 focus:ring-rose-800";
-
   return (
-    <main className="min-h-screen bg-rose-50/60 px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-3xl">
+    <div className="min-h-screen bg-base-200">
+      <PageContainer className="max-w-3xl">
         <PatientHeader active="/profile" />
-        <h1 className="text-3xl font-bold tracking-tight text-gray-950">Patient profile</h1>
-        <p className="mt-2 text-gray-700">Your contact and health details are shared with the M-Care mobile app.</p>
-        {notice && <p role="status" className="mt-5 rounded-xl border border-emerald-300 bg-emerald-50 p-4 font-semibold text-emerald-950">{notice}</p>}
+        <h1 className="text-3xl font-bold tracking-tight text-base-content">Patient profile</h1>
+        <p className="mt-2 text-base-content/80">Your contact and health details are shared with the M-Care mobile app.</p>
+        {notice && <StatusAlert variant="success" className="mt-5">{notice}</StatusAlert>}
         {loading ? (
-          <div role="status" className="mt-6 rounded-2xl bg-white p-8 text-center text-gray-800 shadow-sm">Loading profile…</div>
+          <div className="mt-6"><LoadingState label="Loading profile…" /></div>
         ) : error ? (
-          <div role="alert" className="mt-6 rounded-2xl border border-red-300 bg-white p-6 text-red-950 shadow-sm"><p>{error}</p><button type="button" onClick={() => void loadProfile()} className="mt-4 rounded-lg bg-rose-800 px-4 py-2 font-semibold text-white">Retry</button></div>
+          <div className="mt-6"><ErrorState title="" description={error} onRetry={() => void loadProfile()} /></div>
         ) : (
-          <form onSubmit={saveProfile} className="mt-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-7">
-            <div className="grid gap-5 sm:grid-cols-2">
-              {fields.map(({ key, label, multiline }) => (
-                <label key={key} className={`block text-sm font-semibold text-gray-900 ${multiline ? "sm:col-span-2" : ""}`}>
-                  {label}
-                  {multiline ? <textarea rows={3} className={inputClass} value={form[key]} onChange={(event) => setForm((current) => ({ ...current, [key]: event.target.value }))} /> : <input className={inputClass} value={form[key]} onChange={(event) => setForm((current) => ({ ...current, [key]: event.target.value }))} />}
-                </label>
-              ))}
-            </div>
-            <button type="submit" disabled={saving} className="mt-6 rounded-xl bg-rose-800 px-5 py-3 font-bold text-white hover:bg-rose-900 focus:outline-none focus:ring-2 focus:ring-rose-800 focus:ring-offset-2 disabled:opacity-60">{saving ? "Saving…" : "Save profile"}</button>
-          </form>
+          <Card className="mt-6"><CardBody className="p-5 sm:p-7">
+            <form onSubmit={saveProfile}>
+              <div className="grid gap-5 sm:grid-cols-2">
+                {fields.map(({ key, label, multiline }) => multiline ? (
+                  <div key={key} className="sm:col-span-2">
+                    <TextAreaField label={label} rows={3} value={form[key]} onChange={(event) => setForm((current) => ({ ...current, [key]: event.target.value }))} />
+                  </div>
+                ) : (
+                  <TextField key={key} label={label} value={form[key]} onChange={(event) => setForm((current) => ({ ...current, [key]: event.target.value }))} />
+                ))}
+              </div>
+              <Button type="submit" loading={saving} className="mt-6">{saving ? "Saving…" : "Save profile"}</Button>
+            </form>
+          </CardBody></Card>
         )}
-      </div>
-    </main>
+      </PageContainer>
+    </div>
   );
 }

@@ -1,6 +1,7 @@
 export { default as Button } from "./Button";
 export { default as Card, CardBody } from "./Card";
 export { default as TextField } from "./TextField";
+export { default as TextAreaField } from "./TextAreaField";
 export { default as SelectField } from "./SelectField";
 export { default as Badge } from "./Badge";
 export { default as StatusAlert } from "./StatusAlert";
