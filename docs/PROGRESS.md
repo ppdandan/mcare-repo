@@ -121,3 +121,16 @@
 - Removed generated screenshots at the user's request. No screenshots or visual viewport checks were produced; responsive/contrast claims are based on the shared tokens and code inspection, not browser/device measurements.
 - `git diff --check` passed. Mobile `npx tsc --noEmit -p tsconfig.json` passed. Web typecheck still fails due to the workspace resolving Next and its React types from the root React 19 installation while the web app declares React 18.3.1; this produces JSX/ReactNode errors in Next layouts/links and Recharts. `next typegen` regenerated route types but did not resolve the React mismatch. Package changes are prohibited without user instruction.
 - No package files, migrations, credentials, or production systems were changed in this phase.
+
+## Google Play readiness — Phase 5: Play configuration and privacy/deletion audit
+
+- Confirmed the committed mobile app configuration uses Expo SDK 54, includes the `expo-notifications` plugin and Android `POST_NOTIFICATIONS` permission, and creates the Android notification channel before requesting notification permission. The SDK 54 React Native 0.81.5 Android version catalog resolves target and compile SDK 36; no SDK or package changes were made in this phase.
+- Confirmed privacy policy screens/pages and account deletion flows exist, the shared policy says transaction records may be retained, and `/privacy` and `/delete-account` are public website routes. Policy approval, effective date, processor/recipient list, provider locations/safeguards, official privacy contact, and retention schedule remain clinic decisions.
+- Screenshot capture was skipped as requested. No EAS production build, Play submission, or production deployment was run.
+
+## Google Play readiness — Phase 6: production runbook and final evidence
+
+- Added `PRODUCTION_RUNBOOK.md` with the exact migration inspection/push sequence, the five migrations 00021–00025 including `00025_transaction_history.sql`, delete-account function deployment, and owner-run website/Android publication steps. The runbook states that the website hosting provider is not configured in this repository and requires clinic confirmation.
+- Mobile TypeScript check passed. Web TypeScript check remains blocked by incompatible React 18/19 type resolution; no dependency changes were authorized. Existing dev booking, transaction attack, and cross-platform sync checks are recorded above; temporary screenshot-test accounts and records were removed from dev.
+- Production was not contacted, linked, or modified. Project-list inspection is the only project-list operation; no production database/function/build/deploy/submit command was executed.
+- Outstanding release evidence: no screenshots/device/browser viewport test; no production migration status or deployment (intentionally); no Play Console completion; and clinic decisions listed in Phase 5 and the final report.
