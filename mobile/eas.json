@@ -7,14 +7,12 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "environment": "development",
       "env": {
         "EXPO_PUBLIC_SUPABASE_REF": "luccnwicirfnmyzgemzj"
       }
     },
     "preview": {
       "distribution": "internal",
-      "environment": "preview",
       "android": {
         "buildType": "apk"
       },
