@@ -22,7 +22,8 @@
 - Home/landing: `/` only redirects to `/login` and renders no visible screen. Preserved its route and behavior; no visual change was needed. Recorded as a separate no-UI group commit.
 - Booking: restyled the service cards, calendar, slot states, confirmations, and retry/loading/empty/error presentation with the shared page container and daisyUI styles. Kept all RPCs, calendar rules, date/time logic, and state transitions unchanged. Removed no placeholder text from this page because it had none. Web TypeScript check passed. Group committed separately.
 - Appointments: converted the list cards, status labels, loading/error/empty feedback, refresh and cancel actions to the shared components and daisyUI theme. Preserved the existing query, cancel RPC, confirmations, and wording. Web TypeScript check passed. Group committed separately.
-- Transactions, profile, privacy, deletion, and staff/doctor dashboards: pending.
+- Patient transactions: restyled the history cards, recorded amounts, void badges, and loading/error/empty states with shared components. Preserved the transaction query and display data. Web TypeScript check passed. Group committed separately.
+- Profile, privacy, deletion, and staff/doctor dashboards: pending.
 
 ## Step 4 — Checks
 
