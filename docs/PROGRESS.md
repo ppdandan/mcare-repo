@@ -167,3 +167,8 @@
 - Added a shared error-to-message helper that maps weekend, unavailable-slot, authentication, permission, network, and transaction lifecycle failures to clear user-facing wording without exposing raw service/database messages.
 - Applied it to mobile booking/login/registration/profile/inquiry and website login, booking, dashboard appointment, patient, staff, schedule, record, inquiry, and transaction actions. Website booking errors now offer a Retry action that repeats the submission while retaining the selected slot.
 - Mobile and web TypeScript checks passed. The local web build passed lint/type validation and generated all 22 static pages. `git diff --check` passed.
+
+## Follow-up — remove remaining chart/theme drift
+
+- Replaced the analytics dashboard's remaining unrelated chart colors and 10–11px axis labels with shared semantic colors and the shared caption type size. Moved the remaining mobile shadow and web focus/input/placeholder values into theme-backed tokens.
+- A source scan found no raw hex colors in mobile screens or web app pages/styles. Mobile and web TypeScript checks passed, and the local web build again generated all 22 static pages successfully.

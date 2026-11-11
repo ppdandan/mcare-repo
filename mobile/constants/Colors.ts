@@ -51,7 +51,7 @@ const Colors = {
   warningBackground: designTokens.color.warningSoft,
   errorBackground: designTokens.color.errorSoft,
   infoBackground: designTokens.color.infoSoft,
-  shadow: '#33232B',
+  shadow: designTokens.color.shadow,
 } as const;
 
 export default Colors;

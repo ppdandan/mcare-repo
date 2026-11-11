@@ -19,6 +19,9 @@
     --mcare-canvas: theme('colors.gray.50');
     --mcare-text: theme('colors.gray.900');
     --mcare-text-muted: theme('colors.gray.500');
+    --mcare-text-placeholder: theme('colors.gray.400');
+    --mcare-surface: theme('colors.white');
+    --mcare-focus: theme('colors.primary.500');
     --mcare-border: theme('colors.gray.300');
     --mcare-radius-control: theme('borderRadius.md');
   }
@@ -37,7 +40,7 @@
     min-height: 44px;
     border: 1px solid var(--mcare-border);
     border-radius: var(--mcare-radius-control);
-    background-color: #FFFFFF;
+    background-color: var(--mcare-surface);
     color: var(--mcare-text);
     font: inherit;
   }
@@ -53,12 +56,12 @@
 
   input::placeholder,
   textarea::placeholder {
-    color: #6B6268;
+    color: var(--mcare-text-placeholder);
     opacity: 1;
   }
 
   :focus-visible {
-    outline: 3px solid #994B68;
+    outline: 3px solid var(--mcare-focus);
     outline-offset: 2px;
   }
 }

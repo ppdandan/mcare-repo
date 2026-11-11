@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile, AppointmentWithDetails } from "@m-care/shared";
-import { formatManilaDate, manilaDateKey, manilaTimeKey, weekdayForDateKey } from "@m-care/shared";
+import { designTokens, formatManilaDate, manilaDateKey, manilaTimeKey, weekdayForDateKey, typography } from "@m-care/shared";
 import {
   AreaChart,
   Area,
@@ -20,16 +20,17 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+const colors = designTokens.color;
 const STATUS_COLORS: Record<string, string> = {
-  completed: "#10B981", // Emerald
-  approved: "#3B82F6",  // Blue
-  pending: "#F59E0B",   // Amber
-  cancelled: "#EF4444", // Red
-  no_show: "#F97316",   // Orange
-  rescheduled: "#8B5CF6", // Purple
+  completed: colors.success,
+  approved: colors.info,
+  pending: colors.warning,
+  cancelled: colors.error,
+  no_show: colors.brandStrong,
+  rescheduled: colors.brandMid,
 };
 
-const CHART_PALETTE = ["#E91E8C", "#7C3AED", "#3B82F6", "#10B981", "#F59E0B", "#6366F1"];
+const CHART_PALETTE = [colors.brand, colors.brandStrong, colors.info, colors.success, colors.warning, colors.brandMid];
 
 export default function AnalyticsPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -299,19 +300,19 @@ export default function AnalyticsPage() {
                 <AreaChart data={trendData}>
                   <defs>
                     <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#E91E8C" stopOpacity={0.4} />
-                      <stop offset="95%" stopColor="#E91E8C" stopOpacity={0.0} />
+                      <stop offset="5%" stopColor={colors.brand} stopOpacity={0.4} />
+                      <stop offset="95%" stopColor={colors.brand} stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
-                  <XAxis dataKey="date" stroke="#9CA3AF" fontSize={11} />
-                  <YAxis stroke="#9CA3AF" fontSize={11} allowDecimals={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={colors.divider} />
+                  <XAxis dataKey="date" stroke={colors.textMuted} fontSize={typography.caption.fontSize} />
+                  <YAxis stroke={colors.textMuted} fontSize={typography.caption.fontSize} allowDecimals={false} />
                   <Tooltip />
                   <Area
                     type="monotone"
                     dataKey="total"
                     name="Appointments Booked"
-                    stroke="#E91E8C"
+                    stroke={colors.brand}
                     strokeWidth={2}
                     fillOpacity={1}
                     fill="url(#colorTotal)"
@@ -375,11 +376,11 @@ export default function AnalyticsPage() {
             {isMounted && serviceData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={serviceData} layout="vertical" margin={{ left: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
-                  <XAxis type="number" stroke="#9CA3AF" fontSize={11} allowDecimals={false} />
-                  <YAxis dataKey="service" type="category" stroke="#9CA3AF" fontSize={11} width={100} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={colors.divider} />
+                  <XAxis type="number" stroke={colors.textMuted} fontSize={typography.caption.fontSize} allowDecimals={false} />
+                  <YAxis dataKey="service" type="category" stroke={colors.textMuted} fontSize={typography.caption.fontSize} width={100} />
                   <Tooltip />
-                  <Bar dataKey="count" name="Visits" fill="#7C3AED" radius={[0, 6, 6, 0]} />
+                  <Bar dataKey="count" name="Visits" fill={colors.brandStrong} radius={[0, 6, 6, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
@@ -433,11 +434,11 @@ export default function AnalyticsPage() {
             {isMounted ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={busiestDaysData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
-                  <XAxis dataKey="day" stroke="#9CA3AF" fontSize={11} />
-                  <YAxis stroke="#9CA3AF" fontSize={11} allowDecimals={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={colors.divider} />
+                  <XAxis dataKey="day" stroke={colors.textMuted} fontSize={typography.caption.fontSize} />
+                  <YAxis stroke={colors.textMuted} fontSize={typography.caption.fontSize} allowDecimals={false} />
                   <Tooltip />
-                  <Bar dataKey="visits" name="Consultations" fill="#E91E8C" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="visits" name="Consultations" fill={colors.brand} radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : null}
@@ -453,11 +454,11 @@ export default function AnalyticsPage() {
             {isMounted ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={busiestHoursData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
-                  <XAxis dataKey="hour" stroke="#9CA3AF" fontSize={10} />
-                  <YAxis stroke="#9CA3AF" fontSize={11} allowDecimals={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={colors.divider} />
+                  <XAxis dataKey="hour" stroke={colors.textMuted} fontSize={typography.caption.fontSize} />
+                  <YAxis stroke={colors.textMuted} fontSize={typography.caption.fontSize} allowDecimals={false} />
                   <Tooltip />
-                  <Bar dataKey="count" name="Appointments" fill="#3B82F6" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="count" name="Appointments" fill={colors.info} radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : null}
