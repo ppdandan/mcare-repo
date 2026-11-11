@@ -36,7 +36,9 @@ export async function updateSession(request: NextRequest) {
   const isDashboardRoute = request.nextUrl.pathname.startsWith("/dashboard");
   const isBookingRoute = request.nextUrl.pathname.startsWith("/book");
   const isTransactionRoute = request.nextUrl.pathname.startsWith("/transactions");
-  const isPatientRoute = isBookingRoute || isTransactionRoute;
+  const isAppointmentsRoute = request.nextUrl.pathname.startsWith("/appointments");
+  const isProfileRoute = request.nextUrl.pathname.startsWith("/profile");
+  const isPatientRoute = isBookingRoute || isTransactionRoute || isAppointmentsRoute || isProfileRoute;
 
   // Require a session before opening either the staff portal or patient booking.
   if (!user && (isDashboardRoute || isPatientRoute)) {

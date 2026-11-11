@@ -5,6 +5,7 @@ import Link from "next/link";
 import { formatManilaDate, formatManilaDateTime } from "@m-care/shared";
 import type { TransactionWithAppointment } from "@m-care/shared";
 import { createClient } from "@/lib/supabase/client";
+import PatientHeader from "@/components/PatientHeader";
 
 function formatAmount(amount: number, currency: string) {
   try {
@@ -59,16 +60,7 @@ export default function TransactionHistoryPage() {
   return (
     <main className="min-h-screen bg-rose-50/60 px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl">
-        <header className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-rose-100 bg-white px-5 py-4 shadow-sm">
-          <Link href="/book" className="flex items-center gap-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-800">
-            <img src="/logo.png" alt="M-Care" width={42} height={50} className="h-[50px] w-[42px] object-contain" />
-            <span><strong className="block text-lg text-gray-900">M-Care</strong><span className="text-sm text-gray-700">Patient portal</span></span>
-          </Link>
-          <nav className="flex items-center gap-2" aria-label="Patient navigation">
-            <Link href="/book" className="rounded-lg px-3 py-2 text-sm font-semibold text-rose-900 hover:bg-rose-50">Book a visit</Link>
-            <button type="button" onClick={() => void supabase.auth.signOut().then(() => { window.location.assign("/login"); })} className="rounded-lg px-3 py-2 text-sm font-semibold text-rose-900 hover:bg-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-800">Sign out</button>
-          </nav>
-        </header>
+        <PatientHeader active="/transactions" />
 
         <div className="mb-6">
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">Transaction History</h1>

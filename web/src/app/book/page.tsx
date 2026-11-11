@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import {
   formatManilaDate,
   formatManilaTime,
@@ -12,6 +11,7 @@ import {
 } from "@m-care/shared";
 import type { AvailableSlot, DoctorSchedule, DoctorWithProfile, Service } from "@m-care/shared";
 import { createClient } from "@/lib/supabase/client";
+import PatientHeader from "@/components/PatientHeader";
 
 type BookingSlot = AvailableSlot & { available: boolean };
 
@@ -204,29 +204,10 @@ export default function PatientBookingPage() {
     }
   };
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    router.replace("/login");
-  };
-
   return (
     <main className="min-h-screen bg-rose-50/60 px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
-        <header className="mb-8 flex items-center justify-between rounded-2xl border border-rose-100 bg-white px-5 py-4 shadow-sm">
-          <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="M-Care" width={42} height={50} className="h-[50px] w-[42px] object-contain" />
-            <div>
-              <p className="text-lg font-bold tracking-tight text-gray-900">M-Care</p>
-              <p className="text-sm text-gray-600">Patient booking</p>
-            </div>
-          </div>
-          <nav className="flex items-center gap-1" aria-label="Patient navigation">
-            <Link href="/transactions" className="rounded-lg px-3 py-2 text-sm font-semibold text-rose-900 hover:bg-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-700">Transactions</Link>
-            <button type="button" onClick={signOut} className="rounded-lg px-3 py-2 text-sm font-semibold text-rose-800 hover:bg-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-700">
-              Sign out
-            </button>
-          </nav>
-        </header>
+        <PatientHeader active="/book" />
 
         <section className="mb-6">
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">Book an appointment</h1>

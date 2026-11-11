@@ -104,3 +104,11 @@
 - Added `supabase/tests/transactions.test.mjs`. It passed on dev: incomplete appointment, patient RPC, direct insert/update/delete, cross-user read, duplicate transaction, and wrong-doctor attempts were rejected; patient/admin reads, doctor/admin recording, audit correction, and void history passed. Test fixtures were removed.
 - Mobile TypeScript check passed. Web TypeScript check still reports 34 existing React 18/19, Next layout/link, and Recharts type errors; no errors reference the new transaction pages. No packages were changed.
 - Privacy-policy transaction wording remains for Phase 5. Cross-platform appointment/transaction/profile sync verification and UI screenshot/visual work remain for later phases.
+
+## Google Play readiness — Phase 3: cross-platform data sync
+
+- Added the patient website `/appointments` view with refresh, clear loading/empty/error states, Asia/Manila date/time, and cancellation through `cancel_my_appointment`. Added `/profile` to read and update the same `profiles` and `patients` rows used by mobile. Both routes are session-protected and linked from the shared patient header.
+- Updated mobile appointment cancellation to use `cancel_my_appointment` instead of a direct appointment-table update. Added a retry state for appointment-load failures.
+- Added `supabase/tests/cross-platform-sync.test.mjs`. Against dev ref `luccnwicirfnmyzgemzj`, two independent authenticated patient sessions proved that mobile booking appears on the website, a staff reschedule appears with the same timestamp and status after both clients refresh, a website booking appears on mobile, mobile cancellation appears on the website, and both transaction-history reads return the same post-service record. The test also verified shared profile reads after an update. Manila-formatted dates were identical. All temporary dev fixtures were removed.
+- `npx tsc --noEmit -p tsconfig.json` passed in `mobile/`. The web check still fails on the existing React 18/19 and Recharts/Next type incompatibilities; no errors reference the Phase 3 patient appointment/profile pages or shared header. Browser-driven UI verification remains unavailable in this environment, so the sync proof is through the real dev Supabase client flows rather than browser automation.
+- Production was not contacted. No packages or migrations were changed in this phase.

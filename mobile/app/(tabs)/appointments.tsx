@@ -25,10 +25,16 @@ export default function AppointmentsScreen() {
   const [appointments, setAppointments] = useState<AppointmentWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   const fetchAppointments = useCallback(async () => {
-    if (!patient?.id) return;
+    if (!patient?.id) {
+      setLoading(false);
+      setRefreshing(false);
+      return;
+    }
+    setLoadError(null);
     try {
       const { data, error } = await supabase
         .from('appointments')
@@ -43,13 +49,11 @@ export default function AppointmentsScreen() {
         .eq('patient_id', patient.id)
         .order('start_time', { ascending: activeTab === 'upcoming' });
 
-      if (error) {
-        console.error('Error fetching appointments:', error);
-      } else if (data) {
-        setAppointments(data as unknown as AppointmentWithDetails[]);
-      }
+      if (error) throw error;
+      setAppointments((data ?? []) as unknown as AppointmentWithDetails[]);
     } catch (err) {
       console.error('Fetch appointments error:', err);
+      setLoadError('We couldn’t load your appointments. Check your connection and retry.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -100,16 +104,15 @@ export default function AppointmentsScreen() {
           onPress: async () => {
             setCancellingId(appt.id);
             try {
-              const { error } = await supabase
-                .from('appointments')
-                .update({ status: 'cancelled' })
-                .eq('id', appt.id);
+              const { error } = await supabase.rpc('cancel_my_appointment', {
+                p_appointment_id: appt.id,
+              });
 
               if (error) throw error;
-              fetchAppointments();
+              await fetchAppointments();
             } catch (err: unknown) {
-              const message = err instanceof Error ? err.message : 'Failed to cancel';
-              Alert.alert('Cancellation Error', message);
+              console.error('Appointment cancellation failed:', err);
+              Alert.alert('Cancellation failed', 'We couldn’t cancel this appointment. Refresh your visits and try again.');
             } finally {
               setCancellingId(null);
             }
@@ -197,6 +200,14 @@ export default function AppointmentsScreen() {
             <View style={styles.centerBox}>
               <ActivityIndicator size="large" color={Colors.primary} />
               <Text style={styles.loadingText}>Syncing appointments with clinic...</Text>
+            </View>
+          ) : loadError ? (
+            <View style={styles.emptyCard}>
+              <Text style={styles.emptyTitle}>Appointments unavailable</Text>
+              <Text style={styles.emptyText}>{loadError}</Text>
+              <TouchableOpacity style={styles.bookCTA} onPress={() => { setLoading(true); void fetchAppointments(); }}>
+                <Text style={styles.bookCTAText}>Retry</Text>
+              </TouchableOpacity>
             </View>
           ) : filteredAppointments.length === 0 ? (
             <View style={styles.emptyCard}>
