@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
+import Icon from "@/components/Icon";
 import type { DoctorWithProfile, DoctorSchedule, ScheduleException } from "@m-care/shared";
 import { formatManilaDate, manilaDateKey } from "@m-care/shared";
 
@@ -238,7 +239,7 @@ export default function SchedulesPage() {
                           year: "numeric",
                         })}
                       </span>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-rose-200 text-rose-800">
+                      <span className="px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider bg-rose-200 text-rose-800">
                         {exc.start_time ? `${exc.start_time.slice(0, 5)} - ${exc.end_time?.slice(0, 5)}` : "All Day Leave"}
                       </span>
                     </div>
@@ -298,7 +299,7 @@ export default function SchedulesPage() {
                 {!isFullDay && (
                   <div className="grid grid-cols-2 gap-3 pt-1">
                     <div>
-                      <span className="text-[11px] text-gray-500 block mb-1">Start Time</span>
+                      <span className="text-xs text-gray-500 block mb-1">Start Time</span>
                       <input
                         type="time"
                         value={startTime}
@@ -307,7 +308,7 @@ export default function SchedulesPage() {
                       />
                     </div>
                     <div>
-                      <span className="text-[11px] text-gray-500 block mb-1">End Time</span>
+                      <span className="text-xs text-gray-500 block mb-1">End Time</span>
                       <input
                         type="time"
                         value={endTime}
@@ -332,8 +333,8 @@ export default function SchedulesPage() {
                 />
               </div>
 
-              <div className="p-3 bg-amber-50 rounded-lg text-[11px] text-amber-800 leading-relaxed border border-amber-200">
-                ⚠️ Adding this exception will instantly remove all slots on this date from the patient booking algorithm.
+              <div className="p-3 bg-amber-50 rounded-lg text-xs text-amber-800 leading-relaxed border border-amber-200">
+                <Icon name="alert" size={15} className="mr-1 inline-block align-[-2px]" /> Adding this exception removes all slots on this date from patient booking.
               </div>
 
               <div className="flex justify-end space-x-2 pt-2">

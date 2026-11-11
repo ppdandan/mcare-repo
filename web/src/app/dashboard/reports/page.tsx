@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { AppointmentWithDetails, PatientWithProfile, MedicalRecordWithDetails } from "@m-care/shared";
 import { addCalendarDays, formatManilaDate, formatManilaTime, manilaDateKey } from "@m-care/shared";
+import Icon from "@/components/Icon";
 
 export default function ReportsPage() {
   const [appointments, setAppointments] = useState<AppointmentWithDetails[]>([]);
@@ -200,14 +201,14 @@ export default function ReportsPage() {
             }}
             className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs shadow-sm transition flex items-center space-x-1.5"
           >
-            <span>📥</span>
+            <Icon name="download" size={15} />
             <span>Download CSV</span>
           </button>
           <button
             onClick={handlePrintPdf}
             className="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-xl text-xs shadow-sm transition flex items-center space-x-1.5"
           >
-            <span>🖨️</span>
+            <Icon name="printer" size={15} />
             <span>Print / Save as PDF</span>
           </button>
         </div>
@@ -223,7 +224,7 @@ export default function ReportsPage() {
               reportType === "appointments" ? "bg-white text-pink-600 shadow-sm" : "text-gray-600"
             }`}
           >
-            📅 Appointments Ledger
+            <Icon name="calendar" size={15} /> Appointments Ledger
           </button>
           <button
             onClick={() => setReportType("patients")}
@@ -231,7 +232,7 @@ export default function ReportsPage() {
               reportType === "patients" ? "bg-white text-pink-600 shadow-sm" : "text-gray-600"
             }`}
           >
-            👥 Patient Registry
+            <Icon name="users" size={15} /> Patient Registry
           </button>
           <button
             onClick={() => setReportType("clinical")}
@@ -239,7 +240,7 @@ export default function ReportsPage() {
               reportType === "clinical" ? "bg-white text-pink-600 shadow-sm" : "text-gray-600"
             }`}
           >
-            🩺 Clinical Encounters
+            <Icon name="stethoscope" size={15} /> Clinical Encounters
           </button>
         </div>
 
@@ -275,7 +276,7 @@ export default function ReportsPage() {
             <p className="text-xs text-gray-600">
               Balibago, Angeles City, Pampanga • Tel: (045) 888-CARE
             </p>
-            <p className="text-[11px] text-gray-400 mt-1">
+            <p className="text-xs text-gray-400 mt-1">
               Accredited Women's Health Clinic • Philippine Data Privacy Act RA 10173 Certified
             </p>
           </div>
@@ -286,7 +287,7 @@ export default function ReportsPage() {
             <p className="text-xs text-gray-500 mt-2">
               Generated: {formatManilaDate(new Date(), { dateStyle: "long" })}
             </p>
-            <p className="text-[11px] text-gray-400">
+            <p className="text-xs text-gray-400">
               Period: {startDate} to {endDate}
             </p>
           </div>
@@ -302,7 +303,7 @@ export default function ReportsPage() {
             </h3>
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-gray-500 font-bold uppercase text-[10px]">
+                <tr className="bg-gray-50 border-b border-gray-200 text-gray-500 font-bold uppercase text-xs">
                   <th className="py-2.5 px-3">Date & Time</th>
                   <th className="py-2.5 px-3">Patient Name</th>
                   <th className="py-2.5 px-3">Service</th>
@@ -314,14 +315,14 @@ export default function ReportsPage() {
               <tbody className="divide-y divide-gray-100">
                 {appointments.map((a) => (
                   <tr key={a.id}>
-                    <td className="py-2 px-3 whitespace-nowrap font-mono text-[11px]">
+                    <td className="py-2 px-3 whitespace-nowrap font-mono text-xs">
                       {formatManilaDate(a.start_time, { month: "short", day: "numeric" })}{" "}
                       {formatManilaTime(a.start_time)}
                     </td>
                     <td className="py-2 px-3 font-semibold text-gray-900">{a.patient?.profile?.full_name}</td>
                     <td className="py-2 px-3">{a.service?.name}</td>
                     <td className="py-2 px-3 text-gray-600">{a.doctor?.profile?.full_name}</td>
-                    <td className="py-2 px-3 font-bold uppercase text-[10px] text-pink-700">{a.status}</td>
+                    <td className="py-2 px-3 font-bold uppercase text-xs text-pink-700">{a.status}</td>
                     <td className="py-2 px-3 text-gray-500 truncate max-w-xs">{a.notes || "—"}</td>
                   </tr>
                 ))}
@@ -335,7 +336,7 @@ export default function ReportsPage() {
             </h3>
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-gray-500 font-bold uppercase text-[10px]">
+                <tr className="bg-gray-50 border-b border-gray-200 text-gray-500 font-bold uppercase text-xs">
                   <th className="py-2.5 px-3">Patient Name</th>
                   <th className="py-2.5 px-3">Phone</th>
                   <th className="py-2.5 px-3">Blood Type</th>
@@ -365,7 +366,7 @@ export default function ReportsPage() {
             </h3>
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-gray-500 font-bold uppercase text-[10px]">
+                <tr className="bg-gray-50 border-b border-gray-200 text-gray-500 font-bold uppercase text-xs">
                   <th className="py-2.5 px-3">Visit Date</th>
                   <th className="py-2.5 px-3">Patient Name</th>
                   <th className="py-2.5 px-3">Attending Doctor</th>
@@ -382,7 +383,7 @@ export default function ReportsPage() {
                     <td className="py-2 px-3">{r.doctor?.profile?.full_name}</td>
                     <td className="py-2 px-3 font-mono">{r.blood_pressure || "—"} | {r.heart_rate || "—"}</td>
                     <td className="py-2 px-3 font-medium text-pink-700">{r.diagnosis || "—"}</td>
-                    <td className="py-2 px-3 font-mono text-[11px] text-emerald-800">{r.prescription || "None"}</td>
+                    <td className="py-2 px-3 font-mono text-xs text-emerald-800">{r.prescription || "None"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -396,14 +397,14 @@ export default function ReportsPage() {
             <p className="font-semibold text-gray-800">Verified & Reconciled By:</p>
             <div className="mt-10 border-b border-gray-400 w-48" />
             <p className="mt-1 font-bold text-gray-900">Clinic Administrator</p>
-            <p className="text-[10px] text-gray-500">M-Care OB-GYN Clinic & Ultrasound</p>
+            <p className="text-xs text-gray-500">M-Care OB-GYN Clinic & Ultrasound</p>
           </div>
 
           <div className="text-right flex flex-col items-end">
             <p className="font-semibold text-gray-800">Medical Director Approval:</p>
             <div className="mt-10 border-b border-gray-400 w-48" />
             <p className="mt-1 font-bold text-gray-900">Dr. Bernice Paule</p>
-            <p className="text-[10px] text-gray-500">OB-GYNE / Sonologist</p>
+            <p className="text-xs text-gray-500">OB-GYNE / Sonologist</p>
           </div>
         </div>
       </div>

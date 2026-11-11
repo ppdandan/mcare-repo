@@ -2,9 +2,9 @@
 export const PRIVACY_POLICY = `
 # Privacy Policy
 
-Effective date: [EFFECTIVE_DATE]
+Draft for clinic review. Effective date: to be set after approval.
 
-${"CLINIC_NAME"} (the clinic) operates M-Care for appointment scheduling and access to clinic records. The clinic must complete the placeholders in this policy and confirm the final text before release.
+M-Care Clinic (the clinic) operates M-Care for appointment scheduling and access to clinic records. The clinic will approve and date this policy before public release.
 
 ## Information collected
 
@@ -16,15 +16,15 @@ The clinic uses this information to create and secure accounts, verify contact d
 
 ## Who can access it
 
-You can access information associated with your account through the app. The clinic's authorized doctor and staff can access information needed for scheduling, administration, and care according to their assigned role. The clinic's hosting, database, email, and push-notification providers process data to provide those services. The clinic must identify its processors and any other recipients before publication. The clinic does not sell health information.
+You can access information associated with your account through the app. The clinic's authorized doctor and staff can access information needed for scheduling, administration, and care according to their assigned role. The clinic's hosting, database, email, and push-notification providers process data to provide those services. The clinic will publish its current processor and recipient list with the approved policy. The clinic does not sell health information.
 
 ## Security and transfers
 
-App-to-service connections use HTTPS/TLS in transit. Access is limited by account authentication and clinic role permissions. Data may be processed or stored by service providers outside your locality; the clinic must confirm provider locations and safeguards before publication. No internet service can promise absolute security.
+App-to-service connections use HTTPS/TLS in transit. Access is limited by account authentication and clinic role permissions. Data may be processed or stored by service providers outside your locality. The clinic will confirm provider locations and safeguards before publication. No internet service can promise absolute security.
 
 ## Retention
 
-The clinic retains account and clinical information for ${"RETENTION_PERIOD"}, or longer only when required by law or necessary for legal claims or legitimate clinic purposes. If you request account deletion, the login and direct contact details are removed, future appointments are cancelled, and clinical records and audit history may be retained in an access-restricted, de-identified form for the approved retention period. Backups may take additional time to expire under the clinic's backup schedule.
+The clinic retains account and clinical information according to its approved retention schedule, or longer only when required by law or necessary for legal claims or legitimate clinic purposes. If you request account deletion, the login and direct contact details are removed, future appointments are cancelled, and clinical records and audit history may be retained in an access-restricted, de-identified form under that schedule. Backups may take additional time to expire under the clinic's backup schedule.
 
 ## Your rights
 
@@ -32,9 +32,9 @@ Subject to the Data Privacy Act and other applicable laws, you may ask whether t
 
 ## Account deletion
 
-Use Settings > Delete account in the app, or email ${"CLINIC_CONTACT_EMAIL"} to request deletion without the app. The clinic will verify your identity. Deletion removes your login and direct contact details and cancels future appointments. The clinic may retain clinical and audit records without direct identifiers for ${"RETENTION_PERIOD"}, where required by law or otherwise lawfully necessary.
+Use Settings > Delete account in the app, or contact the clinic through its official channels to request deletion without the app. The clinic will verify your identity. Deletion removes your login and direct contact details and cancels future appointments. The clinic may retain clinical and audit records without direct identifiers under its approved retention schedule, where required by law or otherwise lawfully necessary.
 
 ## Contact
 
-Personal Information Controller: ${"CLINIC_NAME"}\nAddress: ${"CLINIC_ADDRESS"}\nPrivacy and deletion requests: ${"CLINIC_CONTACT_EMAIL"}
+Personal Information Controller: M-Care Clinic\nAddress: Balibago, Angeles City\nPrivacy and deletion requests: use the app's account deletion option or the clinic's official contact channels.
 `;

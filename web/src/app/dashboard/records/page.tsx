@@ -264,7 +264,7 @@ export default function MedicalRecordsPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-gray-50/75 border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider text-[11px]">
+              <tr className="bg-gray-50/75 border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider text-xs">
                 <th className="py-3 px-4">Visit Date</th>
                 <th className="py-3 px-4">Patient Name</th>
                 <th className="py-3 px-4">Attending Physician</th>
@@ -301,18 +301,18 @@ export default function MedicalRecordsPage() {
 
                     <td className="py-3.5 px-4">
                       <p className="font-bold text-gray-900">{rec.patient?.profile?.full_name}</p>
-                      <p className="text-[10px] text-gray-400">
+                      <p className="text-xs text-gray-400">
                         Blood: {rec.patient?.blood_type || "N/A"}
                       </p>
                     </td>
 
                     <td className="py-3.5 px-4">
                       <p className="font-medium text-gray-900">{rec.doctor?.profile?.full_name}</p>
-                      <p className="text-[10px] text-gray-400">{rec.doctor?.specialty}</p>
+                      <p className="text-xs text-gray-400">{rec.doctor?.specialty}</p>
                     </td>
 
                     <td className="py-3.5 px-4 whitespace-nowrap">
-                      <span className="font-mono bg-gray-100 px-2 py-0.5 rounded text-[11px] text-gray-700">
+                      <span className="font-mono bg-gray-100 px-2 py-0.5 rounded text-xs text-gray-700">
                         BP: {rec.blood_pressure || "—"} | HR: {rec.heart_rate || "—"}
                       </span>
                     </td>
@@ -321,7 +321,7 @@ export default function MedicalRecordsPage() {
                       {rec.diagnosis || "Pending lab results"}
                     </td>
 
-                    <td className="py-3.5 px-4 max-w-xs truncate text-emerald-800 font-mono text-[11px]">
+                    <td className="py-3.5 px-4 max-w-xs truncate text-emerald-800 font-mono text-xs">
                       {rec.prescription || "—"}
                     </td>
 
@@ -329,13 +329,13 @@ export default function MedicalRecordsPage() {
                       <div className="flex items-center justify-end space-x-2">
                         <button
                           onClick={() => handleOpenRecordDetail(rec)}
-                          className="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold rounded text-[11px] border border-purple-200 transition"
+                          className="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold rounded text-xs border border-purple-200 transition"
                         >
                           View Chart
                         </button>
                         <button
                           onClick={() => openEditModal(rec)}
-                          className="px-2.5 py-1 bg-pink-50 hover:bg-pink-100 text-pink-700 font-semibold rounded text-[11px] border border-pink-200 transition"
+                          className="px-2.5 py-1 bg-pink-50 hover:bg-pink-100 text-pink-700 font-semibold rounded text-xs border border-pink-200 transition"
                         >
                           Edit
                         </button>
@@ -355,7 +355,7 @@ export default function MedicalRecordsPage() {
           <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-gray-100 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
               <div>
-                <span className="text-[10px] font-bold text-pink-600 uppercase tracking-widest block">
+                <span className="text-xs font-bold text-pink-600 uppercase tracking-widest block">
                   Official Medical Chart
                 </span>
                 <h3 className="text-xl font-bold text-gray-900">
@@ -377,36 +377,36 @@ export default function MedicalRecordsPage() {
               {/* Doctor Details */}
               <div className="bg-purple-50/50 p-3.5 rounded-xl border border-purple-100 flex justify-between items-center">
                 <div>
-                  <span className="text-gray-400 block text-[10px] font-bold uppercase">Attending OB-GYN</span>
+                  <span className="text-gray-400 block text-xs font-bold uppercase">Attending OB-GYN</span>
                   <span className="font-bold text-purple-900 text-sm">{selectedRecord.doctor?.profile?.full_name}</span>
-                  <span className="text-purple-700 block text-[11px]">{selectedRecord.doctor?.specialty}</span>
+                  <span className="text-purple-700 block text-xs">{selectedRecord.doctor?.specialty}</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-gray-400 block text-[10px] font-bold uppercase">Room</span>
+                  <span className="text-gray-400 block text-xs font-bold uppercase">Room</span>
                   <span className="font-bold text-gray-800">{selectedRecord.doctor?.room}</span>
                 </div>
               </div>
 
               {/* Triage Vitals */}
               <div>
-                <span className="font-bold text-gray-700 block mb-1 uppercase tracking-wider text-[11px]">
+                <span className="font-bold text-gray-700 block mb-1 uppercase tracking-wider text-xs">
                   Triage Vitals (Recorded by Nursing Staff)
                 </span>
                 <div className="grid grid-cols-4 gap-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
                   <div>
-                    <span className="text-gray-400 block text-[10px]">Blood Pressure</span>
+                    <span className="text-gray-400 block text-xs">Blood Pressure</span>
                     <span className="font-bold text-gray-900 text-xs">{selectedRecord.blood_pressure || "—"}</span>
                   </div>
                   <div>
-                    <span className="text-gray-400 block text-[10px]">Heart Rate</span>
+                    <span className="text-gray-400 block text-xs">Heart Rate</span>
                     <span className="font-bold text-gray-900 text-xs">{selectedRecord.heart_rate || "—"}</span>
                   </div>
                   <div>
-                    <span className="text-gray-400 block text-[10px]">Temperature</span>
+                    <span className="text-gray-400 block text-xs">Temperature</span>
                     <span className="font-bold text-gray-900 text-xs">{selectedRecord.temperature || "—"}</span>
                   </div>
                   <div>
-                    <span className="text-gray-400 block text-[10px]">Weight (kg)</span>
+                    <span className="text-gray-400 block text-xs">Weight (kg)</span>
                     <span className="font-bold text-gray-900 text-xs">{selectedRecord.weight_kg ? `${selectedRecord.weight_kg} kg` : "—"}</span>
                   </div>
                 </div>
@@ -414,7 +414,7 @@ export default function MedicalRecordsPage() {
 
               {/* Chief Complaint */}
               <div>
-                <span className="font-bold text-gray-700 block mb-1 uppercase tracking-wider text-[11px]">
+                <span className="font-bold text-gray-700 block mb-1 uppercase tracking-wider text-xs">
                   Chief Complaint & Clinical History
                 </span>
                 <div className="bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-2">
@@ -431,7 +431,7 @@ export default function MedicalRecordsPage() {
 
               {/* Diagnosis */}
               <div className="bg-pink-50/60 p-4 rounded-xl border border-pink-200">
-                <span className="font-bold text-pink-900 block mb-1 uppercase tracking-wider text-[11px]">
+                <span className="font-bold text-pink-900 block mb-1 uppercase tracking-wider text-xs">
                   Clinical Diagnosis & Impression
                 </span>
                 <p className="text-pink-950 font-bold text-sm leading-relaxed">
@@ -441,7 +441,7 @@ export default function MedicalRecordsPage() {
 
               {/* Prescription */}
               <div className="bg-emerald-50/60 p-4 rounded-xl border border-emerald-200">
-                <span className="font-bold text-emerald-900 block mb-1 uppercase tracking-wider text-[11px]">
+                <span className="font-bold text-emerald-900 block mb-1 uppercase tracking-wider text-xs">
                   Rx — Official Prescription
                 </span>
                 <pre className="text-emerald-900 font-mono text-xs whitespace-pre-wrap leading-relaxed">
@@ -451,7 +451,7 @@ export default function MedicalRecordsPage() {
 
               {selectedRecord.notes && (
                 <div>
-                  <span className="font-bold text-gray-700 block mb-1 uppercase tracking-wider text-[11px]">
+                  <span className="font-bold text-gray-700 block mb-1 uppercase tracking-wider text-xs">
                     Doctor's Follow-up Instructions
                   </span>
                   <p className="bg-gray-50 p-3 rounded-xl border border-gray-200 text-gray-800">
@@ -460,7 +460,7 @@ export default function MedicalRecordsPage() {
                 </div>
               )}
 
-              <div className="pt-2 text-[10px] text-gray-400 text-center border-t border-gray-100">
+              <div className="pt-2 text-xs text-gray-400 text-center border-t border-gray-100">
                 🔒 DPA 2012 Audit Trail: View access recorded by {currentProfile?.full_name} ({currentProfile?.role}).
               </div>
             </div>
@@ -531,7 +531,7 @@ export default function MedicalRecordsPage() {
                 </label>
                 <div className="grid grid-cols-4 gap-2">
                   <div>
-                    <span className="text-[10px] text-gray-400 block mb-0.5">BP</span>
+                    <span className="text-xs text-gray-400 block mb-0.5">BP</span>
                     <input
                       type="text"
                       placeholder="120/80"
@@ -541,7 +541,7 @@ export default function MedicalRecordsPage() {
                     />
                   </div>
                   <div>
-                    <span className="text-[10px] text-gray-400 block mb-0.5">Heart Rate</span>
+                    <span className="text-xs text-gray-400 block mb-0.5">Heart Rate</span>
                     <input
                       type="text"
                       placeholder="78 bpm"
@@ -551,7 +551,7 @@ export default function MedicalRecordsPage() {
                     />
                   </div>
                   <div>
-                    <span className="text-[10px] text-gray-400 block mb-0.5">Temp</span>
+                    <span className="text-xs text-gray-400 block mb-0.5">Temp</span>
                     <input
                       type="text"
                       placeholder="36.6 C"
@@ -561,7 +561,7 @@ export default function MedicalRecordsPage() {
                     />
                   </div>
                   <div>
-                    <span className="text-[10px] text-gray-400 block mb-0.5">Weight (kg)</span>
+                    <span className="text-xs text-gray-400 block mb-0.5">Weight (kg)</span>
                     <input
                       type="number"
                       step="0.1"

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { AppointmentWithDetails } from "@m-care/shared";
 import { formatManilaDateTime } from "@m-care/shared";
+import Icon from "@/components/Icon";
 
 export default function DashboardOverviewPage() {
   const [appointments, setAppointments] = useState<AppointmentWithDetails[]>([]);
@@ -139,7 +140,7 @@ export default function DashboardOverviewPage() {
         <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
           <div className="flex items-center justify-between text-gray-400 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider">Pending Triage</span>
-            <span className="text-base">⏳</span>
+            <Icon name="clock" size={18} />
           </div>
           <p className="text-3xl font-extrabold text-amber-600">
             {loading ? "..." : pendingAppointments.length}
@@ -150,7 +151,7 @@ export default function DashboardOverviewPage() {
         <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
           <div className="flex items-center justify-between text-gray-400 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider">Confirmed Bookings</span>
-            <span className="text-base">✅</span>
+            <Icon name="check-circle" size={18} />
           </div>
           <p className="text-3xl font-extrabold text-emerald-600">
             {loading ? "..." : approvedAppointments.length}
@@ -161,7 +162,7 @@ export default function DashboardOverviewPage() {
         <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
           <div className="flex items-center justify-between text-gray-400 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider">Consultations Today</span>
-            <span className="text-base">🩺</span>
+            <Icon name="stethoscope" size={18} />
           </div>
           <p className="text-3xl font-extrabold text-pink-600">
             {loading ? "..." : todayAppointments.length}
@@ -172,7 +173,7 @@ export default function DashboardOverviewPage() {
         <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
           <div className="flex items-center justify-between text-gray-400 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider">Registered Patients</span>
-            <span className="text-base">👩</span>
+            <Icon name="users" size={18} />
           </div>
           <p className="text-3xl font-extrabold text-gray-900">
             {loading ? "..." : patientCount}
@@ -203,7 +204,7 @@ export default function DashboardOverviewPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-gray-50/75 border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider text-[11px]">
+              <tr className="bg-gray-50/75 border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider text-xs">
                 <th className="py-3 px-4">Patient Name</th>
                 <th className="py-3 px-4">Service</th>
                 <th className="py-3 px-4">Doctor & Room</th>
@@ -224,7 +225,7 @@ export default function DashboardOverviewPage() {
                   <tr key={appt.id} className="hover:bg-amber-50/30 transition">
                     <td className="py-3.5 px-4 font-bold text-gray-900">
                       {appt.patient?.profile?.full_name}
-                      <span className="block text-[11px] text-gray-400 font-normal">
+                      <span className="block text-xs text-gray-400 font-normal">
                         📞 {appt.patient?.profile?.phone}
                       </span>
                     </td>
@@ -233,7 +234,7 @@ export default function DashboardOverviewPage() {
                     </td>
                     <td className="py-3.5 px-4 text-gray-700">
                       {appt.doctor?.profile?.full_name}
-                      <span className="block text-[10px] text-gray-400">
+                      <span className="block text-xs text-gray-400">
                         📍 {appt.doctor?.room}
                       </span>
                     </td>

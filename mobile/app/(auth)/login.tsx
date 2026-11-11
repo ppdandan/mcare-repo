@@ -1,3 +1,4 @@
+import { spacing, typography, radius } from '@m-care/shared';
 import React, { useState, useRef } from 'react';
 import {
   View,
@@ -157,7 +158,7 @@ export default function LoginScreen() {
                 name="key-outline"
                 size={16}
                 color={mode === 'password' ? Colors.primary : Colors.textSecondary}
-                style={{ marginRight: 6 }}
+                style={{ marginRight: spacing.sm }}
               />
               <Text style={[styles.tabText, mode === 'password' && styles.tabTextActive]}>
                 Password
@@ -177,7 +178,7 @@ export default function LoginScreen() {
                 name="shield-checkmark-outline"
                 size={16}
                 color={mode === 'otp' ? Colors.primary : Colors.textSecondary}
-                style={{ marginRight: 6 }}
+                style={{ marginRight: spacing.sm }}
               />
               <Text style={[styles.tabText, mode === 'otp' && styles.tabTextActive]}>
                 OTP Code
@@ -189,14 +190,14 @@ export default function LoginScreen() {
           <View style={styles.card}>
             {errorMessage && (
               <View style={styles.errorBox}>
-                <Ionicons name="alert-circle" size={18} color="#991B1B" style={{ marginRight: 6 }} />
+                <Ionicons name="alert-circle" size={18} color={Colors.error} style={{ marginRight: spacing.sm }} />
                 <Text style={styles.errorText}>{errorMessage}</Text>
               </View>
             )}
 
             {successMessage && (
               <View style={styles.successBox}>
-                <Ionicons name="checkmark-circle" size={18} color="#065F46" style={{ marginRight: 6 }} />
+                <Ionicons name="checkmark-circle" size={18} color={Colors.success} style={{ marginRight: spacing.sm }} />
                 <Text style={styles.successText}>{successMessage}</Text>
               </View>
             )}
@@ -286,7 +287,7 @@ export default function LoginScreen() {
                   {loading ? (
                     <View style={styles.loadingRow}>
                       <ActivityIndicator color={Colors.textOnPrimary} size="small" />
-                      <Text style={[styles.buttonText, { marginLeft: 8 }]}>Signing in...</Text>
+                      <Text style={[styles.buttonText, { marginLeft: spacing.sm }]}>Signing in...</Text>
                     </View>
                   ) : (
                     <Text style={styles.buttonText}>Sign In</Text>
@@ -338,7 +339,7 @@ export default function LoginScreen() {
                       {loading ? (
                         <View style={styles.loadingRow}>
                           <ActivityIndicator color={Colors.textOnPrimary} size="small" />
-                          <Text style={[styles.buttonText, { marginLeft: 8 }]}>Verifying...</Text>
+                          <Text style={[styles.buttonText, { marginLeft: spacing.sm }]}>Verifying...</Text>
                         </View>
                       ) : (
                         <Text style={styles.buttonText}>Verify & Sign In</Text>
@@ -355,7 +356,7 @@ export default function LoginScreen() {
                     {loading ? (
                       <View style={styles.loadingRow}>
                         <ActivityIndicator color={Colors.textOnPrimary} size="small" />
-                        <Text style={[styles.buttonText, { marginLeft: 8 }]}>Sending code...</Text>
+                        <Text style={[styles.buttonText, { marginLeft: spacing.sm }]}>Sending code...</Text>
                       </View>
                     ) : (
                       <Text style={styles.buttonText}>Send One-Time Code</Text>
@@ -372,13 +373,13 @@ export default function LoginScreen() {
                 <Text style={styles.registerLink}>Create Account</Text>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={() => router.push('/privacy' as never)} accessibilityRole="link" style={{ marginTop: 14 }}>
+            <TouchableOpacity onPress={() => router.push('/privacy' as never)} accessibilityRole="link" style={{ marginTop: spacing.lg }}>
               <Text style={{ color: Colors.primary, textAlign: 'center', textDecorationLine: 'underline' }}>Privacy Policy</Text>
             </TouchableOpacity>
 
             {/* Staff Disclaimer */}
             <View style={styles.staffDisclaimer}>
-              <Ionicons name="information-circle-outline" size={15} color={Colors.textLight} style={{ marginRight: 4 }} />
+              <Ionicons name="information-circle-outline" size={15} color={Colors.textLight} style={{ marginRight: spacing.xs }} />
               <Text style={styles.disclaimerText}>
                 Clinic staff & doctors sign in via the reception web terminal.
               </Text>
@@ -393,7 +394,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFF7F9',
+    backgroundColor: Colors.brandWash,
   },
   keyboardContainer: {
     flex: 1,
@@ -401,72 +402,72 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: 24,
-    paddingTop: 16,
-    paddingBottom: 32,
+    padding: spacing['2xl'],
+    paddingTop: spacing.lg,
+    paddingBottom: spacing['3xl'],
   },
   topNav: {
     flexDirection: 'row',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    borderRadius: 8,
-    backgroundColor: '#FCE7F3',
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    borderRadius: radius.sm,
+    backgroundColor: Colors.brandSoft,
   },
   backButtonText: {
-    fontSize: 13,
+    fontSize: typography.caption.fontSize,
     fontWeight: '600',
     color: Colors.primary,
-    marginLeft: 4,
+    marginLeft: spacing.xs,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   title: {
-    fontSize: 26,
+    fontSize: typography.heading.fontSize,
     fontWeight: '800',
     color: Colors.text,
-    marginTop: 12,
+    marginTop: spacing.md,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: typography.small.fontSize,
     color: Colors.textSecondary,
-    marginTop: 4,
+    marginTop: spacing.xs,
   },
   patientBadge: {
-    marginTop: 6,
-    fontSize: 11,
+    marginTop: spacing.sm,
+    fontSize: typography.caption.fontSize,
     fontWeight: '700',
     color: Colors.primaryDark,
-    backgroundColor: '#FCE7F3',
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 12,
+    backgroundColor: Colors.brandSoft,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.md,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   tabContainer: {
     flexDirection: 'row',
-    backgroundColor: '#F3E8FF',
-    borderRadius: 14,
-    padding: 4,
-    marginBottom: 16,
+    backgroundColor: Colors.brandSoft,
+    borderRadius: radius.lg,
+    padding: spacing.xs,
+    marginBottom: spacing.lg,
   },
   tabButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
-    borderRadius: 10,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
   },
   tabButtonActive: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.background,
     shadowColor: Colors.primaryDark,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.12,
@@ -474,7 +475,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   tabText: {
-    fontSize: 13,
+    fontSize: typography.caption.fontSize,
     fontWeight: '600',
     color: Colors.textSecondary,
   },
@@ -483,12 +484,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 24,
+    backgroundColor: Colors.background,
+    borderRadius: radius.xl,
+    padding: spacing['2xl'],
     borderWidth: 1,
-    borderColor: '#FCE7F3',
-    shadowColor: '#BE185D',
+    borderColor: Colors.brandSoft,
+    shadowColor: Colors.primaryDark,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.08,
     shadowRadius: 18,
@@ -497,91 +498,91 @@ const styles = StyleSheet.create({
   errorBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FEE2E2',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 16,
+    backgroundColor: Colors.errorBackground,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
     borderLeftWidth: 4,
     borderLeftColor: Colors.error,
   },
   errorText: {
     flex: 1,
-    fontSize: 13,
-    color: '#991B1B',
+    fontSize: typography.caption.fontSize,
+    color: Colors.error,
     fontWeight: '500',
   },
   successBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#D1FAE5',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 16,
+    backgroundColor: Colors.successBackground,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
     borderLeftWidth: 4,
-    borderLeftColor: '#059669',
+    borderLeftColor: Colors.success,
   },
   successText: {
     flex: 1,
-    fontSize: 13,
-    color: '#065F46',
+    fontSize: typography.caption.fontSize,
+    color: Colors.success,
     fontWeight: '600',
   },
   inputGroup: {
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   label: {
-    fontSize: 13,
+    fontSize: typography.caption.fontSize,
     fontWeight: '600',
     color: Colors.text,
-    marginBottom: 6,
+    marginBottom: spacing.sm,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     height: 50,
-    borderRadius: 12,
+    borderRadius: radius.md,
     borderWidth: 1,
     borderColor: Colors.border,
     backgroundColor: Colors.surface,
-    paddingHorizontal: 12,
+    paddingHorizontal: spacing.md,
   },
   inputIcon: {
-    marginRight: 8,
+    marginRight: spacing.sm,
   },
   input: {
     flex: 1,
     height: '100%',
-    fontSize: 15,
+    fontSize: typography.small.fontSize,
     color: Colors.text,
   },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     height: 50,
-    borderRadius: 12,
+    borderRadius: radius.md,
     borderWidth: 1,
     borderColor: Colors.border,
     backgroundColor: Colors.surface,
-    paddingHorizontal: 12,
+    paddingHorizontal: spacing.md,
   },
   passwordInput: {
     flex: 1,
     height: '100%',
-    fontSize: 15,
+    fontSize: typography.small.fontSize,
     color: Colors.text,
   },
   eyeButton: {
-    paddingHorizontal: 6,
-    paddingVertical: 6,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
   },
   forgotRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginTop: 6,
-    marginBottom: 10,
+    marginTop: spacing.sm,
+    marginBottom: spacing.sm,
   },
   forgotText: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     fontWeight: '600',
     color: Colors.primary,
   },
@@ -589,25 +590,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    marginTop: 8,
-    marginBottom: 12,
+    marginTop: spacing.sm,
+    marginBottom: spacing.md,
   },
   resendLabel: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     color: Colors.textSecondary,
   },
   resendLink: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     fontWeight: '700',
     color: Colors.primary,
   },
   button: {
     height: 52,
-    borderRadius: 14,
+    borderRadius: radius.lg,
     backgroundColor: Colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 8,
+    marginTop: spacing.sm,
     shadowColor: Colors.primaryDark,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.28,
@@ -624,20 +625,20 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: Colors.textOnPrimary,
-    fontSize: 16,
+    fontSize: typography.body.fontSize,
     fontWeight: '700',
   },
   registerPrompt: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 20,
+    marginTop: spacing.xl,
   },
   promptText: {
-    fontSize: 13,
+    fontSize: typography.caption.fontSize,
     color: Colors.textSecondary,
   },
   registerLink: {
-    fontSize: 13,
+    fontSize: typography.caption.fontSize,
     fontWeight: '700',
     color: Colors.primary,
   },
@@ -645,13 +646,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 20,
-    paddingTop: 16,
+    marginTop: spacing.xl,
+    paddingTop: spacing.lg,
     borderTopWidth: 1,
     borderTopColor: Colors.borderLight,
   },
   disclaimerText: {
-    fontSize: 11,
+    fontSize: typography.caption.fontSize,
     color: Colors.textLight,
     textAlign: 'center',
   },

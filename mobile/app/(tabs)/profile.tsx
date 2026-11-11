@@ -1,3 +1,4 @@
+import { spacing, typography, radius } from '@m-care/shared';
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -151,7 +152,7 @@ export default function ProfileScreen() {
                 value={fullName}
                 onChangeText={setFullName}
                 placeholder="Full Name"
-              />
+               placeholderTextColor={Colors.textLight} />
             </View>
 
             <View style={styles.inputGroup}>
@@ -162,7 +163,7 @@ export default function ProfileScreen() {
                 onChangeText={setPhone}
                 placeholder="0917 123 4567"
                 keyboardType="phone-pad"
-              />
+               placeholderTextColor={Colors.textLight} />
             </View>
 
             <View style={styles.inputGroup}>
@@ -172,7 +173,7 @@ export default function ProfileScreen() {
                 value={address}
                 onChangeText={setAddress}
                 placeholder="Barangay, City, Province"
-              />
+               placeholderTextColor={Colors.textLight} />
             </View>
           </View>
 
@@ -187,7 +188,7 @@ export default function ProfileScreen() {
                 value={emergencyName}
                 onChangeText={setEmergencyName}
                 placeholder="Name and relationship"
-              />
+               placeholderTextColor={Colors.textLight} />
             </View>
 
             <View style={styles.inputGroup}>
@@ -198,7 +199,7 @@ export default function ProfileScreen() {
                 onChangeText={setEmergencyPhone}
                 placeholder="Emergency Contact Phone"
                 keyboardType="phone-pad"
-              />
+               placeholderTextColor={Colors.textLight} />
             </View>
 
             <View style={styles.inputGroup}>
@@ -225,7 +226,7 @@ export default function ProfileScreen() {
                 value={allergies}
                 onChangeText={setAllergies}
                 placeholder="e.g. Penicillin, Aspirin, or None"
-              />
+               placeholderTextColor={Colors.textLight} />
             </View>
 
             <View style={styles.inputGroup}>
@@ -237,7 +238,7 @@ export default function ProfileScreen() {
                 placeholder="e.g. G2P1 (1 CS delivery), menstrual cycle notes"
                 multiline
                 numberOfLines={3}
-              />
+               placeholderTextColor={Colors.textLight} />
             </View>
           </View>
 
@@ -248,7 +249,7 @@ export default function ProfileScreen() {
             disabled={saving}
           >
             {saving ? (
-              <ActivityIndicator color="#FFFFFF" />
+              <ActivityIndicator color={Colors.background} />
             ) : (
               <Text style={styles.saveBtnText}>Save Profile Changes</Text>
             )}
@@ -258,7 +259,7 @@ export default function ProfileScreen() {
           <TouchableOpacity style={styles.signOutBtn} onPress={handleSignOut}>
             <Text style={styles.signOutText}>Sign Out of Patient Account</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push('/privacy' as never)} accessibilityRole="link" style={{ padding: 14 }}>
+          <TouchableOpacity onPress={() => router.push('/privacy' as never)} accessibilityRole="link" style={{ padding: spacing.lg }}>
             <Text style={{ color: Colors.primary, textAlign: 'center', textDecorationLine: 'underline' }}>Privacy Policy</Text>
           </TouchableOpacity>
           <View style={styles.deleteCard}>
@@ -272,9 +273,9 @@ export default function ProfileScreen() {
               secureTextEntry
               autoCapitalize="none"
               editable={!deleting}
-            />
+             placeholderTextColor={Colors.textLight} />
             <TouchableOpacity style={[styles.deleteBtn, deleting && styles.btnDisabled]} onPress={handleDeleteAccount} disabled={deleting}>
-              {deleting ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.deleteBtnText}>Delete my account</Text>}
+              {deleting ? <ActivityIndicator color={Colors.background} /> : <Text style={styles.deleteBtnText}>Delete my account</Text>}
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -284,59 +285,59 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFF7F9' },
-  container: { flexGrow: 1, padding: 20, paddingBottom: 40 },
-  header: { marginBottom: 16 },
-  title: { fontSize: 22, fontWeight: '700', color: Colors.text },
-  subtitle: { fontSize: 13, color: Colors.textSecondary, marginTop: 2 },
+  safeArea: { flex: 1, backgroundColor: Colors.brandWash },
+  container: { flexGrow: 1, padding: spacing.xl, paddingBottom: spacing['4xl'] },
+  header: { marginBottom: spacing.lg },
+  title: { fontSize: typography.title.fontSize, fontWeight: '700', color: Colors.text },
+  subtitle: { fontSize: typography.caption.fontSize, color: Colors.textSecondary, marginTop: spacing.xs },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 18,
-    marginBottom: 16,
+    backgroundColor: Colors.background,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.lg,
     borderWidth: 1,
-    borderColor: '#FCE7F3',
+    borderColor: Colors.brandSoft,
   },
   cardSectionTitle: {
-    fontSize: 15,
+    fontSize: typography.small.fontSize,
     fontWeight: '700',
     color: Colors.primaryDark,
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
-  inputGroup: { marginBottom: 12 },
-  label: { fontSize: 12, fontWeight: '600', color: Colors.textSecondary, marginBottom: 4 },
+  inputGroup: { marginBottom: spacing.md },
+  label: { fontSize: typography.caption.fontSize, fontWeight: '600', color: Colors.textSecondary, marginBottom: spacing.xs },
   input: {
     height: 46,
-    borderRadius: 10,
+    borderRadius: radius.md,
     borderWidth: 1,
     borderColor: Colors.border,
-    paddingHorizontal: 12,
-    fontSize: 14,
+    paddingHorizontal: spacing.md,
+    fontSize: typography.small.fontSize,
     color: Colors.text,
     backgroundColor: Colors.surface,
   },
   multilineInput: {
     height: 70,
-    paddingTop: 8,
+    paddingTop: spacing.sm,
     textAlignVertical: 'top',
   },
-  chipRow: { flexDirection: 'row', paddingVertical: 4 },
+  chipRow: { flexDirection: 'row', paddingVertical: spacing.xs },
   chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: Colors.border,
-    marginRight: 6,
+    marginRight: spacing.sm,
     backgroundColor: Colors.surface,
   },
-  chipActive: { borderColor: Colors.primary, backgroundColor: '#FDE7F3' },
-  chipText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '600' },
+  chipActive: { borderColor: Colors.primary, backgroundColor: Colors.brandSoft },
+  chipText: { fontSize: typography.caption.fontSize, color: Colors.textSecondary, fontWeight: '600' },
   chipTextActive: { color: Colors.primaryDark },
   saveBtn: {
     backgroundColor: Colors.primary,
     height: 50,
-    borderRadius: 12,
+    borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: Colors.primaryDark,
@@ -344,36 +345,36 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 2,
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   btnDisabled: { opacity: 0.6 },
-  saveBtnText: { color: '#FFFFFF', fontSize: 15, fontWeight: '700' },
+  saveBtnText: { color: Colors.background, fontSize: typography.small.fontSize, fontWeight: '700' },
   signOutBtn: {
     height: 46,
-    borderRadius: 12,
+    borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#FECACA',
-    backgroundColor: '#FEF2F2',
+    borderColor: Colors.errorBackground,
+    backgroundColor: Colors.errorBackground,
   },
-  signOutText: { color: '#DC2626', fontSize: 14, fontWeight: '700' },
+  signOutText: { color: Colors.error, fontSize: typography.small.fontSize, fontWeight: '700' },
   deleteCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 18,
-    marginTop: 4,
-    marginBottom: 16,
+    backgroundColor: Colors.background,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    marginTop: spacing.xs,
+    marginBottom: spacing.lg,
     borderWidth: 1,
-    borderColor: '#FECACA',
+    borderColor: Colors.errorBackground,
   },
-  deleteDescription: { fontSize: 12, color: Colors.textSecondary, marginBottom: 12, lineHeight: 17 },
+  deleteDescription: { fontSize: typography.caption.fontSize, color: Colors.textSecondary, marginBottom: spacing.md, lineHeight: typography.caption.lineHeight },
   deleteBtn: {
     height: 46,
-    borderRadius: 12,
+    borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#DC2626',
+    backgroundColor: Colors.error,
   },
-  deleteBtnText: { color: '#FFFFFF', fontSize: 14, fontWeight: '700' },
+  deleteBtnText: { color: Colors.background, fontSize: typography.small.fontSize, fontWeight: '700' },
 });

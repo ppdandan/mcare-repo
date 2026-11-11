@@ -1,9 +1,11 @@
+import { spacing, typography, radius } from '@m-care/shared';
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, StyleSheet, Easing } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import Colors from '@/constants/Colors';
 import { Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function IndexScreen() {
   const { session, profile, loading } = useAuth();
@@ -81,7 +83,8 @@ export default function IndexScreen() {
   }, [session, profile, loading, router]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
       {/* Background Soft Glow Circles */}
       <View style={styles.bgGlowTop} />
       <View style={styles.bgGlowBottom} />
@@ -112,19 +115,24 @@ export default function IndexScreen() {
 
         <View style={styles.loadingPill}>
           <View style={styles.dot} />
-          <Text style={styles.loadingText}>Connecting to care...</Text>
+          <Text style={styles.loadingText}>Connecting to care…</Text>
         </View>
       </Animated.View>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: Colors.brandWash,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFF7F9',
+    backgroundColor: Colors.brandWash,
     position: 'relative',
     overflow: 'hidden',
   },
@@ -134,8 +142,8 @@ const styles = StyleSheet.create({
     right: -100,
     width: 280,
     height: 280,
-    borderRadius: 140,
-    backgroundColor: '#FCE7F3',
+    borderRadius: radius.full,
+    backgroundColor: Colors.brandSoft,
     opacity: 0.6,
   },
   bgGlowBottom: {
@@ -144,47 +152,47 @@ const styles = StyleSheet.create({
     left: -100,
     width: 320,
     height: 320,
-    borderRadius: 160,
-    backgroundColor: '#FBCFE8',
+    borderRadius: radius.full,
+    backgroundColor: Colors.brandSoft,
     opacity: 0.4,
   },
   logoContainer: {
-    marginBottom: 28,
+    marginBottom: 0,
   },
   textContainer: {
     alignItems: 'center',
   },
   clinicName: {
-    fontSize: 34,
+    fontSize: typography.largeTitle.fontSize,
     fontWeight: '900',
     color: Colors.primaryDark,
     letterSpacing: 2.5,
   },
   clinicSpecialty: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     fontWeight: '700',
     color: Colors.textSecondary,
     letterSpacing: 1.5,
-    marginTop: 4,
+    marginTop: spacing.xs,
     textTransform: 'uppercase',
   },
   clinicLocation: {
-    fontSize: 13,
+    fontSize: typography.caption.fontSize,
     fontWeight: '500',
     color: Colors.textLight,
-    marginTop: 4,
+    marginTop: spacing.xs,
   },
   loadingPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 36,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#FFFFFF',
+    marginTop: 0,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.xl,
+    backgroundColor: Colors.background,
     borderWidth: 1,
-    borderColor: '#FCE7F3',
-    shadowColor: '#BE185D',
+    borderColor: Colors.brandSoft,
+    shadowColor: Colors.primaryDark,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
@@ -193,12 +201,12 @@ const styles = StyleSheet.create({
   dot: {
     width: 8,
     height: 8,
-    borderRadius: 4,
+    borderRadius: radius.sm,
     backgroundColor: Colors.primary,
-    marginRight: 8,
+    marginRight: spacing.sm,
   },
   loadingText: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     fontWeight: '600',
     color: Colors.primaryDark,
   },

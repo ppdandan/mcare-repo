@@ -1,3 +1,4 @@
+import { spacing, typography } from '@m-care/shared';
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,14 +12,14 @@ export default function TabsLayout() {
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textSecondary,
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
-          borderTopColor: '#FCE7F3',
+          backgroundColor: Colors.background,
+          borderTopColor: Colors.brandSoft,
           height: 64,
-          paddingBottom: 8,
-          paddingTop: 8,
+          paddingBottom: spacing.sm,
+          paddingTop: spacing.sm,
         },
         tabBarLabelStyle: {
-          fontSize: 10,
+          fontSize: typography.caption.fontSize,
           fontWeight: '600',
         },
       }}

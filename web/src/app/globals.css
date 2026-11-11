@@ -8,21 +8,66 @@
  */
 
 @layer base {
-  /* Smooth scrolling for the entire page */
   html {
     scroll-behavior: smooth;
+    color-scheme: light;
+    --mcare-brand: theme('colors.primary.700');
+    --mcare-brand-strong: theme('colors.primary.800');
+    --mcare-brand-mid: theme('colors.primary.500');
+    --mcare-brand-mark: theme('colors.primary.400');
+    --mcare-brand-soft: theme('colors.primary.100');
+    --mcare-canvas: theme('colors.gray.50');
+    --mcare-text: theme('colors.gray.900');
+    --mcare-text-muted: theme('colors.gray.500');
+    --mcare-border: theme('colors.gray.300');
+    --mcare-radius-control: theme('borderRadius.md');
   }
 
-  /* Default body styles */
   body {
     @apply bg-gray-50 text-gray-900 antialiased;
+    color: var(--mcare-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+  select,
+  textarea {
+    min-height: 44px;
+    border: 1px solid var(--mcare-border);
+    border-radius: var(--mcare-radius-control);
+    background-color: #FFFFFF;
+    color: var(--mcare-text);
+    font: inherit;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+  select {
+    padding: 10px 12px;
+  }
+
+  textarea {
+    padding: 10px 12px;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #6B6268;
+    opacity: 1;
+  }
+
+  :focus-visible {
+    outline: 3px solid #994B68;
+    outline-offset: 2px;
   }
 }
 
 @layer components {
   /* Reusable card shadow style */
   .card-shadow {
-    @apply shadow-sm border border-gray-200 rounded-xl bg-white;
+    @apply shadow-sm border rounded-xl bg-white;
+    border-color: var(--mcare-border);
   }
 
   /* Sidebar link styles */
@@ -43,5 +88,22 @@
 
   .table-cell {
     @apply px-4 py-3 text-sm text-gray-700;
+  }
+
+  button:not([data-unstyled]) {
+    min-height: 40px;
+    border-radius: var(--mcare-radius-control);
+    font-family: inherit;
+    font-weight: 600;
+    transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
   }
 }

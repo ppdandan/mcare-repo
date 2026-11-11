@@ -1,3 +1,4 @@
+import { spacing, typography, radius } from '@m-care/shared';
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
@@ -10,6 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
@@ -133,19 +135,19 @@ export default function AppointmentsScreen() {
   const getStatusBadgeStyle = (status: AppointmentStatus) => {
     switch (status) {
       case 'approved':
-        return { bg: '#D1FAE5', text: '#065F46', label: 'Approved' };
+        return { bg: Colors.successBackground, text: Colors.success, label: 'Approved' };
       case 'pending':
-        return { bg: '#FEF3C7', text: '#92400E', label: 'Pending Staff Review' };
+        return { bg: Colors.warningBackground, text: Colors.warning, label: 'Pending Staff Review' };
       case 'rescheduled':
-        return { bg: '#E0E7FF', text: '#3730A3', label: 'Rescheduled' };
+        return { bg: Colors.infoBackground, text: Colors.info, label: 'Rescheduled' };
       case 'completed':
-        return { bg: '#E5E7EB', text: '#374151', label: 'Completed' };
+        return { bg: Colors.border, text: Colors.text, label: 'Completed' };
       case 'cancelled':
-        return { bg: '#FEE2E2', text: '#991B1B', label: 'Cancelled' };
+        return { bg: Colors.errorBackground, text: Colors.error, label: 'Cancelled' };
       case 'no_show':
-        return { bg: '#FED7AA', text: '#9A3412', label: 'No Show' };
+        return { bg: Colors.warningBackground, text: Colors.warning, label: 'No Show' };
       default:
-        return { bg: '#F3F4F6', text: '#374151', label: status };
+        return { bg: Colors.surfaceAlt, text: Colors.text, label: status };
     }
   };
 
@@ -211,9 +213,7 @@ export default function AppointmentsScreen() {
             </View>
           ) : filteredAppointments.length === 0 ? (
             <View style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>
-                {activeTab === 'upcoming' ? '🗓️' : '📋'}
-              </Text>
+              <Ionicons name={activeTab === 'upcoming' ? 'calendar-outline' : 'time-outline'} size={40} color={Colors.primary} style={styles.emptyIcon} />
               <Text style={styles.emptyTitle}>
                 {activeTab === 'upcoming'
                   ? 'No Upcoming Appointments'
@@ -251,7 +251,7 @@ export default function AppointmentsScreen() {
                   </View>
 
                   <Text style={styles.doctorName}>
-                    👩‍⚕️ {appt.doctor?.profile?.full_name ?? 'Dr. Bernice Paule'}
+                    {appt.doctor?.profile?.full_name ?? 'Dr. Bernice Paule'}
                   </Text>
                   <Text style={styles.roomText}>
                     📍 {appt.doctor?.room ?? 'Room 201'}
@@ -283,7 +283,7 @@ export default function AppointmentsScreen() {
                         disabled={cancellingId === appt.id}
                       >
                         {cancellingId === appt.id ? (
-                          <ActivityIndicator size="small" color="#DC2626" />
+                          <ActivityIndicator size="small" color={Colors.error} />
                         ) : (
                           <Text style={styles.cancelBtnText}>Cancel Booking</Text>
                         )}
@@ -303,51 +303,51 @@ export default function AppointmentsScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFF7F9',
+    backgroundColor: Colors.brandWash,
   },
   container: {
     flex: 1,
   },
   header: {
-    padding: 20,
-    paddingBottom: 14,
-    backgroundColor: '#FFFFFF',
+    padding: spacing.xl,
+    paddingBottom: spacing.lg,
+    backgroundColor: Colors.background,
     borderBottomWidth: 1,
-    borderBottomColor: '#FCE7F3',
+    borderBottomColor: Colors.brandSoft,
   },
   headerTitle: {
-    fontSize: 22,
+    fontSize: typography.title.fontSize,
     fontWeight: '700',
     color: Colors.text,
   },
   headerSubtitle: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     color: Colors.textSecondary,
-    marginTop: 2,
-    marginBottom: 14,
+    marginTop: spacing.xs,
+    marginBottom: spacing.lg,
   },
   tabContainer: {
     flexDirection: 'row',
-    backgroundColor: '#F3F4F6',
-    borderRadius: 12,
-    padding: 4,
+    backgroundColor: Colors.surfaceAlt,
+    borderRadius: radius.md,
+    padding: spacing.xs,
   },
   tabButton: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: spacing.sm,
     alignItems: 'center',
-    borderRadius: 10,
+    borderRadius: radius.md,
   },
   tabButtonActive: {
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
+    backgroundColor: Colors.background,
+    shadowColor: Colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
   },
   tabText: {
-    fontSize: 13,
+    fontSize: typography.caption.fontSize,
     fontWeight: '600',
     color: Colors.textSecondary,
   },
@@ -356,63 +356,63 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   scrollContent: {
-    padding: 20,
-    paddingBottom: 40,
+    padding: spacing.xl,
+    paddingBottom: spacing['4xl'],
   },
   centerBox: {
-    padding: 40,
+    padding: spacing['4xl'],
     alignItems: 'center',
   },
   loadingText: {
-    marginTop: 12,
-    fontSize: 13,
+    marginTop: spacing.md,
+    fontSize: typography.caption.fontSize,
     color: Colors.textSecondary,
   },
   emptyCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    padding: 28,
+    backgroundColor: Colors.background,
+    borderRadius: radius.xl,
+    padding: 0,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#F3F4F6',
-    marginTop: 10,
+    borderColor: Colors.surfaceAlt,
+    marginTop: spacing.sm,
   },
   emptyIcon: {
-    fontSize: 38,
-    marginBottom: 12,
+    fontSize: typography.largeTitle.fontSize,
+    marginBottom: spacing.md,
   },
   emptyTitle: {
-    fontSize: 17,
+    fontSize: typography.body.fontSize,
     fontWeight: '700',
     color: Colors.text,
-    marginBottom: 6,
+    marginBottom: spacing.sm,
   },
   emptyText: {
-    fontSize: 13,
+    fontSize: typography.caption.fontSize,
     color: Colors.textSecondary,
     textAlign: 'center',
-    lineHeight: 18,
-    marginBottom: 20,
+    lineHeight: typography.caption.lineHeight,
+    marginBottom: spacing.xl,
   },
   bookCTA: {
     backgroundColor: Colors.primary,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    borderRadius: radius.md,
   },
   bookCTAText: {
-    color: '#FFFFFF',
-    fontSize: 14,
+    color: Colors.background,
+    fontSize: typography.small.fontSize,
     fontWeight: '700',
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 18,
-    marginBottom: 14,
+    backgroundColor: Colors.background,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.lg,
     borderWidth: 1,
-    borderColor: '#FCE7F3',
-    shadowColor: '#BE185D',
+    borderColor: Colors.brandSoft,
+    shadowColor: Colors.primaryDark,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
@@ -422,39 +422,39 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: spacing.sm,
   },
   serviceName: {
-    fontSize: 16,
+    fontSize: typography.body.fontSize,
     fontWeight: '700',
     color: Colors.text,
     flex: 1,
   },
   badge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginLeft: 8,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.md,
+    marginLeft: spacing.sm,
   },
   badgeText: {
-    fontSize: 11,
+    fontSize: typography.caption.fontSize,
     fontWeight: '700',
   },
   doctorName: {
-    fontSize: 14,
+    fontSize: typography.small.fontSize,
     color: Colors.textSecondary,
-    marginTop: 2,
+    marginTop: spacing.xs,
     fontWeight: '500',
   },
   roomText: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     color: Colors.textLight,
-    marginTop: 2,
+    marginTop: spacing.xs,
   },
   divider: {
     height: 1,
-    backgroundColor: '#F3F4F6',
-    marginVertical: 12,
+    backgroundColor: Colors.surfaceAlt,
+    marginVertical: spacing.md,
   },
   timeRow: {
     flexDirection: 'row',
@@ -462,51 +462,51 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   timeLabel: {
-    fontSize: 13,
+    fontSize: typography.caption.fontSize,
     color: Colors.textSecondary,
   },
   timeValue: {
-    fontSize: 13,
+    fontSize: typography.caption.fontSize,
     fontWeight: '700',
     color: Colors.primaryDark,
   },
   notesBox: {
-    backgroundColor: '#F9FAFB',
-    borderRadius: 8,
-    padding: 10,
-    marginTop: 10,
+    backgroundColor: Colors.surface,
+    borderRadius: radius.sm,
+    padding: spacing.sm,
+    marginTop: spacing.sm,
   },
   notesLabel: {
-    fontSize: 11,
+    fontSize: typography.caption.fontSize,
     fontWeight: '600',
     color: Colors.textSecondary,
-    marginBottom: 2,
+    marginBottom: spacing.xs,
   },
   notesText: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     color: Colors.text,
-    lineHeight: 16,
+    lineHeight: typography.caption.lineHeight,
   },
   cardActions: {
-    marginTop: 14,
-    paddingTop: 10,
+    marginTop: spacing.lg,
+    paddingTop: spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
+    borderTopColor: Colors.surfaceAlt,
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
   cancelBtn: {
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 8,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.sm,
     borderWidth: 1,
-    borderColor: '#FECACA',
-    backgroundColor: '#FEF2F2',
+    borderColor: Colors.errorBackground,
+    backgroundColor: Colors.errorBackground,
   },
   cancelBtnText: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     fontWeight: '600',
-    color: '#DC2626',
+    color: Colors.error,
   },
 });
 

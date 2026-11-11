@@ -224,7 +224,7 @@ export default function PatientsPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-gray-50/75 border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider text-[11px]">
+              <tr className="bg-gray-50/75 border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider text-xs">
                 <th className="py-3 px-4">Patient Name</th>
                 <th className="py-3 px-4">Contact Phone</th>
                 <th className="py-3 px-4">Blood Type</th>
@@ -252,7 +252,7 @@ export default function PatientsPage() {
                   <tr key={p.id} className="hover:bg-pink-50/25 transition">
                     <td className="py-3.5 px-4">
                       <p className="font-bold text-gray-900">{p.profile?.full_name}</p>
-                      <p className="text-[10px] text-gray-400">
+                      <p className="text-xs text-gray-400">
                         DOB: {p.profile?.date_of_birth ?? "Unspecified"}
                       </p>
                     </td>
@@ -262,14 +262,14 @@ export default function PatientsPage() {
                     </td>
 
                     <td className="py-3.5 px-4">
-                      <span className="px-2 py-0.5 bg-rose-50 text-rose-700 font-bold rounded border border-rose-200 text-[11px]">
+                      <span className="px-2 py-0.5 bg-rose-50 text-rose-700 font-bold rounded border border-rose-200 text-xs">
                         {p.blood_type || "N/A"}
                       </span>
                     </td>
 
                     <td className="py-3.5 px-4">
                       <p className="text-gray-800 font-medium">{p.emergency_contact_name || "—"}</p>
-                      <p className="text-[10px] text-gray-400">{p.emergency_contact_phone || ""}</p>
+                      <p className="text-xs text-gray-400">{p.emergency_contact_phone || ""}</p>
                     </td>
 
                     <td className="py-3.5 px-4 max-w-xs truncate text-gray-600">
@@ -278,8 +278,8 @@ export default function PatientsPage() {
 
                     <td className="py-3.5 px-4">
                       {p.allergies ? (
-                        <span className="px-2 py-0.5 bg-red-100 text-red-800 font-semibold rounded text-[10px]">
-                          ⚠️ {p.allergies}
+                        <span className="px-2 py-0.5 bg-red-100 text-red-800 font-semibold rounded text-xs">
+                          <span aria-hidden="true" className="mr-1 font-bold">!</span>{p.allergies}
                         </span>
                       ) : (
                         <span className="text-gray-400">None</span>
@@ -290,13 +290,13 @@ export default function PatientsPage() {
                       <div className="flex items-center justify-end space-x-2">
                         <button
                           onClick={() => setSelectedPatient(p)}
-                          className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded text-[11px] transition"
+                          className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded text-xs transition"
                         >
                           View Card
                         </button>
                         <button
                           onClick={() => openEditModal(p)}
-                          className="px-2.5 py-1 bg-pink-50 hover:bg-pink-100 text-pink-700 font-semibold rounded text-[11px] border border-pink-200 transition"
+                          className="px-2.5 py-1 bg-pink-50 hover:bg-pink-100 text-pink-700 font-semibold rounded text-xs border border-pink-200 transition"
                         >
                           Edit
                         </button>

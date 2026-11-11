@@ -1,3 +1,4 @@
+import { spacing, typography, radius } from '@m-care/shared';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -9,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
@@ -116,7 +118,7 @@ export default function TransactionsScreen() {
             </View>
           ) : transactions.length === 0 ? (
             <View style={styles.stateCard}>
-              <Text style={styles.emptyIcon}>🧾</Text>
+              <Ionicons name="receipt-outline" size={40} color={Colors.primary} style={styles.emptyIcon} />
               <Text style={styles.stateTitle}>No transactions yet</Text>
               <Text style={styles.stateText}>After your clinic visit is completed and paid in person, the clinic can add the record here.</Text>
               <TouchableOpacity style={styles.secondaryButton} onPress={() => router.push('/(tabs)/appointments')}>
@@ -166,30 +168,30 @@ export default function TransactionsScreen() {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: Colors.surface },
   container: { flex: 1 },
-  header: { backgroundColor: Colors.background, paddingHorizontal: 22, paddingTop: 16, paddingBottom: 18, borderBottomWidth: 1, borderBottomColor: Colors.border },
-  title: { color: Colors.text, fontSize: 24, fontWeight: '800' },
-  subtitle: { color: Colors.textSecondary, fontSize: 14, lineHeight: 20, marginTop: 6 },
-  note: { color: Colors.primaryDark, fontSize: 13, fontWeight: '700', marginTop: 8 },
-  content: { padding: 18, paddingBottom: 34, gap: 14 },
-  stateCard: { alignItems: 'center', backgroundColor: Colors.background, borderColor: Colors.border, borderRadius: 18, borderWidth: 1, padding: 24, gap: 10 },
-  errorCard: { alignItems: 'flex-start', backgroundColor: Colors.background, borderColor: Colors.error, borderRadius: 18, borderWidth: 1, padding: 20, gap: 10 },
-  stateTitle: { color: Colors.text, fontSize: 18, fontWeight: '800', textAlign: 'center' },
-  stateText: { color: Colors.textSecondary, fontSize: 14, lineHeight: 21, textAlign: 'center' },
-  errorText: { color: Colors.text, fontSize: 14, lineHeight: 21 },
-  emptyIcon: { fontSize: 34 },
-  card: { backgroundColor: Colors.background, borderColor: Colors.border, borderRadius: 18, borderWidth: 1, padding: 18 },
-  cardTop: { alignItems: 'flex-start', flexDirection: 'row', justifyContent: 'space-between', gap: 8 },
-  serviceName: { color: Colors.text, flex: 1, fontSize: 17, fontWeight: '800' },
-  amount: { color: Colors.primaryDark, fontSize: 24, fontWeight: '800', marginTop: 10 },
-  divider: { backgroundColor: Colors.border, height: 1, marginVertical: 14 },
-  detailRow: { alignItems: 'flex-start', flexDirection: 'row', justifyContent: 'space-between', gap: 12, marginBottom: 10 },
-  label: { color: Colors.textSecondary, flex: 1, fontSize: 13 },
-  value: { color: Colors.text, flex: 1.2, fontSize: 13, fontWeight: '600', textAlign: 'right' },
-  notes: { color: Colors.textSecondary, fontSize: 13, lineHeight: 19, marginTop: 2 },
-  voidBadge: { backgroundColor: '#FEE2E2', borderRadius: 20, color: '#991B1B', fontSize: 12, fontWeight: '800', overflow: 'hidden', paddingHorizontal: 9, paddingVertical: 4 },
-  voidText: { color: '#991B1B', fontSize: 12, lineHeight: 18, marginTop: 8 },
-  primaryButton: { alignItems: 'center', alignSelf: 'stretch', backgroundColor: Colors.primaryDark, borderRadius: 12, marginTop: 4, paddingVertical: 12 },
-  primaryButtonText: { color: Colors.textOnPrimary, fontSize: 14, fontWeight: '800' },
-  secondaryButton: { alignItems: 'center', borderColor: Colors.primaryDark, borderRadius: 12, borderWidth: 1, marginTop: 6, paddingHorizontal: 18, paddingVertical: 11 },
-  secondaryButtonText: { color: Colors.primaryDark, fontSize: 14, fontWeight: '800' },
+  header: { backgroundColor: Colors.background, paddingHorizontal: spacing['2xl'], paddingTop: spacing.lg, paddingBottom: spacing.lg, borderBottomWidth: 1, borderBottomColor: Colors.border },
+  title: { color: Colors.text, fontSize: typography.heading.fontSize, fontWeight: '800' },
+  subtitle: { color: Colors.textSecondary, fontSize: typography.small.fontSize, lineHeight: typography.small.lineHeight, marginTop: spacing.sm },
+  note: { color: Colors.primaryDark, fontSize: typography.caption.fontSize, fontWeight: '700', marginTop: spacing.sm },
+  content: { padding: spacing.lg, paddingBottom: spacing['3xl'], gap: spacing.lg },
+  stateCard: { alignItems: 'center', backgroundColor: Colors.background, borderColor: Colors.border, borderRadius: radius.xl, borderWidth: 1, padding: spacing['2xl'], gap: spacing.sm },
+  errorCard: { alignItems: 'flex-start', backgroundColor: Colors.background, borderColor: Colors.error, borderRadius: radius.xl, borderWidth: 1, padding: spacing.xl, gap: spacing.sm },
+  stateTitle: { color: Colors.text, fontSize: typography.subhead.fontSize, fontWeight: '800', textAlign: 'center' },
+  stateText: { color: Colors.textSecondary, fontSize: typography.small.fontSize, lineHeight: typography.small.lineHeight, textAlign: 'center' },
+  errorText: { color: Colors.text, fontSize: typography.small.fontSize, lineHeight: typography.small.lineHeight },
+  emptyIcon: { fontSize: typography.largeTitle.fontSize },
+  card: { backgroundColor: Colors.background, borderColor: Colors.border, borderRadius: radius.xl, borderWidth: 1, padding: spacing.lg },
+  cardTop: { alignItems: 'flex-start', flexDirection: 'row', justifyContent: 'space-between', gap: spacing.sm },
+  serviceName: { color: Colors.text, flex: 1, fontSize: typography.body.fontSize, fontWeight: '800' },
+  amount: { color: Colors.primaryDark, fontSize: typography.heading.fontSize, fontWeight: '800', marginTop: spacing.sm },
+  divider: { backgroundColor: Colors.border, height: 1, marginVertical: spacing.lg },
+  detailRow: { alignItems: 'flex-start', flexDirection: 'row', justifyContent: 'space-between', gap: spacing.md, marginBottom: spacing.sm },
+  label: { color: Colors.textSecondary, flex: 1, fontSize: typography.caption.fontSize },
+  value: { color: Colors.text, flex: 1.2, fontSize: typography.caption.fontSize, fontWeight: '600', textAlign: 'right' },
+  notes: { color: Colors.textSecondary, fontSize: typography.caption.fontSize, lineHeight: typography.caption.lineHeight, marginTop: spacing.xs },
+  voidBadge: { backgroundColor: Colors.errorBackground, borderRadius: radius.xl, color: Colors.error, fontSize: typography.caption.fontSize, fontWeight: '800', overflow: 'hidden', paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
+  voidText: { color: Colors.error, fontSize: typography.caption.fontSize, lineHeight: typography.caption.lineHeight, marginTop: spacing.sm },
+  primaryButton: { alignItems: 'center', alignSelf: 'stretch', backgroundColor: Colors.primaryDark, borderRadius: radius.md, marginTop: spacing.xs, paddingVertical: spacing.md },
+  primaryButtonText: { color: Colors.textOnPrimary, fontSize: typography.small.fontSize, fontWeight: '800' },
+  secondaryButton: { alignItems: 'center', borderColor: Colors.primaryDark, borderRadius: radius.md, borderWidth: 1, marginTop: spacing.sm, paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
+  secondaryButtonText: { color: Colors.primaryDark, fontSize: typography.small.fontSize, fontWeight: '800' },
 });

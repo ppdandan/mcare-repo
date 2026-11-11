@@ -104,7 +104,7 @@ export default function ReceptionInquiriesPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-gray-50/75 border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider text-[11px]">
+              <tr className="bg-gray-50/75 border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider text-xs">
                 <th className="py-3 px-4">Date Received</th>
                 <th className="py-3 px-4">Patient</th>
                 <th className="py-3 px-4">Subject</th>
@@ -135,7 +135,7 @@ export default function ReceptionInquiriesPage() {
 
                     <td className="py-3.5 px-4 font-bold text-gray-900">
                       {inq.patient?.profile?.full_name || "Patient"}
-                      <span className="block text-[10px] text-gray-400 font-normal">
+                      <span className="block text-xs text-gray-400 font-normal">
                         📞 {inq.patient?.profile?.phone || "No phone"}
                       </span>
                     </td>
@@ -150,7 +150,7 @@ export default function ReceptionInquiriesPage() {
 
                     <td className="py-3.5 px-4">
                       <span
-                        className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                        className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border ${
                           inq.status === "replied"
                             ? "bg-emerald-100 text-emerald-800 border-emerald-200"
                             : "bg-amber-100 text-amber-800 border-amber-200"

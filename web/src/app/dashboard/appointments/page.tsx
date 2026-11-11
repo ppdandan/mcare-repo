@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
+import Icon from "@/components/Icon";
 import {
   addCalendarDays,
   formatManilaDate,
@@ -199,7 +200,7 @@ export default function AppointmentsPage() {
                 : "text-gray-600 hover:text-gray-900"
             }`}
           >
-            📋 List View
+            <Icon name="list" size={15} /> List View
           </button>
           <button
             onClick={() => setViewMode("calendar")}
@@ -209,7 +210,7 @@ export default function AppointmentsPage() {
                 : "text-gray-600 hover:text-gray-900"
             }`}
           >
-            🗓️ Calendar View
+            <Icon name="calendar" size={15} /> Calendar View
           </button>
         </div>
       </div>
@@ -218,7 +219,7 @@ export default function AppointmentsPage() {
       <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
         <div className="flex flex-wrap items-center gap-3">
           <div>
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
+            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">
               Status Filter
             </label>
             <select
@@ -271,7 +272,7 @@ export default function AppointmentsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-gray-50/75 border-b border-gray-200 text-gray-500 font-bold uppercase tracking-wider text-[11px]">
+                <tr className="bg-gray-50/75 border-b border-gray-200 text-gray-500 font-bold uppercase tracking-wider text-xs">
                   <th className="py-3.5 px-4">Patient</th>
                   <th className="py-3.5 px-4">Service</th>
                   <th className="py-3.5 px-4">Doctor & Room</th>
@@ -295,15 +296,15 @@ export default function AppointmentsPage() {
                         <p className="font-bold text-gray-900">
                           {appt.patient?.profile?.full_name ?? "Patient"}
                         </p>
-                        <p className="text-[11px] text-gray-400">
+                        <p className="text-xs text-gray-400">
                           📞 {appt.patient?.profile?.phone ?? "No phone"}
                         </p>
                       </td>
 
                       <td className="py-3.5 px-4">
                         <p className="font-semibold text-gray-800">{appt.service?.name}</p>
-                        <p className="text-[11px] text-gray-400">
-                          ⏱️ {appt.service?.duration_minutes} mins
+                        <p className="text-xs text-gray-400">
+                          <Icon name="clock" size={14} /> {appt.service?.duration_minutes} mins
                         </p>
                       </td>
 
@@ -311,7 +312,7 @@ export default function AppointmentsPage() {
                         <p className="font-medium text-gray-900">
                           {appt.doctor?.profile?.full_name}
                         </p>
-                        <p className="text-[11px] text-gray-400">
+                        <p className="text-xs text-gray-400">
                           📍 {appt.doctor?.room ?? "Consultation Room"}
                         </p>
                       </td>
@@ -320,7 +321,7 @@ export default function AppointmentsPage() {
                         <p className="font-semibold text-gray-900">
                           {formatManilaDate(appt.start_time, { weekday: "short", month: "short", day: "numeric" })}
                         </p>
-                        <p className="text-[11px] text-pink-600 font-bold">
+                        <p className="text-xs text-pink-600 font-bold">
                           {formatManilaTime(appt.start_time)}
                         </p>
                       </td>
@@ -337,7 +338,7 @@ export default function AppointmentsPage() {
                             <button
                               onClick={() => handleUpdateStatus(appt.id, "approved")}
                               disabled={updating}
-                              className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded text-[11px] transition shadow-sm"
+                              className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded text-xs transition shadow-sm"
                             >
                               Approve
                             </button>
@@ -347,7 +348,7 @@ export default function AppointmentsPage() {
                             <button
                               onClick={() => handleUpdateStatus(appt.id, "completed")}
                               disabled={updating}
-                              className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded text-[11px] transition shadow-sm"
+                              className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded text-xs transition shadow-sm"
                             >
                               Mark Done
                             </button>
@@ -364,21 +365,21 @@ export default function AppointmentsPage() {
                                   setRescheduleTime(manilaTimeKey(appt.start_time));
                                 }}
                                 disabled={updating}
-                                className="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold rounded text-[11px] border border-purple-200 transition"
+                                className="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold rounded text-xs border border-purple-200 transition"
                               >
                                 Reschedule
                               </button>
                               <button
                                 onClick={() => handleUpdateStatus(appt.id, "cancelled")}
                                 disabled={updating}
-                                className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold rounded text-[11px] border border-rose-200 transition"
+                                className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold rounded text-xs border border-rose-200 transition"
                               >
                                 Cancel
                               </button>
                               <button
                                 onClick={() => handleUpdateStatus(appt.id, "no_show")}
                                 disabled={updating}
-                                className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-semibold rounded text-[11px] border border-amber-200 transition"
+                                className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-semibold rounded text-xs border border-amber-200 transition"
                               >
                                 No Show
                               </button>
@@ -454,7 +455,7 @@ export default function AppointmentsPage() {
                   className="bg-gray-50/75 rounded-xl p-3 border border-gray-100 min-h-[360px] flex flex-col"
                 >
                   <div className="text-center pb-2 mb-2 border-b border-gray-200">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
                       {formatManilaDate(dayStr, { weekday: "short" })}
                     </p>
                     <p
@@ -472,15 +473,15 @@ export default function AppointmentsPage() {
                     {dayAppts.map((a) => (
                       <div
                         key={a.id}
-                        className="bg-white p-2.5 rounded-lg border border-gray-200 shadow-2xs text-[11px]"
+                        className="bg-white p-2.5 rounded-lg border border-gray-200 shadow-2xs text-xs"
                       >
                         <p className="font-bold text-gray-900 truncate">
                           {a.patient?.profile?.full_name}
                         </p>
-                        <p className="text-[10px] text-pink-600 font-semibold truncate">
+                        <p className="text-xs text-pink-600 font-semibold truncate">
                           {a.service?.name}
                         </p>
-                        <p className="text-[10px] text-gray-400 mt-1">
+                        <p className="text-xs text-gray-400 mt-1">
                           ⏰{" "}
                           {formatManilaTime(a.start_time)}
                         </p>
@@ -547,8 +548,8 @@ export default function AppointmentsPage() {
                 </select>
               </div>
 
-              <div className="p-3 bg-pink-50 rounded-lg text-[11px] text-pink-700 leading-relaxed">
-                🛡️ The PostgreSQL exclusion constraint prevents double-booking. If the doctor already has an appointment during this time, the system will block it.
+              <div className="p-3 bg-pink-50 rounded-lg text-xs text-pink-700 leading-relaxed">
+                <Icon name="shield-check" size={15} className="mr-1 inline-block align-[-2px]" /> The database prevents double-booking. If the doctor already has an appointment during this time, the system blocks it.
               </div>
             </div>
 

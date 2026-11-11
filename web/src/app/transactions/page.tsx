@@ -6,6 +6,7 @@ import { formatManilaDate, formatManilaDateTime } from "@m-care/shared";
 import type { TransactionWithAppointment } from "@m-care/shared";
 import { createClient } from "@/lib/supabase/client";
 import PatientHeader from "@/components/PatientHeader";
+import Icon from "@/components/Icon";
 
 function formatAmount(amount: number, currency: string) {
   try {
@@ -80,7 +81,7 @@ export default function TransactionHistoryPage() {
           </div>
         ) : transactions.length === 0 ? (
           <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm">
-            <p className="text-3xl" aria-hidden="true">🧾</p>
+            <Icon name="receipt" size={34} />
             <h2 className="mt-3 text-xl font-bold text-gray-900">No transactions yet</h2>
             <p className="mx-auto mt-2 max-w-lg text-gray-700">When a clinic visit is completed and paid in person, the clinic can record it here for your reference.</p>
             <Link href="/book" className="mt-5 inline-flex rounded-xl bg-rose-800 px-5 py-3 font-bold text-white hover:bg-rose-900 focus:outline-none focus:ring-2 focus:ring-rose-800 focus:ring-offset-2">Book an appointment</Link>

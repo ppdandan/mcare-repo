@@ -1,6 +1,9 @@
+import { spacing, typography, radius } from '@m-care/shared';
+import Colors from '@/constants/Colors';
 // TODO: The clinic must review this privacy policy text before release.
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { PRIVACY_POLICY } from '@m-care/shared/privacy-policy';
 
@@ -8,17 +11,20 @@ export default function PrivacyScreen() {
   return (
     <>
       <Stack.Screen options={{ title: 'Privacy Policy' }} />
-      <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={styles.content}>
-        <View style={styles.card}>
-          <Text selectable style={styles.policy}>{PRIVACY_POLICY.trim()}</Text>
-        </View>
-      </ScrollView>
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={styles.content}>
+          <View style={styles.card}>
+            <Text selectable style={styles.policy}>{PRIVACY_POLICY.trim()}</Text>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 20, paddingBottom: 36, backgroundColor: '#FFF7F9' },
-  card: { padding: 18, borderRadius: 16, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#FCE7F3' },
-  policy: { color: '#29232B', fontSize: 15, lineHeight: 23 },
+  safeArea: { flex: 1, backgroundColor: Colors.brandWash },
+  content: { padding: spacing.xl, paddingBottom: 0, backgroundColor: Colors.brandWash },
+  card: { padding: spacing.lg, borderRadius: radius.lg, backgroundColor: Colors.background, borderWidth: 1, borderColor: Colors.brandSoft },
+  policy: { color: Colors.text, fontSize: typography.small.fontSize, lineHeight: typography.body.lineHeight },
 });

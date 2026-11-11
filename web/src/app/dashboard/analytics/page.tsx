@@ -258,31 +258,31 @@ export default function AnalyticsPage() {
         <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
           <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Appointments</p>
           <p className="text-3xl font-extrabold text-gray-900 mt-2">{totalVisits}</p>
-          <p className="text-[11px] text-gray-400 mt-1">In selected period</p>
+          <p className="text-xs text-gray-400 mt-1">In selected period</p>
         </div>
 
         <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
           <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Completion Rate</p>
           <p className="text-3xl font-extrabold text-emerald-600 mt-2">{completionRate}%</p>
-          <p className="text-[11px] text-emerald-700 mt-1">{completedCount} consultations concluded</p>
+          <p className="text-xs text-emerald-700 mt-1">{completedCount} consultations concluded</p>
         </div>
 
         <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
           <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Cancellation Rate</p>
           <p className="text-3xl font-extrabold text-rose-600 mt-2">{cancellationRate}%</p>
-          <p className="text-[11px] text-rose-700 mt-1">{cancelledCount} visits cancelled</p>
+          <p className="text-xs text-rose-700 mt-1">{cancelledCount} visits cancelled</p>
         </div>
 
         <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
           <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">No-Show Rate</p>
           <p className="text-3xl font-extrabold text-amber-600 mt-2">{noShowRate}%</p>
-          <p className="text-[11px] text-amber-700 mt-1">{noShowCount} missed sessions</p>
+          <p className="text-xs text-amber-700 mt-1">{noShowCount} missed sessions</p>
         </div>
 
         <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
           <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Patients</p>
           <p className="text-3xl font-extrabold text-purple-600 mt-2">{patientCount}</p>
-          <p className="text-[11px] text-purple-700 mt-1">DPA 2012 Registered</p>
+          <p className="text-xs text-purple-700 mt-1">DPA 2012 Registered</p>
         </div>
       </div>
 
@@ -407,7 +407,7 @@ export default function AnalyticsPage() {
                   className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-200 text-xs"
                 >
                   <div className="flex items-center space-x-3 truncate">
-                    <span className="w-6 h-6 rounded-full bg-pink-100 text-pink-700 flex items-center justify-center font-bold text-[11px] shrink-0">
+                    <span className="w-6 h-6 rounded-full bg-pink-100 text-pink-700 flex items-center justify-center font-bold text-xs shrink-0">
                       {index + 1}
                     </span>
                     <span className="font-semibold text-gray-800 truncate">{d.diagnosis}</span>

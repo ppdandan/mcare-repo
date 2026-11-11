@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
+import Icon from "@/components/Icon";
 import type { Profile, UserRole } from "@m-care/shared";
 import { formatManilaDate } from "@m-care/shared";
 
@@ -164,7 +165,7 @@ export default function StaffManagementPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-gray-50/75 border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider text-[11px]">
+              <tr className="bg-gray-50/75 border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider text-xs">
                 <th className="py-3 px-4">Staff Member</th>
                 <th className="py-3 px-4">Role</th>
                 <th className="py-3 px-4">Phone</th>
@@ -185,12 +186,12 @@ export default function StaffManagementPage() {
                   <tr key={s.id} className="hover:bg-gray-50/50 transition">
                     <td className="py-3.5 px-4">
                       <p className="font-bold text-gray-900">{s.full_name}</p>
-                      <p className="text-[10px] text-gray-400">ID: {s.id.slice(0, 8)}...</p>
+                      <p className="text-xs text-gray-400">ID: {s.id.slice(0, 8)}...</p>
                     </td>
 
                     <td className="py-3.5 px-4">
                       <span
-                        className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                        className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border ${
                           roleColors[s.role] || "bg-gray-100 text-gray-800"
                         }`}
                       >
@@ -204,7 +205,7 @@ export default function StaffManagementPage() {
                       {s.doctor_details ? (
                         <div>
                           <p className="font-semibold text-gray-900">{s.doctor_details.specialty}</p>
-                          <p className="text-[10px] text-gray-400">📍 {s.doctor_details.room}</p>
+                          <p className="text-xs text-gray-400">📍 {s.doctor_details.room}</p>
                         </div>
                       ) : (
                         <span className="text-gray-400">Clinic Department</span>
@@ -220,7 +221,7 @@ export default function StaffManagementPage() {
                     </td>
 
                     <td className="py-3.5 px-4 text-right">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                         Active Staff
                       </span>
                     </td>
@@ -291,8 +292,8 @@ export default function StaffManagementPage() {
                 </div>
               </div>
 
-              <div className="p-3 bg-pink-50 rounded-lg text-[11px] text-pink-700 leading-relaxed">
-                ℹ️ The account will be granted role permissions according to clinic Row Level Security policies.
+              <div className="p-3 bg-pink-50 rounded-lg text-xs text-pink-700 leading-relaxed">
+                <Icon name="info" size={15} className="mr-1 inline-block align-[-2px]" /> The account will receive role permissions defined by clinic access policies.
               </div>
 
               <div className="flex justify-end space-x-2 pt-2">

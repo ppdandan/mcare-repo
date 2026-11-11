@@ -1,3 +1,4 @@
+import { spacing, typography, radius } from '@m-care/shared';
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
@@ -10,6 +11,7 @@ import {
   Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import Colors from '@/constants/Colors';
@@ -114,7 +116,7 @@ export default function RecordsScreen() {
             </View>
           ) : records.length === 0 ? (
             <View style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>🩺</Text>
+              <Ionicons name="document-text-outline" size={40} color={Colors.primary} style={styles.emptyIcon} />
               <Text style={styles.emptyTitle}>No Medical Records Yet</Text>
               <Text style={styles.emptyText}>
                 Your doctor will upload your clinical notes, diagnoses, and prescriptions
@@ -241,7 +243,7 @@ export default function RecordsScreen() {
                     </Text>
 
                     {selectedRecord.history_of_present_illness && (
-                      <View style={{ marginTop: 8 }}>
+                      <View style={{ marginTop: spacing.sm }}>
                         <Text style={styles.secTitle}>History of Present Illness</Text>
                         <Text style={styles.secValueText}>
                           {selectedRecord.history_of_present_illness}
@@ -262,7 +264,7 @@ export default function RecordsScreen() {
 
                   {/* Prescription */}
                   <View style={[styles.detailSection, styles.prescriptionSection]}>
-                    <Text style={[styles.secTitle, { color: '#065F46' }]}>
+                    <Text style={[styles.secTitle, { color: Colors.success }]}>
                       Rx — Official Medical Prescription
                     </Text>
                     <Text style={styles.prescriptionText}>
@@ -296,87 +298,87 @@ export default function RecordsScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFF7F9',
+    backgroundColor: Colors.brandWash,
   },
   container: {
     flex: 1,
   },
   header: {
-    padding: 20,
-    backgroundColor: '#FFFFFF',
+    padding: spacing.xl,
+    backgroundColor: Colors.background,
     borderBottomWidth: 1,
-    borderBottomColor: '#FCE7F3',
+    borderBottomColor: Colors.brandSoft,
   },
   headerTitle: {
-    fontSize: 22,
+    fontSize: typography.title.fontSize,
     fontWeight: '700',
     color: Colors.text,
   },
   headerSubtitle: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     color: Colors.textSecondary,
-    marginTop: 2,
-    marginBottom: 10,
+    marginTop: spacing.xs,
+    marginBottom: spacing.sm,
   },
   dpaBanner: {
-    backgroundColor: '#FDF2F8',
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 8,
+    backgroundColor: Colors.brandWash,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    borderRadius: radius.sm,
     borderWidth: 1,
-    borderColor: '#FCE7F3',
+    borderColor: Colors.brandSoft,
   },
   dpaBannerText: {
-    fontSize: 11,
+    fontSize: typography.caption.fontSize,
     color: Colors.primaryDark,
     fontWeight: '600',
   },
   scrollContent: {
-    padding: 20,
-    paddingBottom: 40,
+    padding: spacing.xl,
+    paddingBottom: spacing['4xl'],
   },
   centerBox: {
-    padding: 40,
+    padding: spacing['4xl'],
     alignItems: 'center',
   },
   loadingText: {
-    marginTop: 12,
-    fontSize: 13,
+    marginTop: spacing.md,
+    fontSize: typography.caption.fontSize,
     color: Colors.textSecondary,
   },
   emptyCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    padding: 28,
+    backgroundColor: Colors.background,
+    borderRadius: radius.xl,
+    padding: 0,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#F3F4F6',
-    marginTop: 20,
+    borderColor: Colors.surfaceAlt,
+    marginTop: spacing.xl,
   },
   emptyIcon: {
-    fontSize: 38,
-    marginBottom: 12,
+    fontSize: typography.largeTitle.fontSize,
+    marginBottom: spacing.md,
   },
   emptyTitle: {
-    fontSize: 17,
+    fontSize: typography.body.fontSize,
     fontWeight: '700',
     color: Colors.text,
-    marginBottom: 6,
+    marginBottom: spacing.sm,
   },
   emptyText: {
-    fontSize: 13,
+    fontSize: typography.caption.fontSize,
     color: Colors.textSecondary,
     textAlign: 'center',
-    lineHeight: 18,
+    lineHeight: typography.caption.lineHeight,
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 18,
-    marginBottom: 14,
+    backgroundColor: Colors.background,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.lg,
     borderWidth: 1,
-    borderColor: '#FCE7F3',
-    shadowColor: '#BE185D',
+    borderColor: Colors.brandSoft,
+    shadowColor: Colors.primaryDark,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
@@ -386,60 +388,60 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: spacing.xs,
   },
   visitDate: {
-    fontSize: 15,
+    fontSize: typography.small.fontSize,
     fontWeight: '700',
     color: Colors.text,
   },
   badge: {
-    backgroundColor: '#E0E7FF',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
+    backgroundColor: Colors.infoBackground,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.sm,
   },
   badgeText: {
-    fontSize: 10,
+    fontSize: typography.caption.fontSize,
     fontWeight: '700',
-    color: '#3730A3',
+    color: Colors.info,
   },
   doctorName: {
-    fontSize: 13,
+    fontSize: typography.caption.fontSize,
     color: Colors.textSecondary,
-    marginTop: 2,
+    marginTop: spacing.xs,
   },
   divider: {
     height: 1,
-    backgroundColor: '#F3F4F6',
-    marginVertical: 10,
+    backgroundColor: Colors.surfaceAlt,
+    marginVertical: spacing.sm,
   },
   fieldRow: {
-    marginBottom: 6,
+    marginBottom: spacing.sm,
   },
   fieldLabel: {
-    fontSize: 11,
+    fontSize: typography.caption.fontSize,
     fontWeight: '600',
     color: Colors.textLight,
   },
   fieldVal: {
-    fontSize: 13,
+    fontSize: typography.caption.fontSize,
     color: Colors.text,
     fontWeight: '500',
-    marginTop: 1,
+    marginTop: spacing.xs,
   },
   diagnosisText: {
     color: Colors.primaryDark,
     fontWeight: '600',
   },
   cardFooter: {
-    marginTop: 10,
-    paddingTop: 8,
+    marginTop: spacing.sm,
+    paddingTop: spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: '#F9FAFB',
+    borderTopColor: Colors.surface,
   },
   viewDetailText: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     fontWeight: '700',
     color: Colors.primary,
     textAlign: 'right',
@@ -450,130 +452,130 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.background,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     maxHeight: '90%',
-    padding: 20,
-    paddingBottom: 34,
+    padding: spacing.xl,
+    paddingBottom: spacing['3xl'],
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: 14,
+    paddingBottom: spacing.lg,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.surfaceAlt,
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: typography.subhead.fontSize,
     fontWeight: '700',
     color: Colors.text,
   },
   modalSub: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     color: Colors.textSecondary,
-    marginTop: 2,
+    marginTop: spacing.xs,
   },
   closeBtn: {
     width: 32,
     height: 32,
-    borderRadius: 16,
-    backgroundColor: '#F3F4F6',
+    borderRadius: radius.lg,
+    backgroundColor: Colors.surfaceAlt,
     alignItems: 'center',
     justifyContent: 'center',
   },
   closeBtnText: {
-    fontSize: 14,
+    fontSize: typography.small.fontSize,
     fontWeight: '700',
     color: Colors.textSecondary,
   },
   modalBody: {
-    marginTop: 14,
+    marginTop: spacing.lg,
   },
   detailSection: {
-    marginBottom: 16,
-    backgroundColor: '#F9FAFB',
-    padding: 14,
-    borderRadius: 12,
+    marginBottom: spacing.lg,
+    backgroundColor: Colors.surface,
+    padding: spacing.lg,
+    borderRadius: radius.md,
   },
   highlightSection: {
-    backgroundColor: '#FDF2F8',
+    backgroundColor: Colors.brandWash,
     borderWidth: 1,
-    borderColor: '#FCE7F3',
+    borderColor: Colors.brandSoft,
   },
   prescriptionSection: {
-    backgroundColor: '#ECFDF5',
+    backgroundColor: Colors.successBackground,
     borderWidth: 1,
-    borderColor: '#D1FAE5',
+    borderColor: Colors.successBackground,
   },
   secTitle: {
-    fontSize: 11,
+    fontSize: typography.caption.fontSize,
     fontWeight: '700',
     color: Colors.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
-    marginBottom: 4,
+    marginBottom: spacing.xs,
   },
   secValue: {
-    fontSize: 15,
+    fontSize: typography.small.fontSize,
     fontWeight: '700',
     color: Colors.text,
   },
   secSub: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     color: Colors.textSecondary,
-    marginTop: 1,
+    marginTop: spacing.xs,
   },
   secValueText: {
-    fontSize: 13,
+    fontSize: typography.caption.fontSize,
     color: Colors.text,
-    lineHeight: 18,
+    lineHeight: typography.caption.lineHeight,
   },
   vitalsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
-    marginTop: 6,
+    gap: spacing.sm,
+    marginTop: spacing.sm,
   },
   vitalBox: {
     flex: 1,
     minWidth: '45%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    padding: 8,
+    backgroundColor: Colors.background,
+    borderRadius: radius.sm,
+    padding: spacing.sm,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.border,
   },
   vitalLabel: {
-    fontSize: 10,
+    fontSize: typography.caption.fontSize,
     color: Colors.textSecondary,
   },
   vitalVal: {
-    fontSize: 13,
+    fontSize: typography.caption.fontSize,
     fontWeight: '700',
     color: Colors.text,
-    marginTop: 2,
+    marginTop: spacing.xs,
   },
   diagnosisLarge: {
-    fontSize: 14,
+    fontSize: typography.small.fontSize,
     fontWeight: '700',
     color: Colors.primaryDark,
-    lineHeight: 20,
+    lineHeight: typography.small.lineHeight,
   },
   prescriptionText: {
-    fontSize: 13,
-    color: '#065F46',
+    fontSize: typography.caption.fontSize,
+    color: Colors.success,
     fontWeight: '600',
-    lineHeight: 20,
+    lineHeight: typography.small.lineHeight,
     fontFamily: 'monospace',
   },
   auditStamp: {
-    paddingVertical: 12,
+    paddingVertical: spacing.md,
     alignItems: 'center',
   },
   auditStampText: {
-    fontSize: 10,
+    fontSize: typography.caption.fontSize,
     color: Colors.textLight,
   },
 });

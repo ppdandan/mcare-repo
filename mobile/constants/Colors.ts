@@ -6,43 +6,52 @@
  * All colors follow WCAG accessibility guidelines for contrast.
  */
 
+import { designTokens } from '@m-care/shared';
+
 const Colors = {
   // ── Brand Colors ──────────────────────────────────────────
-  primary: '#E91E8C',        // Pink — main brand color
-  primaryLight: '#F472B6',   // Light pink — hover/active states
-  primaryDark: '#BE185D',    // Dark pink — pressed states
-  secondary: '#7C3AED',     // Purple — accent color
-  secondaryLight: '#A78BFA', // Light purple — accent hover
-  secondaryDark: '#5B21B6',  // Dark purple — accent pressed
+  primary: designTokens.color.brand,
+  primaryLight: designTokens.color.brandSoft,
+  primaryDark: designTokens.color.brandStrong,
+  secondary: designTokens.color.brandMid,
+  secondaryLight: designTokens.color.brandSoft,
+  secondaryDark: designTokens.color.brandStrong,
 
   // ── Background Colors ────────────────────────────────────
-  background: '#FFFFFF',     // White — main background
-  surface: '#F9FAFB',       // Off-white — card backgrounds
-  surfaceAlt: '#F3F4F6',    // Light gray — alternate surface
+  background: designTokens.color.surface,
+  surface: designTokens.color.canvas,
+  surfaceAlt: designTokens.color.brandSoft,
 
   // ── Text Colors ───────────────────────────────────────────
-  text: '#1F2937',           // Dark gray — primary text
-  textSecondary: '#6B7280',  // Medium gray — secondary text
-  textLight: '#9CA3AF',      // Light gray — placeholder text
-  textOnPrimary: '#FFFFFF',  // White — text on primary color
+  text: designTokens.color.text,
+  textSecondary: designTokens.color.textMuted,
+  textLight: designTokens.color.textPlaceholder,
+  textOnPrimary: designTokens.color.onBrand,
 
   // ── Status Colors ─────────────────────────────────────────
-  success: '#10B981',        // Green — success states
-  warning: '#F59E0B',        // Amber — warning states
-  error: '#EF4444',          // Red — error states
-  info: '#3B82F6',           // Blue — info states
+  success: designTokens.color.success,
+  warning: designTokens.color.warning,
+  error: designTokens.color.error,
+  info: designTokens.color.info,
 
   // ── Border & Divider ─────────────────────────────────────
-  border: '#E5E7EB',         // Light gray — borders
-  borderLight: '#F3F4F6',    // Very light gray — subtle borders
-  divider: '#E5E7EB',        // Divider lines
+  border: designTokens.color.border,
+  borderLight: designTokens.color.divider,
+  divider: designTokens.color.divider,
 
   // ── Appointment Status Colors ─────────────────────────────
-  statusScheduled: '#3B82F6',   // Blue
-  statusConfirmed: '#10B981',   // Green
-  statusCompleted: '#6B7280',   // Gray
-  statusCancelled: '#EF4444',   // Red
-  statusNoShow: '#F59E0B',      // Amber
+  statusScheduled: designTokens.color.info,
+  statusConfirmed: designTokens.color.success,
+  statusCompleted: designTokens.color.textMuted,
+  statusCancelled: designTokens.color.error,
+  statusNoShow: designTokens.color.warning,
+  brandSoft: designTokens.color.brandSoft,
+  brandWash: designTokens.color.brandWash,
+  successBackground: designTokens.color.successSoft,
+  warningBackground: designTokens.color.warningSoft,
+  errorBackground: designTokens.color.errorSoft,
+  infoBackground: designTokens.color.infoSoft,
+  shadow: '#33232B',
 } as const;
 
 export default Colors;

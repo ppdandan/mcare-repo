@@ -1,3 +1,4 @@
+import Colors from '@/constants/Colors';
 import React from 'react';
 import { Stack } from 'expo-router';
 
@@ -6,7 +7,7 @@ export default function AuthLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: '#FFF7F9' },
+        contentStyle: { backgroundColor: Colors.brandWash },
       }}
     >
       <Stack.Screen name="welcome" />

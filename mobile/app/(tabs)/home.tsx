@@ -1,3 +1,4 @@
+import { spacing, typography, radius } from '@m-care/shared';
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
@@ -10,6 +11,7 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
@@ -120,28 +122,28 @@ export default function HomeScreen() {
         <View style={styles.topBar}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Image
-              source={require('../assets/logo.png')}
+              source={require('../../assets/logo.png')}
               accessibilityLabel="M-Care logo"
               resizeMode="contain"
-              style={{ width: 28, height: 33, marginRight: 8 }}
+              style={{ width: 28, height: 33, marginRight: spacing.sm }}
             />
             <View>
               <Text style={styles.greeting}>Good day,</Text>
               <Text style={styles.patientName}>{profile?.full_name ?? 'Patient'}</Text>
             </View>
           </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
             <TouchableOpacity
               onPress={() => router.push('/(tabs)/notifications')}
               style={styles.iconCircle}
             >
-              <Text style={{ fontSize: 16 }}>🔔</Text>
+              <Ionicons name="notifications-outline" size={typography.body.fontSize + 2} color={Colors.primary} />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => router.push('/(tabs)/profile')}
               style={styles.iconCircle}
             >
-              <Text style={{ fontSize: 16 }}>👤</Text>
+              <Ionicons name="person-outline" size={typography.body.fontSize + 2} color={Colors.primary} />
             </TouchableOpacity>
           </View>
         </View>
@@ -154,7 +156,7 @@ export default function HomeScreen() {
             activeOpacity={0.85}
           >
             <View style={styles.actionIconBox}>
-              <Text style={styles.actionIcon}>📅</Text>
+              <Ionicons name="calendar-outline" size={28} color={Colors.primaryDark} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.actionTitle}>Book Appointment</Text>
@@ -170,7 +172,7 @@ export default function HomeScreen() {
             activeOpacity={0.85}
           >
             <View style={styles.actionIconBoxAlt}>
-              <Text style={styles.actionIcon}>📋</Text>
+              <Ionicons name="time-outline" size={28} color={Colors.primaryDark} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.actionTitleAlt}>My Clinic Visits</Text>
@@ -185,8 +187,8 @@ export default function HomeScreen() {
             onPress={() => router.push('/inquiry')}
             activeOpacity={0.85}
           >
-            <View style={[styles.actionIconBoxAlt, { backgroundColor: '#EDE9FE' }]}>
-              <Text style={styles.actionIcon}>💬</Text>
+            <View style={[styles.actionIconBoxAlt, { backgroundColor: Colors.brandSoft }]}>
+              <Ionicons name="chatbubble-ellipses-outline" size={28} color={Colors.primaryDark} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.actionTitleAlt}>Message Clinic Staff</Text>
@@ -248,7 +250,7 @@ export default function HomeScreen() {
             </View>
           ) : (
             <View style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>🗓️</Text>
+              <Ionicons name="calendar-outline" size={40} color={Colors.primary} style={styles.emptyIcon} />
               <Text style={styles.emptyTitle}>No Upcoming Consultations</Text>
               <Text style={styles.emptyDescription}>
                 You have no pending or confirmed consultations. Tap 'Book Appointment' to discover open slots.
@@ -289,61 +291,61 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFF7F9',
+    backgroundColor: Colors.brandWash,
   },
   container: {
-    padding: 20,
-    paddingBottom: 40,
+    padding: spacing.xl,
+    paddingBottom: spacing['4xl'],
   },
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: spacing.xl,
   },
   greeting: {
-    fontSize: 14,
+    fontSize: typography.small.fontSize,
     color: Colors.textSecondary,
   },
   patientName: {
-    fontSize: 22,
+    fontSize: typography.title.fontSize,
     fontWeight: '700',
     color: Colors.text,
   },
   signOutBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-    backgroundColor: '#FCE7F3',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.sm,
+    backgroundColor: Colors.brandSoft,
   },
   signOutText: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     fontWeight: '700',
     color: Colors.primaryDark,
   },
   iconCircle: {
     width: 38,
     height: 38,
-    borderRadius: 19,
-    backgroundColor: '#FFFFFF',
+    borderRadius: radius.xl,
+    backgroundColor: Colors.background,
     borderWidth: 1,
-    borderColor: '#FCE7F3',
+    borderColor: Colors.brandSoft,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#BE185D',
+    shadowColor: Colors.primaryDark,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 1,
   },
   actionGrid: {
-    marginBottom: 20,
-    gap: 12,
+    marginBottom: spacing.xl,
+    gap: spacing.md,
   },
   primaryActionCard: {
     backgroundColor: Colors.primary,
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
     shadowColor: Colors.primaryDark,
@@ -355,34 +357,34 @@ const styles = StyleSheet.create({
   actionIconBox: {
     width: 44,
     height: 44,
-    borderRadius: 12,
+    borderRadius: radius.md,
     backgroundColor: 'rgba(255,255,255,0.25)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 14,
+    marginRight: spacing.lg,
   },
   actionIcon: {
-    fontSize: 22,
+    fontSize: typography.title.fontSize,
   },
   actionTitle: {
-    fontSize: 16,
+    fontSize: typography.body.fontSize,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: Colors.background,
   },
   actionDesc: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     color: 'rgba(255,255,255,0.85)',
-    marginTop: 2,
+    marginTop: spacing.xs,
   },
   secondaryActionCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: Colors.background,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: '#FCE7F3',
-    shadowColor: '#BE185D',
+    borderColor: Colors.brandSoft,
+    shadowColor: Colors.primaryDark,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 6,
@@ -391,52 +393,52 @@ const styles = StyleSheet.create({
   actionIconBoxAlt: {
     width: 44,
     height: 44,
-    borderRadius: 12,
-    backgroundColor: '#FDE7F3',
+    borderRadius: radius.md,
+    backgroundColor: Colors.brandSoft,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 14,
+    marginRight: spacing.lg,
   },
   actionTitleAlt: {
-    fontSize: 15,
+    fontSize: typography.small.fontSize,
     fontWeight: '700',
     color: Colors.text,
   },
   actionDescAlt: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     color: Colors.textSecondary,
-    marginTop: 2,
+    marginTop: spacing.xs,
   },
   section: {
-    marginBottom: 20,
+    marginBottom: spacing.xl,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: spacing.sm,
   },
   sectionTitle: {
-    fontSize: 17,
+    fontSize: typography.body.fontSize,
     fontWeight: '700',
     color: Colors.text,
   },
   seeAllLink: {
-    fontSize: 13,
+    fontSize: typography.caption.fontSize,
     fontWeight: '700',
     color: Colors.primary,
   },
   loadingBox: {
-    padding: 24,
+    padding: spacing['2xl'],
     alignItems: 'center',
   },
   appointmentCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 18,
+    backgroundColor: Colors.background,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
     borderWidth: 1,
-    borderColor: '#FCE7F3',
-    shadowColor: '#BE185D',
+    borderColor: Colors.brandSoft,
+    shadowColor: Colors.primaryDark,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
@@ -446,133 +448,133 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   apptService: {
-    fontSize: 16,
+    fontSize: typography.body.fontSize,
     fontWeight: '700',
     color: Colors.text,
   },
   apptBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.sm,
   },
   badgeApproved: {
-    backgroundColor: '#D1FAE5',
+    backgroundColor: Colors.successBackground,
   },
   badgePending: {
-    backgroundColor: '#FEF3C7',
+    backgroundColor: Colors.warningBackground,
   },
   badgeRescheduled: {
-    backgroundColor: '#E0E7FF',
+    backgroundColor: Colors.infoBackground,
   },
   apptBadgeText: {
-    fontSize: 11,
+    fontSize: typography.caption.fontSize,
     fontWeight: '700',
     color: Colors.text,
   },
   apptDoctor: {
-    fontSize: 14,
+    fontSize: typography.small.fontSize,
     color: Colors.textSecondary,
-    marginBottom: 2,
+    marginBottom: spacing.xs,
   },
   apptRoom: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     color: Colors.textLight,
   },
   divider: {
     height: 1,
     backgroundColor: Colors.borderLight,
-    marginVertical: 12,
+    marginVertical: spacing.md,
   },
   apptTimeRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   apptTimeLabel: {
-    fontSize: 13,
+    fontSize: typography.caption.fontSize,
     color: Colors.textSecondary,
   },
   apptTimeValue: {
-    fontSize: 13,
+    fontSize: typography.caption.fontSize,
     fontWeight: '700',
     color: Colors.primaryDark,
   },
   emptyCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 24,
+    backgroundColor: Colors.background,
+    borderRadius: radius.lg,
+    padding: spacing['2xl'],
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#F3F4F6',
+    borderColor: Colors.surfaceAlt,
   },
   emptyIcon: {
-    fontSize: 32,
-    marginBottom: 8,
+    fontSize: typography.display.fontSize,
+    marginBottom: spacing.sm,
   },
   emptyTitle: {
-    fontSize: 15,
+    fontSize: typography.small.fontSize,
     fontWeight: '700',
     color: Colors.text,
-    marginBottom: 4,
+    marginBottom: spacing.xs,
   },
   emptyDescription: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     color: Colors.textSecondary,
     textAlign: 'center',
-    lineHeight: 18,
+    lineHeight: typography.caption.lineHeight,
   },
   patientIdCard: {
-    backgroundColor: '#BE185D',
-    borderRadius: 20,
-    padding: 18,
-    marginTop: 8,
+    backgroundColor: Colors.primaryDark,
+    borderRadius: radius.xl,
+    padding: spacing.lg,
+    marginTop: spacing.sm,
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: spacing.sm,
   },
   cardClinic: {
-    fontSize: 11,
+    fontSize: typography.caption.fontSize,
     fontWeight: '800',
     color: 'rgba(255,255,255,0.85)',
     letterSpacing: 1.2,
   },
   statusPill: {
     backgroundColor: 'rgba(255,255,255,0.25)',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 12,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.md,
   },
   statusPillText: {
-    fontSize: 10,
+    fontSize: typography.caption.fontSize,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: Colors.background,
   },
   cardRole: {
-    fontSize: 16,
+    fontSize: typography.body.fontSize,
     fontWeight: '700',
-    color: '#FFFFFF',
-    marginBottom: 12,
+    color: Colors.background,
+    marginBottom: spacing.md,
   },
   cardDetails: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderTopWidth: 1,
     borderTopColor: 'rgba(255,255,255,0.25)',
-    paddingTop: 10,
+    paddingTop: spacing.sm,
   },
   cardLabel: {
-    fontSize: 10,
+    fontSize: typography.caption.fontSize,
     color: 'rgba(255,255,255,0.8)',
-    marginBottom: 2,
+    marginBottom: spacing.xs,
   },
   cardValue: {
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: Colors.background,
   },
 });

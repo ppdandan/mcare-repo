@@ -1,3 +1,4 @@
+import { spacing, typography, radius } from '@m-care/shared';
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
@@ -11,6 +12,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
@@ -155,7 +157,7 @@ export default function InquiryScreen() {
                   placeholder="e.g. Question on Ultrasound fasting requirements"
                   value={subject}
                   onChangeText={setSubject}
-                />
+                 placeholderTextColor={Colors.textLight} />
               </View>
 
               <View style={styles.inputGroup}>
@@ -167,7 +169,7 @@ export default function InquiryScreen() {
                   onChangeText={setMessage}
                   multiline
                   numberOfLines={4}
-                />
+                 placeholderTextColor={Colors.textLight} />
               </View>
 
               <TouchableOpacity
@@ -176,7 +178,7 @@ export default function InquiryScreen() {
                 disabled={submitting}
               >
                 {submitting ? (
-                  <ActivityIndicator color="#FFFFFF" />
+                  <ActivityIndicator color={Colors.background} />
                 ) : (
                   <Text style={styles.sendBtnText}>Send Message to Clinic</Text>
                 )}
@@ -192,7 +194,7 @@ export default function InquiryScreen() {
             </View>
           ) : inquiries.length === 0 ? (
             <View style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>💬</Text>
+              <Ionicons name="chatbubble-ellipses-outline" size={40} color={Colors.primary} style={styles.emptyIcon} />
               <Text style={styles.emptyTitle}>No Inquiries Sent</Text>
               <Text style={styles.emptyText}>
                 Have a question about a service, procedure preparation, or scheduling?
@@ -239,7 +241,7 @@ export default function InquiryScreen() {
                 ) : (
                   <View style={styles.pendingReplyBox}>
                     <Text style={styles.pendingReplyText}>
-                      ⏳ Awaiting response from reception staff...
+                      Awaiting response from clinic staff…
                     </Text>
                   </View>
                 )}
@@ -253,116 +255,116 @@ export default function InquiryScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFF7F9' },
+  safeArea: { flex: 1, backgroundColor: Colors.brandWash },
   container: { flex: 1 },
   header: {
-    padding: 20,
-    paddingBottom: 14,
-    backgroundColor: '#FFFFFF',
+    padding: spacing.xl,
+    paddingBottom: spacing.lg,
+    backgroundColor: Colors.background,
     borderBottomWidth: 1,
-    borderBottomColor: '#FCE7F3',
+    borderBottomColor: Colors.brandSoft,
   },
-  backBtn: { marginBottom: 8 },
-  backBtnText: { fontSize: 13, fontWeight: '600', color: Colors.primary },
+  backBtn: { marginBottom: spacing.sm },
+  backBtnText: { fontSize: typography.caption.fontSize, fontWeight: '600', color: Colors.primary },
   headerTitleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  title: { fontSize: 20, fontWeight: '700', color: Colors.text },
+  title: { fontSize: typography.title.fontSize, fontWeight: '700', color: Colors.text },
   newBtn: {
     backgroundColor: Colors.primary,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.sm,
   },
-  newBtnText: { color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
-  subtitle: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
-  scrollContent: { padding: 20, paddingBottom: 40 },
+  newBtnText: { color: Colors.background, fontSize: typography.caption.fontSize, fontWeight: '700' },
+  subtitle: { fontSize: typography.caption.fontSize, color: Colors.textSecondary, marginTop: spacing.xs },
+  scrollContent: { padding: spacing.xl, paddingBottom: spacing['4xl'] },
   formCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 18,
-    marginBottom: 20,
+    backgroundColor: Colors.background,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.xl,
     borderWidth: 1.5,
-    borderColor: '#FCE7F3',
+    borderColor: Colors.brandSoft,
   },
-  formHeading: { fontSize: 15, fontWeight: '700', color: Colors.primaryDark, marginBottom: 12 },
-  inputGroup: { marginBottom: 12 },
-  label: { fontSize: 12, fontWeight: '600', color: Colors.textSecondary, marginBottom: 4 },
+  formHeading: { fontSize: typography.small.fontSize, fontWeight: '700', color: Colors.primaryDark, marginBottom: spacing.md },
+  inputGroup: { marginBottom: spacing.md },
+  label: { fontSize: typography.caption.fontSize, fontWeight: '600', color: Colors.textSecondary, marginBottom: spacing.xs },
   input: {
     height: 44,
-    borderRadius: 10,
+    borderRadius: radius.md,
     borderWidth: 1,
     borderColor: Colors.border,
-    paddingHorizontal: 12,
-    fontSize: 13,
+    paddingHorizontal: spacing.md,
+    fontSize: typography.caption.fontSize,
     color: Colors.text,
     backgroundColor: Colors.surface,
   },
   textArea: {
     height: 80,
-    paddingTop: 8,
+    paddingTop: spacing.sm,
     textAlignVertical: 'top',
   },
   sendBtn: {
     backgroundColor: Colors.primary,
     height: 46,
-    borderRadius: 10,
+    borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 4,
+    marginTop: spacing.xs,
   },
-  sendBtnText: { color: '#FFFFFF', fontSize: 14, fontWeight: '700' },
+  sendBtnText: { color: Colors.background, fontSize: typography.small.fontSize, fontWeight: '700' },
   btnDisabled: { opacity: 0.6 },
-  centerBox: { padding: 40, alignItems: 'center' },
-  loadingText: { marginTop: 12, fontSize: 13, color: Colors.textSecondary },
+  centerBox: { padding: spacing['4xl'], alignItems: 'center' },
+  loadingText: { marginTop: spacing.md, fontSize: typography.caption.fontSize, color: Colors.textSecondary },
   emptyCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    padding: 28,
+    backgroundColor: Colors.background,
+    borderRadius: radius.xl,
+    padding: 0,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#F3F4F6',
-    marginTop: 20,
+    borderColor: Colors.surfaceAlt,
+    marginTop: spacing.xl,
   },
-  emptyIcon: { fontSize: 38, marginBottom: 12 },
-  emptyTitle: { fontSize: 17, fontWeight: '700', color: Colors.text, marginBottom: 6 },
-  emptyText: { fontSize: 13, color: Colors.textSecondary, textAlign: 'center', lineHeight: 18 },
+  emptyIcon: { fontSize: typography.largeTitle.fontSize, marginBottom: spacing.md },
+  emptyTitle: { fontSize: typography.body.fontSize, fontWeight: '700', color: Colors.text, marginBottom: spacing.sm },
+  emptyText: { fontSize: typography.caption.fontSize, color: Colors.textSecondary, textAlign: 'center', lineHeight: typography.caption.lineHeight },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
+    backgroundColor: Colors.background,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.md,
     borderWidth: 1,
-    borderColor: '#FCE7F3',
+    borderColor: Colors.brandSoft,
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  cardSubject: { fontSize: 15, fontWeight: '700', color: Colors.text, flex: 1, marginRight: 8 },
-  statusPill: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  pillOpen: { backgroundColor: '#FEF3C7' },
-  pillReplied: { backgroundColor: '#D1FAE5' },
-  pillClosed: { backgroundColor: '#F3F4F6' },
-  statusPillText: { fontSize: 10, fontWeight: '700', color: Colors.text },
-  cardDate: { fontSize: 11, color: Colors.textLight, marginTop: 4, marginBottom: 10 },
+  cardSubject: { fontSize: typography.small.fontSize, fontWeight: '700', color: Colors.text, flex: 1, marginRight: spacing.sm },
+  statusPill: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: radius.sm },
+  pillOpen: { backgroundColor: Colors.warningBackground },
+  pillReplied: { backgroundColor: Colors.successBackground },
+  pillClosed: { backgroundColor: Colors.surfaceAlt },
+  statusPillText: { fontSize: typography.caption.fontSize, fontWeight: '700', color: Colors.text },
+  cardDate: { fontSize: typography.caption.fontSize, color: Colors.textLight, marginTop: spacing.xs, marginBottom: spacing.sm },
   patientMsgBox: {
-    backgroundColor: '#FFF5F8',
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 10,
+    backgroundColor: Colors.brandWash,
+    padding: spacing.sm,
+    borderRadius: radius.sm,
+    marginBottom: spacing.sm,
   },
-  patientMsgText: { fontSize: 13, color: Colors.text, lineHeight: 18 },
+  patientMsgText: { fontSize: typography.caption.fontSize, color: Colors.text, lineHeight: typography.caption.lineHeight },
   replyBox: {
-    backgroundColor: '#F0FDF4',
-    padding: 12,
-    borderRadius: 10,
+    backgroundColor: Colors.successBackground,
+    padding: spacing.md,
+    borderRadius: radius.md,
     borderLeftWidth: 3,
-    borderLeftColor: '#10B981',
+    borderLeftColor: Colors.success,
   },
-  replyLabel: { fontSize: 11, fontWeight: '700', color: '#065F46', marginBottom: 2 },
-  replyText: { fontSize: 13, color: '#047857', lineHeight: 18 },
-  replyDate: { fontSize: 10, color: '#6EE7B7', marginTop: 4, textAlign: 'right' },
+  replyLabel: { fontSize: typography.caption.fontSize, fontWeight: '700', color: Colors.success, marginBottom: spacing.xs },
+  replyText: { fontSize: typography.caption.fontSize, color: Colors.success, lineHeight: typography.caption.lineHeight },
+  replyDate: { fontSize: typography.caption.fontSize, color: Colors.success, marginTop: spacing.xs, textAlign: 'right' },
   pendingReplyBox: {
-    backgroundColor: '#F9FAFB',
-    padding: 8,
-    borderRadius: 6,
+    backgroundColor: Colors.surface,
+    padding: spacing.sm,
+    borderRadius: radius.sm,
   },
-  pendingReplyText: { fontSize: 11, color: Colors.textSecondary, fontStyle: 'italic' },
+  pendingReplyText: { fontSize: typography.caption.fontSize, color: Colors.textSecondary, fontStyle: 'italic' },
 });
 

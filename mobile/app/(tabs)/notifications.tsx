@@ -1,3 +1,4 @@
+import { spacing, typography, radius } from '@m-care/shared';
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
@@ -9,6 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import Colors from '@/constants/Colors';
@@ -145,7 +147,7 @@ export default function NotificationsScreen() {
             </View>
           ) : notifications.length === 0 ? (
             <View style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>🔔</Text>
+              <Ionicons name="notifications-outline" size={40} color={Colors.primary} style={styles.emptyIcon} />
               <Text style={styles.emptyTitle}>No Notifications Yet</Text>
               <Text style={styles.emptyText}>
                 You will receive alerts here when clinic staff confirms your appointment or sends clinical reminders.
@@ -181,54 +183,54 @@ export default function NotificationsScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFF7F9' },
+  safeArea: { flex: 1, backgroundColor: Colors.brandWash },
   container: { flex: 1 },
   header: {
-    padding: 20,
-    paddingBottom: 14,
-    backgroundColor: '#FFFFFF',
+    padding: spacing.xl,
+    paddingBottom: spacing.lg,
+    backgroundColor: Colors.background,
     borderBottomWidth: 1,
-    borderBottomColor: '#FCE7F3',
+    borderBottomColor: Colors.brandSoft,
   },
   headerTitleRow: { flexDirection: 'row', alignItems: 'center' },
-  title: { fontSize: 22, fontWeight: '700', color: Colors.text },
+  title: { fontSize: typography.title.fontSize, fontWeight: '700', color: Colors.text },
   badge: {
     backgroundColor: Colors.primary,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 10,
-    marginLeft: 8,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.md,
+    marginLeft: spacing.sm,
   },
-  badgeText: { color: '#FFFFFF', fontSize: 11, fontWeight: '700' },
-  subtitle: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
-  markAllBtn: { alignSelf: 'flex-start', marginTop: 8 },
-  markAllText: { fontSize: 12, fontWeight: '700', color: Colors.primary },
-  scrollContent: { padding: 20, paddingBottom: 40 },
-  centerBox: { padding: 40, alignItems: 'center' },
-  loadingText: { marginTop: 12, fontSize: 13, color: Colors.textSecondary },
+  badgeText: { color: Colors.background, fontSize: typography.caption.fontSize, fontWeight: '700' },
+  subtitle: { fontSize: typography.caption.fontSize, color: Colors.textSecondary, marginTop: spacing.xs },
+  markAllBtn: { alignSelf: 'flex-start', marginTop: spacing.sm },
+  markAllText: { fontSize: typography.caption.fontSize, fontWeight: '700', color: Colors.primary },
+  scrollContent: { padding: spacing.xl, paddingBottom: spacing['4xl'] },
+  centerBox: { padding: spacing['4xl'], alignItems: 'center' },
+  loadingText: { marginTop: spacing.md, fontSize: typography.caption.fontSize, color: Colors.textSecondary },
   emptyCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    padding: 28,
+    backgroundColor: Colors.background,
+    borderRadius: radius.xl,
+    padding: 0,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#F3F4F6',
-    marginTop: 20,
+    borderColor: Colors.surfaceAlt,
+    marginTop: spacing.xl,
   },
-  emptyIcon: { fontSize: 38, marginBottom: 12 },
-  emptyTitle: { fontSize: 17, fontWeight: '700', color: Colors.text, marginBottom: 6 },
-  emptyText: { fontSize: 13, color: Colors.textSecondary, textAlign: 'center', lineHeight: 18 },
+  emptyIcon: { fontSize: typography.largeTitle.fontSize, marginBottom: spacing.md },
+  emptyTitle: { fontSize: typography.body.fontSize, fontWeight: '700', color: Colors.text, marginBottom: spacing.sm },
+  emptyText: { fontSize: typography.caption.fontSize, color: Colors.textSecondary, textAlign: 'center', lineHeight: typography.caption.lineHeight },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 10,
+    backgroundColor: Colors.background,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.sm,
     borderWidth: 1,
-    borderColor: '#F3F4F6',
+    borderColor: Colors.surfaceAlt,
   },
   unreadCard: {
-    backgroundColor: '#FFF5F8',
-    borderColor: '#FCE7F3',
+    backgroundColor: Colors.brandWash,
+    borderColor: Colors.brandSoft,
     borderLeftWidth: 4,
     borderLeftColor: Colors.primary,
   },
@@ -236,19 +238,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 6,
+    marginBottom: spacing.sm,
   },
-  titleRow: { flexDirection: 'row', alignItems: 'center', flex: 1, marginRight: 8 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', flex: 1, marginRight: spacing.sm },
   unreadDot: {
     width: 8,
     height: 8,
-    borderRadius: 4,
+    borderRadius: radius.sm,
     backgroundColor: Colors.primary,
-    marginRight: 6,
+    marginRight: spacing.sm,
   },
-  cardTitle: { fontSize: 14, fontWeight: '600', color: Colors.text },
+  cardTitle: { fontSize: typography.small.fontSize, fontWeight: '600', color: Colors.text },
   unreadTitle: { fontWeight: '700', color: Colors.primaryDark },
-  timeAgo: { fontSize: 11, color: Colors.textLight },
-  cardBody: { fontSize: 13, color: Colors.textSecondary, lineHeight: 18 },
+  timeAgo: { fontSize: typography.caption.fontSize, color: Colors.textLight },
+  cardBody: { fontSize: typography.caption.fontSize, color: Colors.textSecondary, lineHeight: typography.caption.lineHeight },
 });
 
