@@ -79,3 +79,9 @@
 - Added migration `00024_reject_weekend_appointments.sql`, which rejects weekend appointments in Asia/Manila in both the booking RPC and a database trigger. Applied it to dev ref `luccnwicirfnmyzgemzj` and verified a Saturday insert is rejected. Production was not contacted.
 - Added shared Manila date/time helpers and updated patient-facing mobile screens and web dashboard dates/times to use Asia/Manila. Booking load, slot, and submission failures show the returned error and a Retry action.
 - Mobile TypeScript check passed. Web TypeScript check still fails on the stale `.next/types` reference to a removed route and existing React 18/19 Next/Link and Recharts JSX type conflicts. No packages were changed.
+
+### Task 4 — TypeScript and dev booking verification
+
+- Re-ran `npx tsc --noEmit` in `mobile/`: passed.
+- Re-ran `npx tsc --noEmit` in `web/`: still fails on stale `.next/types` references to removed `src/app/book/page` and existing React 18/19 compatibility errors in Next layouts/links and Recharts JSX types. App manifests and packages were not changed.
+- Against dev ref `luccnwicirfnmyzgemzj`, authenticated an existing patient session, booked an available weekday slot through `book_appointment`, and confirmed the patient could read back the appointment with Dr. Bernice, the requested start time, and `pending` status. Deleted the temporary appointment after verification. Production was not contacted.
