@@ -29,3 +29,4 @@
 ## Step 4 — Checks
 
 - Not started.
+- Privacy and deletion pages: moved the existing policy and deletion guidance into shared themed cards and readable page widths. Preserved public access, policy text, deletion instructions, and all route behavior. Web TypeScript check passed. Group committed separately.
