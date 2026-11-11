@@ -31,7 +31,7 @@ export function ErrorState({ title = "We could not load this information", descr
   return (
     <div role="alert" className="alert alert-error items-start">
       <div className="min-w-0 flex-1">
-        <h2 className="font-bold">{title}</h2>
+        {title && <h2 className="font-bold">{title}</h2>}
         <p>{description}</p>
       </div>
       {onRetry && <Button variant="outline" onClick={onRetry}>Retry</Button>}

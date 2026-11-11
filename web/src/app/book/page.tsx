@@ -12,6 +12,11 @@ import {
 import type { AvailableSlot, DoctorSchedule, DoctorWithProfile, Service } from "@m-care/shared";
 import { createClient } from "@/lib/supabase/client";
 import PatientHeader from "@/components/PatientHeader";
+import Button from "@/components/ui/Button";
+import PageContainer from "@/components/ui/PageContainer";
+import Badge from "@/components/ui/Badge";
+import StatusAlert from "@/components/ui/StatusAlert";
+import { EmptyState, ErrorState, LoadingState } from "@/components/ui/AsyncStates";
 
 type BookingSlot = AvailableSlot & { available: boolean };
 
@@ -205,99 +210,90 @@ export default function PatientBookingPage() {
   };
 
   return (
-    <main className="min-h-screen bg-rose-50/60 px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-5xl">
+    <div className="min-h-screen bg-base-200">
+      <PageContainer className="max-w-5xl py-6">
         <PatientHeader active="/book" />
 
         <section className="mb-6">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">Book an appointment</h1>
-          <p className="mt-2 text-base text-gray-700">Choose a service and a weekday that works for you. All times are in Asia/Manila.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-base-content">Book an appointment</h1>
+          <p className="mt-2 text-base text-base-content/80">Choose a service and a weekday that works for you. All times are in Asia/Manila.</p>
         </section>
 
         {bookingReference && (
-          <div role="status" className="mb-6 rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-emerald-950">
+          <StatusAlert variant="success" className="mb-6">
             <p className="font-semibold">Your appointment request was submitted.</p>
             <p className="mt-1 text-sm">Reference: {bookingReference}</p>
-            <button type="button" onClick={() => setBookingReference(null)} className="mt-3 rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-800 focus:ring-offset-2">
+            <Button type="button" variant="secondary" onClick={() => setBookingReference(null)}>
               Book another appointment
-            </button>
-          </div>
+            </Button>
+          </StatusAlert>
         )}
 
         {loading ? (
-          <div role="status" className="rounded-2xl border border-gray-200 bg-white p-8 text-center text-gray-700 shadow-sm">
-            <span className="mb-3 inline-block h-8 w-8 animate-spin rounded-full border-4 border-rose-700 border-t-transparent" />
-            <p>Loading clinic booking details…</p>
-          </div>
+          <LoadingState label="Loading clinic booking details…" />
         ) : loadError ? (
-          <div role="alert" className="rounded-2xl border border-red-300 bg-white p-6 text-red-950 shadow-sm">
-            <p className="font-semibold">Booking details are unavailable</p>
-            <p className="mt-1">{loadError}</p>
-            <button type="button" onClick={() => void loadCatalog()} className="mt-4 rounded-lg bg-rose-800 px-4 py-2 font-semibold text-white hover:bg-rose-900 focus:outline-none focus:ring-2 focus:ring-rose-800 focus:ring-offset-2">Retry</button>
-          </div>
+          <ErrorState title="Booking details are unavailable" description={loadError} onRetry={() => void loadCatalog()} />
         ) : (
           <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-            <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
-              <h2 className="text-xl font-bold text-gray-900">1. Choose a service</h2>
+            <section className="card card-bordered rounded-box border-base-300 bg-base-100 p-4 shadow-sm sm:p-6">
+              <h2 className="text-xl font-bold text-base-content">1. Choose a service</h2>
               {services.length === 0 ? (
-                <div className="mt-4 rounded-xl bg-gray-50 p-4 text-gray-700">
-                  <p>No services are currently available.</p>
-                  <button type="button" onClick={() => void loadCatalog()} className="mt-3 rounded-lg bg-rose-800 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-900">Retry</button>
+                <div className="mt-4">
+                  <EmptyState title="No services are currently available.">
+                    <Button type="button" variant="outline" onClick={() => void loadCatalog()}>Retry</Button>
+                  </EmptyState>
                 </div>
               ) : (
                 <div className="mt-4 space-y-3">
                   {services.map((service) => (
-                    <button key={service.id} type="button" aria-pressed={selectedService?.id === service.id} onClick={() => { setSelectedService(service); setSelectedDate(""); setBookingError(null); }} className={`w-full rounded-xl border p-4 text-left transition focus:outline-none focus:ring-2 focus:ring-rose-700 focus:ring-offset-2 ${selectedService?.id === service.id ? "border-rose-800 bg-rose-50" : "border-gray-300 hover:border-rose-700"}`}>
-                      <span className="block font-semibold text-gray-900">{service.name}</span>
-                      {service.description && <span className="mt-1 block text-sm text-gray-700">{service.description}</span>}
-                      <span className="mt-2 block text-sm font-medium text-gray-700">{service.duration_minutes} minutes</span>
+                    <button key={service.id} type="button" aria-pressed={selectedService?.id === service.id} onClick={() => { setSelectedService(service); setSelectedDate(""); setBookingError(null); }} className={`btn btn-ghost h-auto min-h-20 w-full justify-start rounded-box border p-4 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${selectedService?.id === service.id ? "border-primary bg-primary/10" : "border-base-300 hover:border-primary"}`}>
+                      <span className="block font-semibold text-base-content">{service.name}</span>
+                      {service.description && <span className="mt-1 block text-sm font-normal text-base-content/80">{service.description}</span>}
+                      <span className="mt-2 block text-sm font-medium text-base-content/80">{service.duration_minutes} minutes</span>
                     </button>
                   ))}
                 </div>
               )}
-              <div className="mt-6 rounded-xl bg-gray-50 p-4">
-                <p className="font-semibold text-gray-900">Your doctor</p>
-                <p className="mt-1 text-gray-800">Dr. Bernice Paule</p>
-                <p className="text-sm text-gray-700">OB-GYNE / Sonologist</p>
+              <div className="mt-6 rounded-box bg-base-200 p-4">
+                <p className="font-semibold text-base-content">Your doctor</p>
+                <p className="mt-1 text-base-content">Dr. Bernice Paule</p>
+                <p className="text-sm text-base-content/80">OB-GYNE / Sonologist</p>
               </div>
             </section>
 
-            <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
-              <h2 className="text-xl font-bold text-gray-900">2. Choose a date and time</h2>
-              <div className="mt-4 flex items-center justify-between">
-                <button type="button" aria-label="Previous month" onClick={() => setMonth((value) => monthDate(value.getUTCFullYear(), value.getUTCMonth() - 1, 1))} className="h-10 w-10 rounded-lg border border-gray-300 text-2xl text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-rose-700">‹</button>
-                <h3 className="text-lg font-bold text-gray-900">{monthTitle}</h3>
-                <button type="button" aria-label="Next month" onClick={() => setMonth((value) => monthDate(value.getUTCFullYear(), value.getUTCMonth() + 1, 1))} className="h-10 w-10 rounded-lg border border-gray-300 text-2xl text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-rose-700">›</button>
+            <section className="card card-bordered rounded-box border-base-300 bg-base-100 p-4 shadow-sm sm:p-6">
+              <h2 className="text-xl font-bold text-base-content">2. Choose a date and time</h2>
+              <div className="mt-4 flex items-center justify-between gap-2">
+                <Button type="button" aria-label="Previous month" variant="outline" className="btn-square px-0 text-xl" onClick={() => setMonth((value) => monthDate(value.getUTCFullYear(), value.getUTCMonth() - 1, 1))}>‹</Button>
+                <h3 className="text-lg font-bold text-base-content">{monthTitle}</h3>
+                <Button type="button" aria-label="Next month" variant="outline" className="btn-square px-0 text-xl" onClick={() => setMonth((value) => monthDate(value.getUTCFullYear(), value.getUTCMonth() + 1, 1))}>›</Button>
               </div>
-              <div className="mt-4 grid grid-cols-7 gap-1 text-center">
-                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((label) => <span key={label} className="py-2 text-xs font-semibold text-gray-700">{label}</span>)}
+              <div className="mt-4 grid grid-cols-7 gap-0 text-center">
+                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((label) => <span key={label} className="inline-flex min-h-11 items-center justify-center text-xs font-semibold text-base-content/75">{label}</span>)}
                 {days.map((day) => (
-                  <button key={day.dateKey} type="button" disabled={day.disabled || !selectedService} aria-pressed={selectedDate === day.dateKey} aria-label={`${formatManilaDate(day.dateKey, { dateStyle: "full" })}${day.disabled ? ", unavailable" : ""}`} onClick={() => { setSelectedDate(day.dateKey); setBookingError(null); }} className={`aspect-square rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-rose-700 ${day.disabled || !selectedService ? "cursor-not-allowed bg-gray-100 text-gray-400" : "text-gray-900 hover:bg-rose-50"} ${selectedDate === day.dateKey ? "!bg-rose-800 !text-white" : ""}`}>
+                  <button key={day.dateKey} type="button" disabled={day.disabled || !selectedService} aria-pressed={selectedDate === day.dateKey} aria-label={`${formatManilaDate(day.dateKey, { dateStyle: "full" })}${day.disabled ? ", unavailable" : ""}`} onClick={() => { setSelectedDate(day.dateKey); setBookingError(null); }} className={`min-h-11 min-w-11 rounded-md text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${day.disabled || !selectedService ? "cursor-not-allowed bg-base-200 text-base-content/50" : "text-base-content hover:bg-primary/10"} ${selectedDate === day.dateKey ? "!bg-primary !text-primary-content" : ""}`}>
                     {day.day}
                   </button>
                 ))}
               </div>
-              <p className="mt-3 text-sm text-gray-700">Weekends and past dates are unavailable. Calendar dates use Manila time.</p>
+              <p className="mt-3 text-sm text-base-content/80">Weekends and past dates are unavailable. Calendar dates use Manila time.</p>
 
               {!selectedService ? (
-                <p className="mt-5 rounded-xl bg-gray-50 p-4 text-gray-700">Choose a service to see available dates.</p>
+                <p className="mt-5 rounded-box bg-base-200 p-4 text-base-content/80">Choose a service to see available dates.</p>
               ) : selectedDate && (
-                <div className="mt-5 border-t border-gray-200 pt-5">
-                  <h3 className="font-bold text-gray-900">{formatManilaDate(selectedDate, { dateStyle: "full" })}</h3>
+                <div className="mt-5 border-t border-base-300 pt-5">
+                  <h3 className="font-bold text-base-content">{formatManilaDate(selectedDate, { dateStyle: "full" })}</h3>
                   {slotError ? (
-                    <div role="alert" className="mt-3 rounded-xl border border-red-300 bg-red-50 p-4 text-red-950">
-                      <p>{slotError}</p>
-                      <button type="button" onClick={() => setRetry((value) => value + 1)} className="mt-3 rounded-lg bg-rose-800 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-900">Retry</button>
-                    </div>
+                    <div className="mt-3"><ErrorState title="" description={slotError} onRetry={() => setRetry((value) => value + 1)} /></div>
                   ) : loadingSlots ? (
-                    <p role="status" className="mt-3 text-gray-700">Loading available times…</p>
+                    <div className="mt-3"><LoadingState label="Loading available times…" /></div>
                   ) : slots.length === 0 ? (
-                    <p className="mt-3 rounded-xl bg-gray-50 p-4 text-gray-700">No clinic hours are scheduled for this date.</p>
+                    <div className="mt-3"><EmptyState title="No clinic hours are scheduled for this date." /></div>
                   ) : (
                     <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
                       {slots.map((slot) => (
-                        <button key={slot.slot_start} type="button" disabled={!slot.available} aria-pressed={selectedSlot?.slot_start === slot.slot_start} onClick={() => { setSelectedSlot(slot); setBookingError(null); }} className={`rounded-lg border px-3 py-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-rose-700 ${!slot.available ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-500" : selectedSlot?.slot_start === slot.slot_start ? "border-rose-800 bg-rose-800 text-white" : "border-gray-300 text-gray-900 hover:border-rose-700"}`}>
-                          {formatManilaTime(slot.slot_start)}{!slot.available && <span className="mt-1 block text-xs font-normal">Unavailable</span>}
+                        <button key={slot.slot_start} type="button" disabled={!slot.available} aria-pressed={selectedSlot?.slot_start === slot.slot_start} onClick={() => { setSelectedSlot(slot); setBookingError(null); }} className={`btn h-auto min-h-11 flex-col rounded-field border px-3 py-3 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${!slot.available ? "cursor-not-allowed border-base-300 bg-base-200 text-base-content/60" : selectedSlot?.slot_start === slot.slot_start ? "border-primary bg-primary text-primary-content" : "border-base-300 bg-base-100 text-base-content hover:border-primary"}`}>
+                          {formatManilaTime(slot.slot_start)}{!slot.available && <Badge variant="outline" className="mt-1">Unavailable</Badge>}
                         </button>
                       ))}
                     </div>
@@ -305,14 +301,19 @@ export default function PatientBookingPage() {
                 </div>
               )}
 
-              {bookingError && <div role="alert" className="mt-4 rounded-xl border border-red-300 bg-red-50 p-4 text-red-950"><p>{bookingError}</p><button type="button" disabled={submitting} onClick={() => void submitBooking()} className="mt-3 rounded-lg bg-rose-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">{submitting ? "Retrying…" : "Retry"}</button></div>}
-              <button type="button" disabled={!selectedSlot || submitting} onClick={() => void submitBooking()} className="mt-5 w-full rounded-xl bg-rose-800 px-5 py-3 font-bold text-white hover:bg-rose-900 focus:outline-none focus:ring-2 focus:ring-rose-800 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400">
+              {bookingError && (
+                <StatusAlert variant="error" className="mt-4 flex-wrap">
+                  <span className="min-w-0 flex-1">{bookingError}</span>
+                  <Button type="button" variant="destructive" disabled={submitting} loading={submitting} onClick={() => void submitBooking()}>{submitting ? "Retrying…" : "Retry"}</Button>
+                </StatusAlert>
+              )}
+              <Button type="button" disabled={!selectedSlot || submitting} loading={submitting} onClick={() => void submitBooking()} fullWidth className="mt-5">
                 {submitting ? "Submitting…" : "Request appointment"}
-              </button>
+              </Button>
             </section>
           </div>
         )}
-      </div>
-    </main>
+      </PageContainer>
+    </div>
   );
 }
