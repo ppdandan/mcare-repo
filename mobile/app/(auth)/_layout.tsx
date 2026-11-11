@@ -1,4 +1,4 @@
-import Colors from '@/constants/Colors';
+import { colors as Colors } from '@/theme';
 import React from 'react';
 import { Stack } from 'expo-router';
 

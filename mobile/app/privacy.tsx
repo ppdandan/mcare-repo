@@ -1,5 +1,5 @@
-import { spacing, typography, radius } from '@m-care/shared';
-import Colors from '@/constants/Colors';
+import { spacing, typography, radius } from '@/theme';
+import { colors as Colors } from '@/theme';
 // TODO: The clinic must review this privacy policy text before release.
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';

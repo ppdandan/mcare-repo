@@ -1,4 +1,5 @@
-import { spacing, typography, radius, userFacingErrorMessage } from '@m-care/shared';
+import { spacing, typography, radius } from '@/theme';
+import { userFacingErrorMessage } from '@m-care/shared';
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
@@ -16,7 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
-import Colors from '@/constants/Colors';
+import { colors as Colors } from '@/theme';
 import { formatManilaDateTime, formatManilaTime } from '@m-care/shared';
 import type { Inquiry } from '@m-care/shared';
 

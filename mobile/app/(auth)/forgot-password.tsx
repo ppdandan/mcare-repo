@@ -1,4 +1,4 @@
-import { spacing, typography, radius } from '@m-care/shared';
+import { spacing, typography, radius } from '@/theme';
 import React, { useState } from 'react';
 import {
   View,
@@ -13,7 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
-import Colors from '@/constants/Colors';
+import { colors as Colors } from '@/theme';
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();

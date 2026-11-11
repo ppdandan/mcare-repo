@@ -1,9 +1,9 @@
-import { spacing, typography, radius } from '@m-care/shared';
+import { spacing, typography, radius } from '@/theme';
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, StyleSheet, Easing } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
-import Colors from '@/constants/Colors';
+import { colors as Colors } from '@/theme';
 import { Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 

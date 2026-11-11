@@ -36,3 +36,10 @@
 - Rechecked theme contrast with a script: body 15.81:1, muted 7.01:1, and the primary, secondary, accent, neutral, info, success, warning, and error button pairs 8.82:1, 11.09:1, 5.90:1, 15.81:1, 7.51:1, 6.48:1, 6.53:1, and 7.14:1.
 - Source audit found 46 form controls with accessible names/labels, all 3 app images with alt attributes, and no remaining input placeholder text. Buttons and form controls have a 44px minimum; interactive navigation links have 44px minimum heights. All nine dashboard tables are contained by horizontal scroll wrappers.
 - Reviewed responsive layout classes for the 375px, 768px, and 1280px widths: narrow forms and cards use full-width containers, grids switch at responsive breakpoints, tables scroll inside their own wrappers, dashboard content uses `min-w-0`, and the dashboard switches to its sidebar at the large breakpoint. This was a source-class review only. No screenshots, browser-based viewport rendering, or real device checks were performed.
+
+## Mobile UI progress
+
+### Step 1 — Design tokens
+
+- Read `shared/theme.ts` and the website `mcare` theme. Added `mobile/theme.ts` as the app token entry point, using the shared palette, spacing, type scale, radii, and sizes. Replaced the mobile `Colors` constant and moved screen token imports to the mobile theme; no styling framework or package was added.
+- `cd mobile && npx tsc --noEmit` passed. Step 1 complete.

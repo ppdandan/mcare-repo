@@ -1,4 +1,4 @@
-import { spacing, typography, radius } from '@m-care/shared';
+import { spacing, typography, radius } from '@/theme';
 import React from 'react';
 import {
   View,
@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import Colors from '@/constants/Colors';
+import { colors as Colors } from '@/theme';
 
 export default function WelcomeScreen() {
   const router = useRouter();

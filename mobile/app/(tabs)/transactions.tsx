@@ -1,4 +1,4 @@
-import { spacing, typography, radius } from '@m-care/shared';
+import { spacing, typography, radius } from '@/theme';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
-import Colors from '@/constants/Colors';
+import { colors as Colors } from '@/theme';
 import { formatManilaDate, formatManilaDateTime } from '@m-care/shared';
 import type { TransactionWithAppointment } from '@m-care/shared';
 

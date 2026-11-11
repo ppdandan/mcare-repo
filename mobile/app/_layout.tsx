@@ -3,7 +3,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider } from '@/lib/auth';
-import Colors from '@/constants/Colors';
+import { colors as Colors } from '@/theme';
 
 export default function RootLayout() {
   return (

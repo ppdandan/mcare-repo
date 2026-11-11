@@ -1,4 +1,5 @@
-import { spacing, typography, radius, userFacingErrorMessage } from '@m-care/shared';
+import { spacing, typography, radius } from '@/theme';
+import { userFacingErrorMessage } from '@m-care/shared';
 import React, { useState, useRef } from 'react';
 import {
   View,
@@ -15,7 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
-import Colors from '@/constants/Colors';
+import { colors as Colors } from '@/theme';
 import { Ionicons } from '@expo/vector-icons';
 
 type LoginMode = 'password' | 'otp';

@@ -1,8 +1,8 @@
-import { spacing, typography } from '@m-care/shared';
+import { spacing, typography } from '@/theme';
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import Colors from '@/constants/Colors';
+import { colors as Colors } from '@/theme';
 
 export default function TabsLayout() {
   return (

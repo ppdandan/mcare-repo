@@ -1,4 +1,4 @@
-import { spacing, typography, radius } from '@m-care/shared';
+import { spacing, typography, radius } from '@/theme';
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
@@ -14,7 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
-import Colors from '@/constants/Colors';
+import { colors as Colors } from '@/theme';
 import { formatManilaDate } from '@m-care/shared';
 import type { MedicalRecordWithDetails } from '@m-care/shared';
 

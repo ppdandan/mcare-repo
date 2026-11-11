@@ -1,4 +1,4 @@
-import { spacing, typography, radius } from '@m-care/shared';
+import { spacing, typography, radius } from '@/theme';
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
@@ -16,7 +16,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import { registerForPushNotificationsAsync } from '@/lib/notifications';
-import Colors from '@/constants/Colors';
+import { colors as Colors } from '@/theme';
 import { formatManilaDateTime } from '@m-care/shared';
 import type { AppointmentWithDetails } from '@m-care/shared';
 
