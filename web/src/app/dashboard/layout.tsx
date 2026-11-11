@@ -98,9 +98,7 @@ export default function DashboardLayout({
         <div>
           {/* Brand */}
           <div className="h-16 flex items-center px-6 border-b border-gray-100">
-            <div className="w-9 h-9 rounded-lg bg-pink-600 flex items-center justify-center text-white font-bold text-lg shadow-sm mr-3">
-              M
-            </div>
+            <img src="/logo.png" alt="M-Care" width={36} height={42} className="mr-3 h-10 w-9 object-contain" />
             <div>
               <span className="font-extrabold text-gray-900 tracking-tight text-base">M-CARE</span>
               <span className="text-[10px] block font-semibold text-pink-600 uppercase tracking-wider">

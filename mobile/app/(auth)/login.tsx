@@ -11,10 +11,10 @@ import {
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import Colors from '@/constants/Colors';
-import PregnantWomanLogo from '@/components/PregnantWomanLogo';
 import { Ionicons } from '@expo/vector-icons';
 
 type LoginMode = 'password' | 'otp';
@@ -131,7 +131,12 @@ export default function LoginScreen() {
 
           {/* Header with Pregnant Woman Logo */}
           <View style={styles.header}>
-            <PregnantWomanLogo size={80} />
+            <Image
+              source={require('../../assets/logo.png')}
+              accessibilityLabel="M-Care logo"
+              resizeMode="contain"
+              style={{ width: 80, height: 93 }}
+            />
             <Text style={styles.title}>Welcome Back</Text>
             <Text style={styles.subtitle}>M-Care OB-GYN & Ultrasound Clinic</Text>
             <Text style={styles.patientBadge}>Patient Portal</Text>

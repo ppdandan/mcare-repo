@@ -3,7 +3,7 @@ import { View, Text, Animated, StyleSheet, Easing } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import Colors from '@/constants/Colors';
-import PregnantWomanLogo from '@/components/PregnantWomanLogo';
+import { Image } from 'react-native';
 
 export default function IndexScreen() {
   const { session, profile, loading } = useAuth();
@@ -96,7 +96,12 @@ export default function IndexScreen() {
           },
         ]}
       >
-        <PregnantWomanLogo size={110} />
+        <Image
+          source={require('../assets/logo.png')}
+          accessibilityLabel="M-Care logo"
+          resizeMode="contain"
+          style={{ width: 140, height: 164 }}
+        />
       </Animated.View>
 
       {/* Brand Title and Subtitle Animation */}

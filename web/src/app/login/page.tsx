@@ -138,9 +138,7 @@ function LoginForm() {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-pink-100 p-8">
         {/* Brand Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-pink-600 text-white font-bold text-2xl shadow-md mb-3">
-            M
-          </div>
+          <img src="/logo.png" alt="M-Care" width={64} height={75} className="mx-auto mb-3 h-[75px] w-16 object-contain" />
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">M-CARE CLINIC</h1>
           <p className="text-sm font-semibold text-pink-600 uppercase tracking-wider mt-1">
             Clinical & Administrative Portal

@@ -5,11 +5,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import Colors from '@/constants/Colors';
-import PregnantWomanLogo from '@/components/PregnantWomanLogo';
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -19,7 +19,12 @@ export default function WelcomeScreen() {
       <ScrollView contentContainerStyle={styles.container}>
         {/* Brand Header */}
         <View style={styles.header}>
-          <PregnantWomanLogo size={88} />
+          <Image
+            source={require('../../assets/logo.png')}
+            accessibilityLabel="M-Care logo"
+            resizeMode="contain"
+            style={{ width: 88, height: 103 }}
+          />
           <Text style={styles.clinicTitle}>M-CARE</Text>
           <Text style={styles.clinicSubtitle}>OB-GYN Clinic & Ultrasound</Text>
           <Text style={styles.location}>Balibago, Angeles City, Pampanga</Text>

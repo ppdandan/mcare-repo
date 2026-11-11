@@ -7,6 +7,7 @@ import {
   ScrollView,
   RefreshControl,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -116,9 +117,17 @@ export default function HomeScreen() {
       >
         {/* Top Bar */}
         <View style={styles.topBar}>
-          <View>
-            <Text style={styles.greeting}>Good day,</Text>
-            <Text style={styles.patientName}>{profile?.full_name ?? 'Patient'}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Image
+              source={require('../assets/logo.png')}
+              accessibilityLabel="M-Care logo"
+              resizeMode="contain"
+              style={{ width: 28, height: 33, marginRight: 8 }}
+            />
+            <View>
+              <Text style={styles.greeting}>Good day,</Text>
+              <Text style={styles.patientName}>{profile?.full_name ?? 'Patient'}</Text>
+            </View>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <TouchableOpacity

@@ -54,3 +54,13 @@
 - `npx expo-doctor` passed 18/18, the mobile TypeScript check passed, and `npx expo export --platform android` succeeded after these changes. Committed as `0ca99ed`.
 - Android 16 emulator UI review was not run: the user instructed not to start the emulator on this device and will install an EAS build on their own phone. The layout fix above is static; the device check remains outstanding.
 - No EAS build was run and no Android/iOS folder is tracked.
+
+## Requested recovery tasks
+
+### Task 1 — Brand assets
+
+- Added the supplied `logo.png` to the mobile and web assets. Replaced the mobile illustrated logo in login, welcome, splash, and home header; replaced the web placeholder in login and dashboard header.
+- Regenerated the mobile app icon, adaptive icon foreground, and splash image from the supplied PNG while preserving aspect ratio. Updated the splash and adaptive icon backgrounds to white.
+- Added the supplied `logo.svg` as the Next.js app icon/favicon and removed `PregnantWomanLogo.tsx`.
+- No email templates exist in this repository.
+- Mobile TypeScript check passed. Web TypeScript check remains blocked by existing workspace type conflicts (React 18/19 `ReactNode` incompatibilities), stale `.next/types` references to missing `src/app/book/page`, and Recharts JSX type errors; no packages were changed.
