@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
-import { designTokens } from "../shared/design-tokens";
+import daisyui from "daisyui";
+import { designTokens } from "../shared/theme";
 
 const brand = designTokens.color;
 const brandScale = {
@@ -68,7 +69,41 @@ const infoScale = {
  * Tailwind CSS configuration for M-Care web dashboard.
  * Custom brand colors: primary (pink) and secondary (purple).
  */
-const config: Config = {
+const mcareTheme = {
+  primary: brand.brand,
+  "primary-content": brand.onBrand,
+  secondary: brand.brandStrong,
+  "secondary-content": brand.onBrand,
+  accent: brand.brandMid,
+  "accent-content": brand.onBrand,
+  neutral: brand.text,
+  "neutral-content": brand.surface,
+  "base-100": brand.surface,
+  "base-200": brand.canvas,
+  "base-300": brand.brandSoft,
+  "base-content": brand.text,
+  info: brand.info,
+  "info-content": brand.onBrand,
+  success: brand.success,
+  "success-content": brand.onBrand,
+  warning: brand.warning,
+  "warning-content": brand.onBrand,
+  error: brand.error,
+  "error-content": brand.onBrand,
+  "--rounded-box": `${designTokens.radius.lg}px`,
+  "--rounded-btn": `${designTokens.radius.md}px`,
+  "--rounded-badge": `${designTokens.radius.full}px`,
+  "--tab-radius": `${designTokens.radius.sm}px`,
+  "--animation-btn": "0.2s",
+  "--animation-input": "0.2s",
+  "--btn-focus-scale": "0.98",
+  "--border-btn": "1px",
+  "--tab-border": "1px",
+  "--mcare-control-height": `${designTokens.size.controlHeight}px`,
+  "--mcare-tap-target": `${designTokens.size.tapTarget}px`,
+};
+
+const config: Config & { daisyui: { themes: Array<Record<string, typeof mcareTheme>>; darkTheme: false; logs: false } } = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -124,7 +159,12 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [daisyui],
+  daisyui: {
+    themes: [{ mcare: mcareTheme }],
+    darkTheme: false,
+    logs: false,
+  },
 };
 
 export default config;
