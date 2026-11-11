@@ -1,6 +1,6 @@
 # Play Console privacy worksheet draft
 
-Clinic review is required before completing Play Console forms. Replace all placeholders and verify each provider's processing terms and locations.
+Clinic review is required before completing Play Console forms. Confirm each provider's processing terms and locations.
 
 ## Data types observed in the current code
 
@@ -34,9 +34,9 @@ The in-app account deletion path asks for recent authentication or password conf
 
 ## Clinic values to fill
 
-- `CLINIC_NAME`
-- `CLINIC_ADDRESS`
-- `CLINIC_CONTACT_EMAIL`
+- Clinic name: M-Care
+- Clinic address: Balibago, Angeles City
+- Clinic contact email: dposadas003@gmail.com
 - `RETENTION_PERIOD`
 - Effective date and privacy request verification instructions
 - Supabase, email, and push provider legal names, locations, and retention terms

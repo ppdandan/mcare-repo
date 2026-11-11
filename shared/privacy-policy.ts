@@ -4,37 +4,39 @@ export const PRIVACY_POLICY = `
 
 Draft for clinic review. Effective date: to be set after approval.
 
-M-Care Clinic (the clinic) operates M-Care for appointment scheduling and access to clinic records. The clinic will approve and date this policy before public release.
+M-Care operates M-Care for appointments and patient records. This draft must be approved by the clinic before release.
 
 ## Information collected
 
-The app may collect your name, email address, phone number, date of birth, home address, emergency contact details, blood type, allergies, obstetric and gynecologic history, appointment date and time, selected doctor and service, booking status, inquiry messages, clinical notes and records entered by clinic staff, notification preferences, and device push token. After a completed service, the clinic may record the amount paid, currency, a payment-method label, notes, and the staff member who recorded it so you can review your transaction history. Payment is made in person at the clinic; M-Care does not collect payments or payment card or wallet details.
+M-Care collects your name, email, phone number, birth date, and address. It may also collect emergency contact details, blood type, allergies, and pregnancy or reproductive health information. It stores appointment details, messages, clinic records, notification settings, and a device push token.
 
-## Why it is used
+After a completed visit, clinic staff may record the amount, currency, payment method label, notes, and staff member. These stored transaction records let you review charges for clinic services. Payment happens at the clinic. M-Care does not collect card or wallet details.
 
-The clinic uses this information to create and secure accounts, verify contact details, schedule and manage visits, communicate booking updates, respond to inquiries, maintain patient and clinical records, support continuity of care, and meet legal and operational duties. Health information is sensitive personal information under the Philippine Data Privacy Act of 2012 (RA 10173) and is accessed only for clinic and care purposes, subject to applicable law.
+## Why we use it
 
-## Who can access it
+We use your information to manage your account and appointments. We use it to reply to messages, provide care, keep clinic records, and send updates and reminders. We also use it to meet legal and clinic duties.
 
-You can access information associated with your account through the app. The clinic's authorized doctor and staff can access information needed for scheduling, administration, and care according to their assigned role. The clinic's hosting, database, email, and push-notification providers process data to provide those services. The clinic will publish its current processor and recipient list with the approved policy. The clinic does not sell health information.
+## Who can see it
 
-## Security and transfers
+You can see information linked to your account in M-Care. Clinic doctors and staff can see information needed for their work. Our database, email, and notification providers process information to provide their services. M-Care does not sell your health information.
 
-App-to-service connections use HTTPS/TLS in transit. Access is limited by account authentication and clinic role permissions. Data may be processed or stored by service providers outside your locality. The clinic will confirm provider locations and safeguards before publication. No internet service can promise absolute security.
+## Security
+
+M-Care uses secure connections and account permissions to protect your information. Some service providers may store or process it outside your area. The clinic will confirm provider locations before approving this policy.
 
 ## Retention
 
-The clinic retains account, clinical, and completed-service transaction records according to its approved retention schedule, or longer only when required by law or necessary for legal claims or legitimate clinic purposes. If you request account deletion, the login and direct contact details are removed, future appointments are cancelled, and clinical records, transaction records, and audit history may be retained in an access-restricted form under that schedule. Backups may take additional time to expire under the clinic's backup schedule.
+We keep account, care, and transaction records for RETENTION_PERIOD. The clinic must approve this period. Some records may need to be kept longer when the law requires it. Backups may take additional time to expire.
 
-## Your rights
+## Deletion requests
 
-Subject to the Data Privacy Act and other applicable laws, you may ask whether the clinic processes your data, request access or a copy, correct inaccurate information, object to or restrict processing, withdraw consent where consent is the legal basis, request erasure or blocking where applicable, request data portability where applicable, and file a complaint with the National Privacy Commission. Some requests may be limited where records must be retained by law or to establish, exercise, or defend legal claims. The clinic will explain any limitation.
+To request account deletion, use Settings > Delete account or email the clinic. The clinic will verify your identity. Deletion removes your login and direct contact details and cancels future appointments. The clinic may keep clinical records, stored transaction records, and audit history for the approved retention period or when the law requires it. Some notes may still contain identifying details.
 
-## Account deletion
-
-Use Settings > Delete account in the app, or contact the clinic through its official channels to request deletion without the app. The clinic will verify your identity. Deletion removes your login and direct contact details and cancels future appointments. The clinic may retain clinical and audit records without direct identifiers under its approved retention schedule, where required by law or otherwise lawfully necessary.
+You may also ask to access or correct your information. You may raise a privacy concern with the clinic or the National Privacy Commission. The clinic will explain if it must keep information.
 
 ## Contact
 
-Personal Information Controller: M-Care Clinic\nAddress: Balibago, Angeles City\nPrivacy and deletion requests: use the app's account deletion option or the clinic's official contact channels.
+Personal Information Controller: M-Care
+Address: Balibago, Angeles City
+Email: dposadas003@gmail.com
 `;

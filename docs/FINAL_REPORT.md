@@ -22,10 +22,7 @@ Scope was limited to `recover-features` and dev Supabase ref `luccnwicirfnmyzgem
 
 ## Every placeholder to fill or verify
 
-- `CLINIC_NAME` — replace/confirm the clinic's legal and public name; the current policy says “M-Care Clinic.”
-- `CLINIC_ADDRESS` — confirm the full public address; current policy says “Balibago, Angeles City.”
-- `CLINIC_CONTACT_EMAIL` — supply and publish the official privacy/deletion contact email.
-- `RETENTION_PERIOD` — select and document the approved schedule in the worksheet and deletion plan.
+- `RETENTION_PERIOD` — select and document the approved schedule in the policy, worksheet, and deletion plan. This remains an open clinic decision.
 - Policy effective date — set after clinic approval.
 - Official privacy, complaint, and deletion-request channels and identity-verification instructions — specify them in the policy and public deletion page.
 - Provider/processor legal names, service roles, processing/storage locations, safeguards, retention terms, and relevant agreements — verify for Supabase, email delivery, Expo push, and any other production provider; publish the approved recipient list.
@@ -34,7 +31,7 @@ Scope was limited to `recover-features` and dev Supabase ref `luccnwicirfnmyzgem
 
 ## Clinic decisions required
 
-- Approve the privacy policy, effective date, public clinic identity/contact details, complaint route, and deletion-request verification procedure.
+- Approve the privacy policy, effective date, public clinic identity/contact details (M-Care; Balibago, Angeles City; dposadas003@gmail.com), complaint route, and deletion-request verification procedure.
 - Set retention periods and approve which profile, clinical, transaction, and audit fields remain after account deletion, including backup expiry.
 - Decide how to handle identifying details that may remain in historical free-text clinical notes or audit before/after payloads, and whether retained fields are necessary for care or legal duties.
 - Confirm payment collection practices and approve the transaction wording and Play Console financial-data declarations accordingly.

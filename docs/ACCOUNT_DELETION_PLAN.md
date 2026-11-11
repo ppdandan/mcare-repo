@@ -2,6 +2,8 @@
 
 **Clinic approval required before production.** This proposal changes the default deletion flow but does not choose the clinic's retention period.
 
+Clinic contact for deletion requests: M-Care, Balibago, Angeles City, dposadas003@gmail.com.
+
 ## Foreign key impact found in migrations
 
 | Child column | References | Delete rule | Consequence before migration 00022 |
