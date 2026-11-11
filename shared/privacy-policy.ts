@@ -8,7 +8,7 @@ M-Care Clinic (the clinic) operates M-Care for appointment scheduling and access
 
 ## Information collected
 
-The app may collect your name, email address, phone number, date of birth, home address, emergency contact details, blood type, allergies, obstetric and gynecologic history, appointment date and time, selected doctor and service, booking status, inquiry messages, clinical notes and records entered by clinic staff, notification preferences, and device push token. Authentication data is processed to create and secure your account. Do not use an inquiry as an emergency channel.
+The app may collect your name, email address, phone number, date of birth, home address, emergency contact details, blood type, allergies, obstetric and gynecologic history, appointment date and time, selected doctor and service, booking status, inquiry messages, clinical notes and records entered by clinic staff, notification preferences, and device push token. After a completed service, the clinic may record the amount paid, currency, a payment-method label, notes, and the staff member who recorded it so you can review your transaction history. Payment is made in person at the clinic; M-Care does not collect payments or payment card or wallet details.
 
 ## Why it is used
 
@@ -24,7 +24,7 @@ App-to-service connections use HTTPS/TLS in transit. Access is limited by accoun
 
 ## Retention
 
-The clinic retains account and clinical information according to its approved retention schedule, or longer only when required by law or necessary for legal claims or legitimate clinic purposes. If you request account deletion, the login and direct contact details are removed, future appointments are cancelled, and clinical records and audit history may be retained in an access-restricted, de-identified form under that schedule. Backups may take additional time to expire under the clinic's backup schedule.
+The clinic retains account, clinical, and completed-service transaction records according to its approved retention schedule, or longer only when required by law or necessary for legal claims or legitimate clinic purposes. If you request account deletion, the login and direct contact details are removed, future appointments are cancelled, and clinical records, transaction records, and audit history may be retained in an access-restricted form under that schedule. Backups may take additional time to expire under the clinic's backup schedule.
 
 ## Your rights
 

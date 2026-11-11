@@ -140,3 +140,8 @@
 - Final source scan found the local `supabase/seed.sql` still described three retired doctors, even though dev and the live app flows use only Dr. Bernice Paule. Updated the seed to preserve the migration-owned canonical doctor record, removed the legacy doctor accounts and rows, and assign seed schedules, sample appointments, records, notifications, and audit activity to Dr. Bernice.
 - Seed sample appointment dates now resolve to weekdays in Asia/Manila so migration 00024's weekend constraint does not reject a local seed reset.
 - `git diff --check` passed and a source scan confirms the seed contains no retired doctor names or obsolete doctor IDs. A local Supabase reset was not run in this environment.
+
+## Follow-up — privacy policy transaction disclosure
+
+- Updated the shared policy to explain that M-Care does not collect payments or payment card/wallet details; the clinic records the in-person amount and plain payment-method label after a completed service. The retention section now explicitly includes transaction records after account deletion.
+- The policy still requires clinic approval of its effective date, official contact/complaint channels, processor names and locations, and retention schedule.
