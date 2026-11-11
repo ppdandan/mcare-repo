@@ -5,6 +5,11 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { userFacingErrorMessage } from "@m-care/shared";
 import SiteFooter from "@/components/ui/SiteFooter";
+import Button from "@/components/ui/Button";
+import Card, { CardBody } from "@/components/ui/Card";
+import { ErrorState } from "@/components/ui/AsyncStates";
+import StatusAlert from "@/components/ui/StatusAlert";
+import TextField from "@/components/ui/TextField";
 
 type LoginMode = "password" | "otp";
 
@@ -120,16 +125,17 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-pink-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-pink-100 p-8">
+    <main className="flex min-h-screen items-center justify-center bg-base-200 p-4">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardBody className="p-6 sm:p-8">
         {/* Brand Header */}
-        <div className="text-center mb-6">
-          <img src="/logo.png" alt="M-Care" width={64} height={75} className="mx-auto mb-3 h-[75px] w-16 object-contain" />
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">M-CARE CLINIC</h1>
-          <p className="text-sm font-semibold text-pink-600 uppercase tracking-wider mt-1">
+        <div className="mb-6 text-center">
+          <img src="/logo.png" alt="M-Care logo" width={64} height={75} className="mx-auto mb-3 h-[75px] w-16 object-contain" />
+          <h1 className="text-2xl font-bold tracking-tight text-base-content">M-CARE CLINIC</h1>
+          <p className="mt-1 text-sm font-semibold uppercase tracking-wider text-primary">
             Patient & Clinic Portal
           </p>
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="mt-2 text-xs text-base-content/75">
             Balibago, Angeles City • Patient and clinic access
           </p>
         </div>
@@ -168,98 +174,29 @@ function LoginForm() {
           </button>
         </div>
 
-        {error && (
-          <div className="mb-5 p-3.5 bg-red-50 border-l-4 border-red-500 rounded-lg text-xs text-red-700 leading-relaxed">
-            {error}
-          </div>
-        )}
+        {error && <div className="mb-5"><ErrorState title="Sign-in error" description={error} /></div>}
 
-        {success && (
-          <div className="mb-5 p-3.5 bg-emerald-50 border-l-4 border-emerald-500 rounded-lg text-xs text-emerald-700 leading-relaxed">
-            {success}
-          </div>
-        )}
+        {success && <div className="mb-5"><StatusAlert variant="success">{success}</StatusAlert></div>}
 
         {/* Password Form */}
         {mode === "password" && (
           <form onSubmit={handlePasswordLogin} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Email Address
-              </label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value.trim())}
-                placeholder="staff@yourclinic.com"
-                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Password
-              </label>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2.5 px-4 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-xl text-sm shadow-md transition disabled:opacity-50"
-            >
-              {loading ? "Signing In..." : "Sign In to Portal"}
-            </button>
+            <TextField label="Email Address" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value.trim())} />
+            <TextField label="Password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Button type="submit" loading={loading} fullWidth>{loading ? "Signing In..." : "Sign In to Portal"}</Button>
           </form>
         )}
 
         {/* OTP Form */}
         {mode === "otp" && (
           <form onSubmit={otpSent ? handleVerifyOtp : handleSendOtp} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Email Address
-              </label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value.trim())}
-                placeholder="doctor@yourclinic.com"
-                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition"
-              />
-            </div>
+            <TextField label="Email Address" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value.trim())} />
 
             {otpSent && (
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  6-Digit OTP Code
-                </label>
-                <input
-                  type="text"
-                  required
-                  maxLength={8}
-                  value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value.trim())}
-                  placeholder="123456"
-                  className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm tracking-widest font-bold text-center focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition"
-                />
-              </div>
+              <TextField label="6-Digit OTP Code" type="text" inputMode="numeric" maxLength={8} required value={otpCode} onChange={(e) => setOtpCode(e.target.value.trim())} className="text-center font-bold tracking-widest" />
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2.5 px-4 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-xl text-sm shadow-md transition disabled:opacity-50"
-            >
+            <Button type="submit" loading={loading} fullWidth>
               {loading
                 ? otpSent
                   ? "Verifying OTP..."
@@ -267,18 +204,18 @@ function LoginForm() {
                 : otpSent
                 ? "Verify OTP & Sign In"
                 : "Send One-Time Code"}
-            </button>
+            </Button>
 
             {otpSent && (
               <div className="text-right">
-                <button
+                <Button
                   type="button"
                   onClick={handleSendOtp}
                   disabled={loading}
-                  className="text-xs text-pink-600 hover:text-pink-700 font-semibold"
+                  variant="outline"
                 >
                   Resend OTP Code
-                </button>
+                </Button>
               </div>
             )}
           </form>
@@ -295,8 +232,9 @@ function LoginForm() {
             All clinic consultations and patient record queries are logged in immutable audit records.
           </p>
         </SiteFooter>
-      </div>
-    </div>
+        </CardBody>
+      </Card>
+    </main>
   );
 }
 

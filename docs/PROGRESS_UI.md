@@ -18,7 +18,9 @@
 
 ## Step 3 — Screen groups
 
-- Not started.
+- Login: replaced the form shell, alerts, text fields, and submit actions with shared daisyUI components; removed example-value input placeholders. Preserved password/OTP behavior and the existing data calls. Web TypeScript check passed. No separate web signup route exists, so none was added. Group committed separately.
+- Home/landing: `/` only redirects to `/login` and renders no visible screen. Preserved its route and behavior; no visual change was needed. Group recorded in its own commit.
+- Booking, appointments, transactions, profile, privacy, deletion, and staff/doctor dashboards: pending.
 
 ## Step 4 — Checks
 
