@@ -134,3 +134,9 @@
 - Mobile TypeScript check passed. Web TypeScript check remains blocked by incompatible React 18/19 type resolution; no dependency changes were authorized. Existing dev booking, transaction attack, and cross-platform sync checks are recorded above; temporary screenshot-test accounts and records were removed from dev.
 - Production was not contacted, linked, or modified. Project-list inspection is the only project-list operation; no production database/function/build/deploy/submit command was executed.
 - Outstanding release evidence: no screenshots/device/browser viewport test; no production migration status or deployment (intentionally); no Play Console completion; and clinic decisions listed in Phase 5 and the final report.
+
+## Follow-up — canonical doctor seed integrity
+
+- Final source scan found the local `supabase/seed.sql` still described three retired doctors, even though dev and the live app flows use only Dr. Bernice Paule. Updated the seed to preserve the migration-owned canonical doctor record, removed the legacy doctor accounts and rows, and assign seed schedules, sample appointments, records, notifications, and audit activity to Dr. Bernice.
+- Seed sample appointment dates now resolve to weekdays in Asia/Manila so migration 00024's weekend constraint does not reject a local seed reset.
+- `git diff --check` passed and a source scan confirms the seed contains no retired doctor names or obsolete doctor IDs. A local Supabase reset was not run in this environment.

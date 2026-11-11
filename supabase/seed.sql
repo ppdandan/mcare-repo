@@ -14,15 +14,58 @@ TRUNCATE TABLE appointments CASCADE;
 TRUNCATE TABLE schedule_exceptions CASCADE;
 TRUNCATE TABLE doctor_schedules CASCADE;
 TRUNCATE TABLE services CASCADE;
-TRUNCATE TABLE doctors CASCADE;
 TRUNCATE TABLE patients CASCADE;
-TRUNCATE TABLE profiles CASCADE;
+DELETE FROM public.doctors
+WHERE profile_id <> '00000000-0000-4000-8000-000000000015'::uuid;
+DELETE FROM public.profiles
+WHERE id <> '00000000-0000-4000-8000-000000000015'::uuid;
+
+-- Migration 00015/00023 owns the canonical doctor record. Seed fixtures refer
+-- to that record instead of creating an additional doctor in seed.sql.
+CREATE TEMP TABLE IF NOT EXISTS mcare_seed_doctor (doctor_id uuid);
+TRUNCATE TABLE mcare_seed_doctor;
+INSERT INTO mcare_seed_doctor (doctor_id)
+SELECT d.id
+FROM public.doctors AS d
+JOIN public.profiles AS p ON p.id = d.profile_id
+WHERE p.full_name = 'Dr. Bernice Paule';
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM mcare_seed_doctor) THEN
+    RAISE EXCEPTION 'Run migrations 00015 and 00023 before loading seed data';
+  END IF;
+END;
+$$;
+CREATE TEMP TABLE IF NOT EXISTS mcare_seed_dates (
+  day_offset integer PRIMARY KEY,
+  visit_date date NOT NULL
+);
+TRUNCATE TABLE mcare_seed_dates;
+WITH clinic_today AS (
+  SELECT (now() AT TIME ZONE 'Asia/Manila')::date AS today
+), target_dates AS (
+  SELECT offsets.day_offset, clinic_today.today + offsets.day_offset AS target_date
+  FROM clinic_today
+  CROSS JOIN (VALUES (-14), (-10), (-7), (-5), (-2), (1), (2), (4), (5), (6)) AS offsets(day_offset)
+)
+INSERT INTO mcare_seed_dates (day_offset, visit_date)
+SELECT day_offset,
+  CASE
+    WHEN day_offset < 0 AND extract(dow FROM target_date) = 0 THEN target_date - 2
+    WHEN day_offset < 0 AND extract(dow FROM target_date) = 6 THEN target_date - 1
+    WHEN day_offset > 0 AND extract(dow FROM target_date) = 0 THEN target_date + 1
+    WHEN day_offset > 0 AND extract(dow FROM target_date) = 6 THEN target_date + 2
+    ELSE target_date
+  END
+FROM target_dates;
 
 -- Optional: Clean up auth users with seeded IDs if running in local Supabase
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'auth' AND table_name = 'users') THEN
-    DELETE FROM auth.users WHERE email LIKE '%@mcare.clinic' OR email LIKE '%@mcare.ph';
+    DELETE FROM auth.users
+    WHERE (email LIKE '%@mcare.clinic' OR email LIKE '%@mcare.ph')
+      AND lower(email) <> 'bernice.paule@mcare.clinic';
 
     -- 1. Insert auth.users for staff and patients
     INSERT INTO auth.users (
@@ -33,10 +76,6 @@ BEGIN
       ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'admin@mcare.clinic', '$2a$10$e8Z4wZ57s5bqvQhZq1qHre6wV482BvP/eTfLw7N454R7X5q8Xv5lW', now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Maria Santos (Admin)"}', now(), now()),
       ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'receptionist@mcare.clinic', '$2a$10$e8Z4wZ57s5bqvQhZq1qHre6wV482BvP/eTfLw7N454R7X5q8Xv5lW', now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Ana Reyes"}', now(), now()),
       ('00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'nurse@mcare.clinic', '$2a$10$e8Z4wZ57s5bqvQhZq1qHre6wV482BvP/eTfLw7N454R7X5q8Xv5lW', now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Elena Cruz"}', now(), now()),
-      -- Doctor Accounts
-      ('00000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'dr.dizon@mcare.clinic', '$2a$10$e8Z4wZ57s5bqvQhZq1qHre6wV482BvP/eTfLw7N454R7X5q8Xv5lW', now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Dr. Carmela Dizon"}', now(), now()),
-      ('00000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'dr.lim@mcare.clinic', '$2a$10$e8Z4wZ57s5bqvQhZq1qHre6wV482BvP/eTfLw7N454R7X5q8Xv5lW', now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Dr. Patricia Lim"}', now(), now()),
-      ('00000000-0000-0000-0000-000000000013', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'dr.mercado@mcare.clinic', '$2a$10$e8Z4wZ57s5bqvQhZq1qHre6wV482BvP/eTfLw7N454R7X5q8Xv5lW', now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Dr. Roberto Mercado"}', now(), now()),
       -- Patient Accounts
       ('00000000-0000-0000-0000-000000000021', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'patient1@mcare.ph', '$2a$10$e8Z4wZ57s5bqvQhZq1qHre6wV482BvP/eTfLw7N454R7X5q8Xv5lW', now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Bea Alonzo"}', now(), now()),
       ('00000000-0000-0000-0000-000000000022', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'patient2@mcare.ph', '$2a$10$e8Z4wZ57s5bqvQhZq1qHre6wV482BvP/eTfLw7N454R7X5q8Xv5lW', now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Clara Soriano"}', now(), now()),
@@ -53,9 +92,6 @@ INSERT INTO profiles (id, role, full_name, phone, date_of_birth, address) VALUES
   ('00000000-0000-0000-0000-000000000001', 'admin',        'Maria Santos',          '09171110001', '1982-04-12', 'Angeles City, Pampanga'),
   ('00000000-0000-0000-0000-000000000002', 'receptionist', 'Ana Reyes',             '09171110002', '1994-08-23', 'Balibago, Angeles City, Pampanga'),
   ('00000000-0000-0000-0000-000000000003', 'nurse',        'Elena Cruz, RN',        '09171110003', '1991-11-05', 'Mabalacat, Pampanga'),
-  ('00000000-0000-0000-0000-000000000011', 'doctor',       'Dr. Carmela Dizon, MD', '09171110011', '1979-02-18', 'Angeles City, Pampanga'),
-  ('00000000-0000-0000-0000-000000000012', 'doctor',       'Dr. Patricia Lim, MD',   '09171110012', '1984-06-30', 'San Fernando, Pampanga'),
-  ('00000000-0000-0000-0000-000000000013', 'doctor',       'Dr. Roberto Mercado, MD','09171110013', '1975-09-14', 'Angeles City, Pampanga'),
   ('00000000-0000-0000-0000-000000000021', 'patient',      'Bea Alonzo',            '09181110021', '1996-03-15', 'Balibago, Angeles City, Pampanga'),
   ('00000000-0000-0000-0000-000000000022', 'patient',      'Clara Soriano',         '09181110022', '1993-07-22', 'Sto. Rosario, Angeles City, Pampanga'),
   ('00000000-0000-0000-0000-000000000023', 'patient',      'Diana Mendoza',         '09181110023', '1999-12-04', 'Dau, Mabalacat, Pampanga'),
@@ -65,10 +101,7 @@ INSERT INTO profiles (id, role, full_name, phone, date_of_birth, address) VALUES
 -- =============================================================================
 -- 2. Doctors
 -- =============================================================================
-INSERT INTO doctors (id, profile_id, specialty, room) VALUES
-  ('10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000011', 'General Obstetrics & Gynecologic Ultrasound', 'Room 201 - Ultrasound Suite'),
-  ('10000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000012', 'Maternal-Fetal Medicine (High Risk Pregnancy)', 'Room 202 - Consultation A'),
-  ('10000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000013', 'Gynecologic Oncology & Preventive Health',   'Room 203 - Consultation B');
+-- The canonical doctor is created and maintained by migrations 00015/00023.
 
 -- =============================================================================
 -- 3. Patients
@@ -93,92 +126,89 @@ INSERT INTO services (id, name, description, duration_minutes, is_active) VALUES
 -- =============================================================================
 -- 5. Doctor Schedules (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
 -- =============================================================================
-INSERT INTO doctor_schedules (doctor_id, weekday, start_time, end_time) VALUES
-  -- Dr. Carmela Dizon: Monday (1), Wednesday (3), Friday (5): 09:00 - 16:00
-  ('10000000-0000-0000-0000-000000000001', 1, '09:00:00', '16:00:00'),
-  ('10000000-0000-0000-0000-000000000001', 3, '09:00:00', '16:00:00'),
-  ('10000000-0000-0000-0000-000000000001', 5, '09:00:00', '16:00:00'),
-  -- Dr. Patricia Lim: Tuesday (2), Thursday (4), Saturday (6): 09:00 - 15:00
-  ('10000000-0000-0000-0000-000000000002', 2, '09:00:00', '15:00:00'),
-  ('10000000-0000-0000-0000-000000000002', 4, '09:00:00', '15:00:00'),
-  ('10000000-0000-0000-0000-000000000002', 6, '09:00:00', '14:00:00'),
-  -- Dr. Roberto Mercado: Monday (1), Wednesday (3), Thursday (4): 13:00 - 18:00
-  ('10000000-0000-0000-0000-000000000003', 1, '13:00:00', '18:00:00'),
-  ('10000000-0000-0000-0000-000000000003', 3, '13:00:00', '18:00:00'),
-  ('10000000-0000-0000-0000-000000000003', 4, '13:00:00', '18:00:00');
+INSERT INTO doctor_schedules (doctor_id, weekday, start_time, end_time)
+SELECT doctor_id, weekday, start_time, end_time
+FROM mcare_seed_doctor
+CROSS JOIN (VALUES
+  (1, '10:00:00'::time, '12:00:00'::time), (1, '13:00:00'::time, '18:00:00'::time),
+  (2, '10:00:00'::time, '12:00:00'::time), (2, '13:00:00'::time, '18:00:00'::time),
+  (3, '10:00:00'::time, '12:00:00'::time), (3, '13:00:00'::time, '18:00:00'::time),
+  (4, '10:00:00'::time, '12:00:00'::time), (4, '13:00:00'::time, '18:00:00'::time),
+  (5, '10:00:00'::time, '12:00:00'::time), (5, '13:00:00'::time, '18:00:00'::time)
+) AS schedule(weekday, start_time, end_time);
 
 -- =============================================================================
 -- 6. Schedule Exceptions (Sample leave / blocked hours)
 -- =============================================================================
 INSERT INTO schedule_exceptions (doctor_id, exception_date, start_time, end_time, reason, is_blocked) VALUES
-  ('10000000-0000-0000-0000-000000000001', CURRENT_DATE + interval '7 days', NULL, NULL, 'Attending Philippine Obstetrical & Gynecological Society (POGS) Annual Congress', true),
-  ('10000000-0000-0000-0000-000000000002', CURRENT_DATE + interval '3 days', '13:00:00', '15:00:00', 'Hospital Emergency Rounds at AUF Medical Center', true);
+  ((SELECT doctor_id FROM mcare_seed_doctor), CURRENT_DATE + interval '7 days', NULL, NULL, 'Clinic schedule hold', true),
+  ((SELECT doctor_id FROM mcare_seed_doctor), CURRENT_DATE + interval '3 days', '13:00:00', '15:00:00', 'Clinic schedule hold', true);
 
 -- =============================================================================
 -- 7. Appointments (Sample records covering all required statuses)
 -- =============================================================================
 INSERT INTO appointments (id, patient_id, doctor_id, service_id, start_time, end_time, status, notes) VALUES
   -- Completed past appointments
-  ('40000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001',
-   (CURRENT_DATE - interval '14 days' + time '09:30:00') AT TIME ZONE 'Asia/Manila',
-   (CURRENT_DATE - interval '14 days' + time '10:00:00') AT TIME ZONE 'Asia/Manila',
+  ('40000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001', (SELECT doctor_id FROM mcare_seed_doctor), '30000000-0000-0000-0000-000000000001',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = -14) + time '09:30:00') AT TIME ZONE 'Asia/Manila',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = -14) + time '10:00:00') AT TIME ZONE 'Asia/Manila',
    'completed', 'Routine first trimester follow-up. Fetal heart beat confirmed.'),
 
-  ('40000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000002', '10000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000002',
-   (CURRENT_DATE - interval '10 days' + time '10:00:00') AT TIME ZONE 'Asia/Manila',
-   (CURRENT_DATE - interval '10 days' + time '10:45:00') AT TIME ZONE 'Asia/Manila',
+  ('40000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000002', (SELECT doctor_id FROM mcare_seed_doctor), '30000000-0000-0000-0000-000000000002',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = -10) + time '10:00:00') AT TIME ZONE 'Asia/Manila',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = -10) + time '10:45:00') AT TIME ZONE 'Asia/Manila',
    'completed', 'Pelvic ultrasound performed. Biometry normal.'),
 
-  ('40000000-0000-0000-0000-000000000003', '20000000-0000-0000-0000-000000000003', '10000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000003',
-   (CURRENT_DATE - interval '7 days' + time '14:00:00') AT TIME ZONE 'Asia/Manila',
-   (CURRENT_DATE - interval '7 days' + time '14:30:00') AT TIME ZONE 'Asia/Manila',
+  ('40000000-0000-0000-0000-000000000003', '20000000-0000-0000-0000-000000000003', (SELECT doctor_id FROM mcare_seed_doctor), '30000000-0000-0000-0000-000000000003',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = -7) + time '14:00:00') AT TIME ZONE 'Asia/Manila',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = -7) + time '14:30:00') AT TIME ZONE 'Asia/Manila',
    'completed', 'Routine Pap smear screening. Specimen sent to laboratory.'),
 
   -- Past no-show
-  ('40000000-0000-0000-0000-000000000004', '20000000-0000-0000-0000-000000000004', '10000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000005',
-   (CURRENT_DATE - interval '5 days' + time '11:00:00') AT TIME ZONE 'Asia/Manila',
-   (CURRENT_DATE - interval '5 days' + time '11:30:00') AT TIME ZONE 'Asia/Manila',
+  ('40000000-0000-0000-0000-000000000004', '20000000-0000-0000-0000-000000000004', (SELECT doctor_id FROM mcare_seed_doctor), '30000000-0000-0000-0000-000000000005',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = -5) + time '11:00:00') AT TIME ZONE 'Asia/Manila',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = -5) + time '11:30:00') AT TIME ZONE 'Asia/Manila',
    'no_show', 'Patient did not answer confirmation phone call.'),
 
   -- Cancelled appointment
-  ('40000000-0000-0000-0000-000000000005', '20000000-0000-0000-0000-000000000005', '10000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001',
-   (CURRENT_DATE - interval '2 days' + time '09:00:00') AT TIME ZONE 'Asia/Manila',
-   (CURRENT_DATE - interval '2 days' + time '09:30:00') AT TIME ZONE 'Asia/Manila',
+  ('40000000-0000-0000-0000-000000000005', '20000000-0000-0000-0000-000000000005', (SELECT doctor_id FROM mcare_seed_doctor), '30000000-0000-0000-0000-000000000001',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = -2) + time '09:00:00') AT TIME ZONE 'Asia/Manila',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = -2) + time '09:30:00') AT TIME ZONE 'Asia/Manila',
    'cancelled', 'Cancelled by patient due to transportation conflict.'),
 
   -- Approved upcoming appointments
-  ('40000000-0000-0000-0000-000000000006', '20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000002',
-   (CURRENT_DATE + interval '1 days' + time '10:00:00') AT TIME ZONE 'Asia/Manila',
-   (CURRENT_DATE + interval '1 days' + time '10:45:00') AT TIME ZONE 'Asia/Manila',
+  ('40000000-0000-0000-0000-000000000006', '20000000-0000-0000-0000-000000000001', (SELECT doctor_id FROM mcare_seed_doctor), '30000000-0000-0000-0000-000000000002',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = 1) + time '10:00:00') AT TIME ZONE 'Asia/Manila',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = 1) + time '10:45:00') AT TIME ZONE 'Asia/Manila',
    'approved', 'Follow-up anomaly scan at 24 weeks.'),
 
-  ('40000000-0000-0000-0000-000000000007', '20000000-0000-0000-0000-000000000002', '10000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000001',
-   (CURRENT_DATE + interval '2 days' + time '11:00:00') AT TIME ZONE 'Asia/Manila',
-   (CURRENT_DATE + interval '2 days' + time '11:30:00') AT TIME ZONE 'Asia/Manila',
+  ('40000000-0000-0000-0000-000000000007', '20000000-0000-0000-0000-000000000002', (SELECT doctor_id FROM mcare_seed_doctor), '30000000-0000-0000-0000-000000000001',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = 2) + time '11:00:00') AT TIME ZONE 'Asia/Manila',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = 2) + time '11:30:00') AT TIME ZONE 'Asia/Manila',
    'approved', 'High risk checkup for previous CS.'),
 
   -- Pending appointments (requested by patients from mobile app)
-  ('40000000-0000-0000-0000-000000000008', '20000000-0000-0000-0000-000000000003', '10000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000005',
-   (CURRENT_DATE + interval '4 days' + time '14:00:00') AT TIME ZONE 'Asia/Manila',
-   (CURRENT_DATE + interval '4 days' + time '14:30:00') AT TIME ZONE 'Asia/Manila',
+  ('40000000-0000-0000-0000-000000000008', '20000000-0000-0000-0000-000000000003', (SELECT doctor_id FROM mcare_seed_doctor), '30000000-0000-0000-0000-000000000005',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = 4) + time '14:00:00') AT TIME ZONE 'Asia/Manila',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = 4) + time '14:30:00') AT TIME ZONE 'Asia/Manila',
    'pending', 'Patient requested consultation for irregular cycle.'),
 
-  ('40000000-0000-0000-0000-000000000009', '20000000-0000-0000-0000-000000000004', '10000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000004',
-   (CURRENT_DATE + interval '5 days' + time '09:30:00') AT TIME ZONE 'Asia/Manila',
-   (CURRENT_DATE + interval '5 days' + time '10:00:00') AT TIME ZONE 'Asia/Manila',
+  ('40000000-0000-0000-0000-000000000009', '20000000-0000-0000-0000-000000000004', (SELECT doctor_id FROM mcare_seed_doctor), '30000000-0000-0000-0000-000000000004',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = 5) + time '09:30:00') AT TIME ZONE 'Asia/Manila',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = 5) + time '10:00:00') AT TIME ZONE 'Asia/Manila',
    'pending', 'Family planning and subdermal implant inquiry.'),
 
   -- Rescheduled appointment
-  ('40000000-0000-0000-0000-000000000010', '20000000-0000-0000-0000-000000000005', '10000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001',
-   (CURRENT_DATE + interval '6 days' + time '11:00:00') AT TIME ZONE 'Asia/Manila',
-   (CURRENT_DATE + interval '6 days' + time '11:30:00') AT TIME ZONE 'Asia/Manila',
+  ('40000000-0000-0000-0000-000000000010', '20000000-0000-0000-0000-000000000005', (SELECT doctor_id FROM mcare_seed_doctor), '30000000-0000-0000-0000-000000000001',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = 6) + time '11:00:00') AT TIME ZONE 'Asia/Manila',
+   ((SELECT visit_date FROM mcare_seed_dates WHERE day_offset = 6) + time '11:30:00') AT TIME ZONE 'Asia/Manila',
    'rescheduled', 'Moved from earlier slot due to patient request.');
 
 -- =============================================================================
 -- 8. Medical Records
 -- =============================================================================
 INSERT INTO medical_records (id, patient_id, doctor_id, appointment_id, visit_date, chief_complaint, history_of_present_illness, blood_pressure, heart_rate, temperature, weight_kg, diagnosis, prescription, notes) VALUES
-  ('50000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001',
+  ('50000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001', (SELECT doctor_id FROM mcare_seed_doctor), '40000000-0000-0000-0000-000000000001',
    CURRENT_DATE - interval '14 days',
    'Mild nausea and morning sickness; routine prenatal checkup',
    'Patient is a 28 y/o G1P0 at 22 weeks age of gestation presenting for routine evaluation.',
@@ -187,7 +217,7 @@ INSERT INTO medical_records (id, patient_id, doctor_id, appointment_id, visit_da
    '1. Ferrous Sulfate + Folic Acid 1 tab OD after meal\n2. Calcium Carbonate 500mg 1 tab BID\n3. Multivitamins for pregnancy 1 cap OD',
    'Encouraged adequate hydration and continued maternal milk supplementation. Advised anomaly scan next visit.'),
 
-  ('50000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000002', '10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000002',
+  ('50000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000002', (SELECT doctor_id FROM mcare_seed_doctor), '40000000-0000-0000-0000-000000000002',
    CURRENT_DATE - interval '10 days',
    'Lower abdominal heaviness and request for pelvic ultrasound',
    'Patient is a 31 y/o G2P1 (previous CS 2022) with mild discomfort upon prolonged standing.',
@@ -196,7 +226,7 @@ INSERT INTO medical_records (id, patient_id, doctor_id, appointment_id, visit_da
    '1. Paracetamol 500mg PRN for pain (max 3x daily)\n2. Rest and abdominal binder support',
    'Follow-up in 2 weeks or sooner if severe cramping or vaginal spotting occurs.'),
 
-  ('50000000-0000-0000-0000-000000000003', '20000000-0000-0000-0000-000000000003', '10000000-0000-0000-0000-000000000003', '40000000-0000-0000-0000-000000000003',
+  ('50000000-0000-0000-0000-000000000003', '20000000-0000-0000-0000-000000000003', (SELECT doctor_id FROM mcare_seed_doctor), '40000000-0000-0000-0000-000000000003',
    CURRENT_DATE - interval '7 days',
    'Annual cervical cancer screening; no acute symptoms',
    'Patient is a 25 y/o nulligravida seeking routine preventive health screening.',
@@ -210,15 +240,15 @@ INSERT INTO medical_records (id, patient_id, doctor_id, appointment_id, visit_da
 -- =============================================================================
 INSERT INTO notifications (user_id, title, body, is_read, created_at) VALUES
   ('00000000-0000-0000-0000-000000000021', 'Appointment Approved', 'Your Obstetric & Pelvic Ultrasound appointment for tomorrow has been approved.', false, now() - interval '2 hours'),
-  ('00000000-0000-0000-0000-000000000021', 'Appointment Reminder', 'Friendly reminder: You have an upcoming visit tomorrow at 10:00 AM with Dr. Carmela Dizon.', false, now() - interval '1 hour'),
-  ('00000000-0000-0000-0000-000000000022', 'Appointment Approved', 'Your Prenatal Checkup with Dr. Patricia Lim has been confirmed.', true, now() - interval '1 day'),
+  ('00000000-0000-0000-0000-000000000021', 'Appointment Reminder', 'Friendly reminder: You have an upcoming visit tomorrow at 10:00 AM with Dr. Bernice Paule.', false, now() - interval '1 hour'),
+  ('00000000-0000-0000-0000-000000000022', 'Appointment Approved', 'Your Prenatal Checkup with Dr. Bernice Paule has been confirmed.', true, now() - interval '1 day'),
   ('00000000-0000-0000-0000-000000000023', 'Booking Request Received', 'We have received your booking request for General Consultation. Staff will review shortly.', true, now() - interval '2 days');
 
 -- =============================================================================
 -- 10. Audit Logs
 -- =============================================================================
 INSERT INTO audit_logs (user_id, action, table_name, record_id, old_data, new_data, created_at) VALUES
-  ('00000000-0000-0000-0000-000000000011', 'INSERT', 'medical_records', '50000000-0000-0000-0000-000000000001', NULL, '{"action":"Created initial medical record for Bea Alonzo"}'::jsonb, now() - interval '14 days'),
-  ('00000000-0000-0000-0000-000000000011', 'VIEW', 'medical_records', '50000000-0000-0000-0000-000000000001', NULL, '{"access_role":"doctor","purpose":"Clinical review before follow-up"}'::jsonb, now() - interval '1 day'),
+  ('00000000-0000-4000-8000-000000000015', 'INSERT', 'medical_records', '50000000-0000-0000-0000-000000000001', NULL, '{"action":"Created initial medical record for Bea Alonzo"}'::jsonb, now() - interval '14 days'),
+  ('00000000-0000-4000-8000-000000000015', 'VIEW', 'medical_records', '50000000-0000-0000-0000-000000000001', NULL, '{"access_role":"doctor","purpose":"Clinical review before follow-up"}'::jsonb, now() - interval '1 day'),
   ('00000000-0000-0000-0000-000000000002', 'UPDATE', 'appointments', '40000000-0000-0000-0000-000000000006', '{"status":"pending"}'::jsonb, '{"status":"approved","staff":"Ana Reyes"}'::jsonb, now() - interval '2 hours');
 
