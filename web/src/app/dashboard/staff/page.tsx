@@ -115,12 +115,12 @@ export default function StaffManagementPage() {
 
   if (!isAdmin && !loading) {
     return (
-      <div className="bg-white rounded-2xl p-12 text-center border border-gray-200 shadow-sm">
+      <div className="bg-base-100 rounded-2xl p-12 text-center border border-base-300 shadow-sm">
         <div className="w-16 h-16 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-2xl mx-auto mb-4 font-bold">
           🔒
         </div>
-        <h2 className="text-xl font-bold text-gray-900">Administrator Access Restricted</h2>
-        <p className="text-xs text-gray-500 max-w-md mx-auto mt-2 leading-relaxed">
+        <h2 className="text-xl font-bold text-base-content">Administrator Access Restricted</h2>
+        <p className="text-xs text-base-content/70 max-w-md mx-auto mt-2 leading-relaxed">
           Staff account provisioning, role assignment, and clinic access rights management
           can only be performed by the Clinic Administrator.
         </p>
@@ -138,22 +138,22 @@ export default function StaffManagementPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm">
         <div>
           <div className="flex items-center space-x-3">
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Staff Management</h1>
+            <h1 className="text-2xl font-bold text-base-content tracking-tight">Staff Management</h1>
             <span className="px-2.5 py-1 bg-rose-50 text-rose-700 text-xs font-semibold rounded-full border border-rose-200">
               Admin Exclusive
             </span>
           </div>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-base-content/70 mt-1">
             Clinic personnel directory, access permissions, and account provisioning
           </p>
         </div>
 
         <button
           onClick={() => setShowModal(true)}
-          className="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-xl text-xs shadow-sm transition flex items-center space-x-2"
+          className="px-4 py-2 bg-primary hover:bg-primary-focus text-white font-semibold rounded-xl text-xs shadow-sm transition flex items-center space-x-2"
         >
           <span>+</span>
           <span>Provision New Staff Account</span>
@@ -161,11 +161,11 @@ export default function StaffManagementPage() {
       </div>
 
       {/* Staff Table */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-base-100 rounded-2xl border border-base-300 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-gray-50/75 border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider text-xs">
+              <tr className="bg-base-200/75 border-b border-base-300 text-base-content/60 font-bold uppercase tracking-wider text-xs">
                 <th className="py-3 px-4">Staff Member</th>
                 <th className="py-3 px-4">Role</th>
                 <th className="py-3 px-4">Phone</th>
@@ -174,45 +174,45 @@ export default function StaffManagementPage() {
                 <th className="py-3 px-4 text-right">System Access</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-base-300">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-gray-400">
+                  <td colSpan={6} className="text-center py-12 text-base-content/60">
                     Loading clinic staff directory...
                   </td>
                 </tr>
               ) : (
                 staff.map((s) => (
-                  <tr key={s.id} className="hover:bg-gray-50/50 transition">
+                  <tr key={s.id} className="hover:bg-base-200/50 transition">
                     <td className="py-3.5 px-4">
-                      <p className="font-bold text-gray-900">{s.full_name}</p>
-                      <p className="text-xs text-gray-400">ID: {s.id.slice(0, 8)}...</p>
+                      <p className="font-bold text-base-content">{s.full_name}</p>
+                      <p className="text-xs text-base-content/60">ID: {s.id.slice(0, 8)}...</p>
                     </td>
 
                     <td className="py-3.5 px-4">
                       <span
                         className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border ${
-                          roleColors[s.role] || "bg-gray-100 text-gray-800"
+                          roleColors[s.role] || "bg-base-200 text-base-content"
                         }`}
                       >
                         {s.role}
                       </span>
                     </td>
 
-                    <td className="py-3.5 px-4 font-mono text-gray-700">{s.phone || "—"}</td>
+                    <td className="py-3.5 px-4 font-mono text-base-content">{s.phone || "—"}</td>
 
                     <td className="py-3.5 px-4">
                       {s.doctor_details ? (
                         <div>
-                          <p className="font-semibold text-gray-900">{s.doctor_details.specialty}</p>
-                          <p className="text-xs text-gray-400">📍 {s.doctor_details.room}</p>
+                          <p className="font-semibold text-base-content">{s.doctor_details.specialty}</p>
+                          <p className="text-xs text-base-content/60">📍 {s.doctor_details.room}</p>
                         </div>
                       ) : (
-                        <span className="text-gray-400">Clinic Department</span>
+                        <span className="text-base-content/60">Clinic Department</span>
                       )}
                     </td>
 
-                    <td className="py-3.5 px-4 text-gray-500">
+                    <td className="py-3.5 px-4 text-base-content/70">
                       {formatManilaDate(s.created_at, {
                         month: "short",
                         day: "numeric",
@@ -236,44 +236,42 @@ export default function StaffManagementPage() {
       {/* Provision Staff Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100">
-            <h3 className="text-lg font-bold text-gray-900 mb-1">Provision Staff Account</h3>
-            <p className="text-xs text-gray-500 mb-4">
+          <div className="bg-base-100 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-base-300">
+            <h3 className="text-lg font-bold text-base-content mb-1">Provision Staff Account</h3>
+            <p className="text-xs text-base-content/70 mb-4">
               Create credentials for Nurses, Receptionists, or Administrators
             </p>
 
             <form onSubmit={handleCreateStaff} className="space-y-3 text-xs">
               <div>
-                <label className="font-bold text-gray-700 block mb-1">Full Name *</label>
+                <label className="font-bold text-base-content block mb-1">Full Name *</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Maria Santos"
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-2 text-xs"
+                  aria-label="Full Name" onChange={(e) => setFullName(e.target.value)}
+                  className="w-full border border-base-300 rounded-lg p-2 text-xs"
                 />
               </div>
 
               <div>
-                <label className="font-bold text-gray-700 block mb-1">Staff Email Address *</label>
+                <label className="font-bold text-base-content block mb-1">Staff Email Address *</label>
                 <input
                   type="email"
                   required
-                  placeholder="e.g. dr.ramos@mcare.clinic"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-2 text-xs"
+                  aria-label="Email Address" onChange={(e) => setEmail(e.target.value)}
+                  className="w-full border border-base-300 rounded-lg p-2 text-xs"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-gray-700 block mb-1">Staff Role *</label>
+                  <label className="font-bold text-base-content block mb-1">Staff Role *</label>
                   <select
                     value={role}
-                    onChange={(e) => setRole(e.target.value as UserRole)}
-                    className="w-full border border-gray-300 rounded-lg p-2 text-xs bg-white font-bold"
+                    aria-label="Staff role" onChange={(e) => setRole(e.target.value as UserRole)}
+                    className="w-full border border-base-300 rounded-lg p-2 text-xs bg-base-100 font-bold"
                   >
                     <option value="nurse">Nurse</option>
                     <option value="receptionist">Receptionist</option>
@@ -281,18 +279,17 @@ export default function StaffManagementPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="font-bold text-gray-700 block mb-1">Contact Phone</label>
+                  <label className="font-bold text-base-content block mb-1">Contact Phone</label>
                   <input
                     type="text"
-                    placeholder="0917 111 2233"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-2 text-xs"
+                    aria-label="Phone Number" onChange={(e) => setPhone(e.target.value)}
+                    className="w-full border border-base-300 rounded-lg p-2 text-xs"
                   />
                 </div>
               </div>
 
-              <div className="p-3 bg-pink-50 rounded-lg text-xs text-pink-700 leading-relaxed">
+              <div className="p-3 bg-primary/10 rounded-lg text-xs text-primary leading-relaxed">
                 <Icon name="info" size={15} className="mr-1 inline-block align-[-2px]" /> The account will receive role permissions defined by clinic access policies.
               </div>
 
@@ -300,14 +297,14 @@ export default function StaffManagementPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-50"
+                  className="px-4 py-2 border border-base-300 text-base-content/80 rounded-lg text-xs font-semibold hover:bg-base-200"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 bg-pink-600 text-white rounded-lg text-xs font-semibold hover:bg-pink-700 transition"
+                  className="px-4 py-2 bg-primary text-white rounded-lg text-xs font-semibold hover:bg-primary-focus transition"
                 >
                   {submitting ? "Provisioning..." : "Create Account"}
                 </button>

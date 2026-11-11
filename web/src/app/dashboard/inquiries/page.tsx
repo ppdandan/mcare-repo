@@ -90,21 +90,21 @@ export default function ReceptionInquiriesPage() {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Patient Inquiries Desk</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-base-content tracking-tight">Patient Inquiries Desk</h1>
+          <p className="text-sm text-base-content/70 mt-1">
             Live patient messages, scheduling questions, and receptionist replies
           </p>
         </div>
       </div>
 
       {/* Inquiries Table */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-base-100 rounded-2xl border border-base-300 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-gray-50/75 border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider text-xs">
+              <tr className="bg-base-200/75 border-b border-base-300 text-base-content/60 font-bold uppercase tracking-wider text-xs">
                 <th className="py-3 px-4">Date Received</th>
                 <th className="py-3 px-4">Patient</th>
                 <th className="py-3 px-4">Subject</th>
@@ -113,38 +113,38 @@ export default function ReceptionInquiriesPage() {
                 <th className="py-3 px-4 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-base-300">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-gray-400">
+                  <td colSpan={6} className="text-center py-12 text-base-content/60">
                     Loading patient inquiries...
                   </td>
                 </tr>
               ) : inquiries.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-gray-400">
+                  <td colSpan={6} className="text-center py-12 text-base-content/60">
                     No inquiries received from mobile patients.
                   </td>
                 </tr>
               ) : (
                 inquiries.map((inq) => (
-                  <tr key={inq.id} className="hover:bg-pink-50/25 transition">
-                    <td className="py-3.5 px-4 whitespace-nowrap text-gray-500 font-mono">
+                  <tr key={inq.id} className="hover:bg-primary/10 transition">
+                    <td className="py-3.5 px-4 whitespace-nowrap text-base-content/70 font-mono">
                       {formatManilaDateTime(inq.created_at, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
                     </td>
 
-                    <td className="py-3.5 px-4 font-bold text-gray-900">
+                    <td className="py-3.5 px-4 font-bold text-base-content">
                       {inq.patient?.profile?.full_name || "Patient"}
-                      <span className="block text-xs text-gray-400 font-normal">
+                      <span className="block text-xs text-base-content/60 font-normal">
                         📞 {inq.patient?.profile?.phone || "No phone"}
                       </span>
                     </td>
 
-                    <td className="py-3.5 px-4 font-semibold text-gray-800">
+                    <td className="py-3.5 px-4 font-semibold text-base-content">
                       {inq.subject}
                     </td>
 
-                    <td className="py-3.5 px-4 max-w-sm truncate text-gray-600">
+                    <td className="py-3.5 px-4 max-w-sm truncate text-base-content/80">
                       {inq.message}
                     </td>
 
@@ -166,7 +166,7 @@ export default function ReceptionInquiriesPage() {
                           setSelectedInquiry(inq);
                           setReplyText(inq.reply || "");
                         }}
-                        className="px-3 py-1 bg-pink-50 hover:bg-pink-100 text-pink-700 font-semibold rounded text-xs border border-pink-200 transition"
+                        className="px-3 py-1 bg-primary/10 hover:bg-pink-100 text-primary font-semibold rounded text-xs border border-pink-200 transition"
                       >
                         {inq.reply ? "View / Edit Reply" : "Reply to Patient"}
                       </button>
@@ -182,30 +182,29 @@ export default function ReceptionInquiriesPage() {
       {/* Reply Modal */}
       {selectedInquiry && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100">
-            <h3 className="text-lg font-bold text-gray-900 mb-1">
+          <div className="bg-base-100 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-base-300">
+            <h3 className="text-lg font-bold text-base-content mb-1">
               Reply to Patient Inquiry
             </h3>
-            <p className="text-xs text-gray-500 mb-4">
+            <p className="text-xs text-base-content/70 mb-4">
               Patient: <strong>{selectedInquiry.patient?.profile?.full_name}</strong>
             </p>
 
             <div className="space-y-3 text-xs mb-4">
-              <div className="p-3 bg-gray-50 rounded-xl border border-gray-200">
-                <p className="font-bold text-gray-800 mb-1">{selectedInquiry.subject}</p>
-                <p className="text-gray-600 leading-relaxed">{selectedInquiry.message}</p>
+              <div className="p-3 bg-base-200 rounded-xl border border-base-300">
+                <p className="font-bold text-base-content mb-1">{selectedInquiry.subject}</p>
+                <p className="text-base-content/80 leading-relaxed">{selectedInquiry.message}</p>
               </div>
 
               <div>
-                <label className="font-bold text-gray-700 block mb-1">
+                <label className="font-bold text-base-content block mb-1">
                   Reception Staff Response
                 </label>
                 <textarea
                   rows={4}
                   value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  placeholder="Type your official clinic response here..."
-                  className="w-full border border-gray-300 rounded-lg p-2.5 text-xs outline-none focus:ring-2 focus:ring-pink-500"
+                  aria-label="Reception Staff Response" onChange={(e) => setReplyText(e.target.value)}
+                  className="w-full border border-base-300 rounded-lg p-2.5 text-xs outline-none focus:ring-2 focus:ring-pink-500"
                 />
               </div>
             </div>
@@ -213,14 +212,14 @@ export default function ReceptionInquiriesPage() {
             <div className="flex justify-end space-x-2">
               <button
                 onClick={() => setSelectedInquiry(null)}
-                className="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-50"
+                className="px-4 py-2 border border-base-300 text-base-content/80 rounded-lg text-xs font-semibold hover:bg-base-200"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSendReply}
                 disabled={sending}
-                className="px-4 py-2 bg-pink-600 text-white rounded-lg text-xs font-semibold hover:bg-pink-700 transition"
+                className="px-4 py-2 bg-primary text-white rounded-lg text-xs font-semibold hover:bg-primary-focus transition"
               >
                 {sending ? "Sending..." : "Send Reply to Mobile"}
               </button>

@@ -30,3 +30,4 @@
 
 - Not started.
 - Privacy and deletion pages: moved the existing policy and deletion guidance into shared themed cards and readable page widths. Preserved public access, policy text, deletion instructions, and all route behavior. Web TypeScript check passed. Group committed separately.
+- Staff and doctor dashboards: themed all dashboard subpages with the shared `mcare` base, border, text, and primary colors; added accessible names to dashboard form controls, removed helper placeholders, contained report tables on narrow screens, and updated navigation tap targets and focus styles; reused shared loading and retryable error components where those states already existed. Removed example and helper placeholder text from the dashboard inputs. Preserved all dashboard queries, RPCs, state, and actions. Web TypeScript check passed. Group committed separately.

@@ -184,10 +184,10 @@ export default function ReportsPage() {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm print:hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm print:hidden">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Clinical Reports & Export Center</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-base-content tracking-tight">Clinical Reports & Export Center</h1>
+          <p className="text-sm text-base-content/70 mt-1">
             Export verified clinic audit logs, appointment ledgers, and clinical records to PDF and CSV
           </p>
         </div>
@@ -206,7 +206,7 @@ export default function ReportsPage() {
           </button>
           <button
             onClick={handlePrintPdf}
-            className="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-xl text-xs shadow-sm transition flex items-center space-x-1.5"
+            className="px-4 py-2 bg-primary hover:bg-primary-focus text-white font-semibold rounded-xl text-xs shadow-sm transition flex items-center space-x-1.5"
           >
             <Icon name="printer" size={15} />
             <span>Print / Save as PDF</span>
@@ -215,13 +215,13 @@ export default function ReportsPage() {
       </div>
 
       {/* Filter and Category Bar (Hidden during print) */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm print:hidden">
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-base-100 p-4 rounded-xl border border-base-300 shadow-sm print:hidden">
         {/* Report Category Switcher */}
-        <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-xl">
+        <div className="flex items-center space-x-2 bg-base-200 p-1 rounded-xl">
           <button
             onClick={() => setReportType("appointments")}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-              reportType === "appointments" ? "bg-white text-pink-600 shadow-sm" : "text-gray-600"
+              reportType === "appointments" ? "bg-base-100 text-primary shadow-sm" : "text-base-content/80"
             }`}
           >
             <Icon name="calendar" size={15} /> Appointments Ledger
@@ -229,7 +229,7 @@ export default function ReportsPage() {
           <button
             onClick={() => setReportType("patients")}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-              reportType === "patients" ? "bg-white text-pink-600 shadow-sm" : "text-gray-600"
+              reportType === "patients" ? "bg-base-100 text-primary shadow-sm" : "text-base-content/80"
             }`}
           >
             <Icon name="users" size={15} /> Patient Registry
@@ -237,7 +237,7 @@ export default function ReportsPage() {
           <button
             onClick={() => setReportType("clinical")}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-              reportType === "clinical" ? "bg-white text-pink-600 shadow-sm" : "text-gray-600"
+              reportType === "clinical" ? "bg-base-100 text-primary shadow-sm" : "text-base-content/80"
             }`}
           >
             <Icon name="stethoscope" size={15} /> Clinical Encounters
@@ -246,37 +246,37 @@ export default function ReportsPage() {
 
         {/* Date Filter */}
         {reportType !== "patients" && (
-          <div className="flex items-center space-x-2 text-xs">
-            <span className="text-gray-500 font-semibold">From:</span>
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <span className="text-base-content/70 font-semibold">From:</span>
             <input
               type="date"
               value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs text-gray-800"
+              aria-label="From date" onChange={(e) => setStartDate(e.target.value)}
+              className="border border-base-300 rounded-lg px-2.5 py-1.5 text-xs text-base-content"
             />
-            <span className="text-gray-500 font-semibold">To:</span>
+            <span className="text-base-content/70 font-semibold">To:</span>
             <input
               type="date"
               value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs text-gray-800"
+              aria-label="To date" onChange={(e) => setEndDate(e.target.value)}
+              className="border border-base-300 rounded-lg px-2.5 py-1.5 text-xs text-base-content"
             />
           </div>
         )}
       </div>
 
       {/* Printable Report Document Sheet */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 print:p-0 print:border-none print:shadow-none">
+      <div className="bg-base-100 rounded-2xl border border-base-300 shadow-sm p-8 print:p-0 print:border-none print:shadow-none">
         {/* Clinic Letterhead Header */}
         <div className="border-b-2 border-pink-600 pb-4 mb-6 flex justify-between items-start">
           <div>
-            <h2 className="text-xl font-extrabold text-gray-900 tracking-tight">
+            <h2 className="text-xl font-extrabold text-base-content tracking-tight">
               M-CARE OB-GYN CLINIC & ULTRASONOGRAPHY
             </h2>
-            <p className="text-xs text-gray-600">
+            <p className="text-xs text-base-content/80">
               Balibago, Angeles City, Pampanga • Tel: (045) 888-CARE
             </p>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-base-content/60 mt-1">
               Accredited Women's Health Clinic • Philippine Data Privacy Act RA 10173 Certified
             </p>
           </div>
@@ -284,10 +284,10 @@ export default function ReportsPage() {
             <span className="px-3 py-1 bg-pink-100 text-pink-800 font-bold text-xs uppercase tracking-wider rounded">
               Official Clinic Report
             </span>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-base-content/70 mt-2">
               Generated: {formatManilaDate(new Date(), { dateStyle: "long" })}
             </p>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-base-content/60">
               Period: {startDate} to {endDate}
             </p>
           </div>
@@ -295,15 +295,15 @@ export default function ReportsPage() {
 
         {/* Content Table */}
         {loading ? (
-          <div className="py-12 text-center text-xs text-gray-400">Loading report records...</div>
+          <div className="py-12 text-center text-xs text-base-content/60">Loading report records...</div>
         ) : reportType === "appointments" ? (
           <div>
-            <h3 className="text-sm font-bold text-gray-900 mb-3">
+            <h3 className="text-sm font-bold text-base-content mb-3">
               Appointments Audit Ledger ({appointments.length} records)
             </h3>
-            <table className="w-full text-left border-collapse text-xs">
+            <div className="overflow-x-auto"><table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-gray-500 font-bold uppercase text-xs">
+                <tr className="bg-base-200 border-b border-base-300 text-base-content/70 font-bold uppercase text-xs">
                   <th className="py-2.5 px-3">Date & Time</th>
                   <th className="py-2.5 px-3">Patient Name</th>
                   <th className="py-2.5 px-3">Service</th>
@@ -312,31 +312,31 @@ export default function ReportsPage() {
                   <th className="py-2.5 px-3">Notes</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-base-300">
                 {appointments.map((a) => (
                   <tr key={a.id}>
                     <td className="py-2 px-3 whitespace-nowrap font-mono text-xs">
                       {formatManilaDate(a.start_time, { month: "short", day: "numeric" })}{" "}
                       {formatManilaTime(a.start_time)}
                     </td>
-                    <td className="py-2 px-3 font-semibold text-gray-900">{a.patient?.profile?.full_name}</td>
+                    <td className="py-2 px-3 font-semibold text-base-content">{a.patient?.profile?.full_name}</td>
                     <td className="py-2 px-3">{a.service?.name}</td>
-                    <td className="py-2 px-3 text-gray-600">{a.doctor?.profile?.full_name}</td>
-                    <td className="py-2 px-3 font-bold uppercase text-xs text-pink-700">{a.status}</td>
-                    <td className="py-2 px-3 text-gray-500 truncate max-w-xs">{a.notes || "—"}</td>
+                    <td className="py-2 px-3 text-base-content/80">{a.doctor?.profile?.full_name}</td>
+                    <td className="py-2 px-3 font-bold uppercase text-xs text-primary">{a.status}</td>
+                    <td className="py-2 px-3 text-base-content/70 truncate max-w-xs">{a.notes || "—"}</td>
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           </div>
         ) : reportType === "patients" ? (
           <div>
-            <h3 className="text-sm font-bold text-gray-900 mb-3">
+            <h3 className="text-sm font-bold text-base-content mb-3">
               Registered Patient Directory ({patients.length} records)
             </h3>
-            <table className="w-full text-left border-collapse text-xs">
+            <div className="overflow-x-auto"><table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-gray-500 font-bold uppercase text-xs">
+                <tr className="bg-base-200 border-b border-base-300 text-base-content/70 font-bold uppercase text-xs">
                   <th className="py-2.5 px-3">Patient Name</th>
                   <th className="py-2.5 px-3">Phone</th>
                   <th className="py-2.5 px-3">Blood Type</th>
@@ -345,28 +345,28 @@ export default function ReportsPage() {
                   <th className="py-2.5 px-3">Allergies</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-base-300">
                 {patients.map((p) => (
                   <tr key={p.id}>
-                    <td className="py-2 px-3 font-semibold text-gray-900">{p.profile?.full_name}</td>
+                    <td className="py-2 px-3 font-semibold text-base-content">{p.profile?.full_name}</td>
                     <td className="py-2 px-3 font-mono">{p.profile?.phone || "—"}</td>
                     <td className="py-2 px-3 font-bold text-rose-700">{p.blood_type || "N/A"}</td>
                     <td className="py-2 px-3">{p.emergency_contact_name} ({p.emergency_contact_phone})</td>
-                    <td className="py-2 px-3 text-gray-600">{p.obstetric_history || "None"}</td>
+                    <td className="py-2 px-3 text-base-content/80">{p.obstetric_history || "None"}</td>
                     <td className="py-2 px-3">{p.allergies || "None"}</td>
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           </div>
         ) : (
           <div>
-            <h3 className="text-sm font-bold text-gray-900 mb-3">
+            <h3 className="text-sm font-bold text-base-content mb-3">
               Clinical Consultations & Diagnoses Log ({records.length} records)
             </h3>
-            <table className="w-full text-left border-collapse text-xs">
+            <div className="overflow-x-auto"><table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-gray-500 font-bold uppercase text-xs">
+                <tr className="bg-base-200 border-b border-base-300 text-base-content/70 font-bold uppercase text-xs">
                   <th className="py-2.5 px-3">Visit Date</th>
                   <th className="py-2.5 px-3">Patient Name</th>
                   <th className="py-2.5 px-3">Attending Doctor</th>
@@ -375,36 +375,36 @@ export default function ReportsPage() {
                   <th className="py-2.5 px-3">Prescription (Rx)</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-base-300">
                 {records.map((r) => (
                   <tr key={r.id}>
                     <td className="py-2 px-3 whitespace-nowrap font-mono">{r.visit_date}</td>
-                    <td className="py-2 px-3 font-semibold text-gray-900">{r.patient?.profile?.full_name}</td>
+                    <td className="py-2 px-3 font-semibold text-base-content">{r.patient?.profile?.full_name}</td>
                     <td className="py-2 px-3">{r.doctor?.profile?.full_name}</td>
                     <td className="py-2 px-3 font-mono">{r.blood_pressure || "—"} | {r.heart_rate || "—"}</td>
-                    <td className="py-2 px-3 font-medium text-pink-700">{r.diagnosis || "—"}</td>
+                    <td className="py-2 px-3 font-medium text-primary">{r.diagnosis || "—"}</td>
                     <td className="py-2 px-3 font-mono text-xs text-emerald-800">{r.prescription || "None"}</td>
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           </div>
         )}
 
         {/* Official Sign-off Block (Visible on print / PDF) */}
-        <div className="mt-12 pt-8 border-t border-gray-200 grid grid-cols-2 gap-8 text-xs text-gray-600">
+        <div className="mt-12 pt-8 border-t border-base-300 grid grid-cols-2 gap-8 text-xs text-base-content/80">
           <div>
-            <p className="font-semibold text-gray-800">Verified & Reconciled By:</p>
+            <p className="font-semibold text-base-content">Verified & Reconciled By:</p>
             <div className="mt-10 border-b border-gray-400 w-48" />
-            <p className="mt-1 font-bold text-gray-900">Clinic Administrator</p>
-            <p className="text-xs text-gray-500">M-Care OB-GYN Clinic & Ultrasound</p>
+            <p className="mt-1 font-bold text-base-content">Clinic Administrator</p>
+            <p className="text-xs text-base-content/70">M-Care OB-GYN Clinic & Ultrasound</p>
           </div>
 
           <div className="text-right flex flex-col items-end">
-            <p className="font-semibold text-gray-800">Medical Director Approval:</p>
+            <p className="font-semibold text-base-content">Medical Director Approval:</p>
             <div className="mt-10 border-b border-gray-400 w-48" />
-            <p className="mt-1 font-bold text-gray-900">Dr. Bernice Paule</p>
-            <p className="text-xs text-gray-500">OB-GYNE / Sonologist</p>
+            <p className="mt-1 font-bold text-base-content">Dr. Bernice Paule</p>
+            <p className="text-xs text-base-content/70">OB-GYNE / Sonologist</p>
           </div>
         </div>
       </div>

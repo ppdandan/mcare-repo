@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@m-care/shared";
 import Icon, { type IconName } from "@/components/Icon";
+import { LoadingState } from "@/components/ui/AsyncStates";
 
 interface NavItem {
   label: string;
@@ -75,13 +76,8 @@ export default function DashboardLayout({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-10 h-10 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-            Loading M-Care Portal...
-          </p>
-        </div>
+      <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+        <div className="w-full max-w-md"><LoadingState label="Loading M-Care Portal..." /></div>
       </div>
     );
   }
@@ -89,19 +85,19 @@ export default function DashboardLayout({
   const roleColors: Record<string, string> = {
     doctor: "bg-primary-100 text-primary-800",
     nurse: "bg-primary-50 text-primary-700",
-    receptionist: "bg-gray-100 text-gray-700",
+    receptionist: "bg-base-200 text-base-content",
     admin: "bg-primary-100 text-primary-800",
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 lg:flex-row">
-      <header className="border-b border-gray-200 bg-white px-4 py-3 lg:hidden">
+    <div className="min-h-screen flex flex-col bg-base-200 lg:flex-row">
+      <header className="border-b border-base-300 bg-base-100 px-4 py-3 lg:hidden">
         <div className="flex items-center justify-between gap-3">
-          <Link href="/dashboard" className="flex min-w-0 items-center gap-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-700">
+          <Link href="/dashboard" className="flex min-h-11 min-w-0 items-center gap-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
             <img src="/logo.png" alt="" width={30} height={35} className="h-9 w-8 object-contain" />
-            <span className="min-w-0"><strong className="block truncate text-sm text-gray-900">M-Care Clinic</strong><span className="block truncate text-xs text-gray-600">{profile?.full_name} · {profile?.role}</span></span>
+            <span className="min-w-0"><strong className="block truncate text-sm text-base-content">M-Care Clinic</strong><span className="block truncate text-xs text-base-content/80">{profile?.full_name} · {profile?.role}</span></span>
           </Link>
-          <button type="button" onClick={handleSignOut} aria-label="Sign out" className="inline-flex shrink-0 items-center gap-2 border border-gray-300 px-3 py-2 text-sm text-gray-800 hover:bg-gray-100">
+          <button type="button" onClick={handleSignOut} aria-label="Sign out" className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-btn border border-base-300 px-3 text-sm text-base-content hover:bg-base-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">
             <Icon name="logout" size={16} /><span className="hidden min-[380px]:inline">Sign out</span>
           </button>
         </div>
@@ -109,28 +105,28 @@ export default function DashboardLayout({
           {navItems.map((item) => {
             if (item.roles && profile?.role && !item.roles.includes(profile.role)) return null;
             const isActive = pathname === item.href;
-            return <Link key={item.href} href={item.href} aria-current={isActive ? "page" : undefined} className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-semibold ${isActive ? "bg-primary-700 text-white" : "text-gray-700 hover:bg-gray-100"}`}><Icon name={item.icon} size={16} /><span>{item.label}</span></Link>;
+            return <Link key={item.href} href={item.href} aria-current={isActive ? "page" : undefined} className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-btn px-3 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${isActive ? "bg-primary text-primary-content" : "text-base-content hover:bg-base-200"}`}><Icon name={item.icon} size={16} /><span>{item.label}</span></Link>;
           })}
         </nav>
       </header>
       {/* Sidebar */}
-      <aside className="hidden w-64 shrink-0 flex-col justify-between border-r border-gray-200 bg-white lg:flex">
+      <aside className="hidden w-64 shrink-0 flex-col justify-between border-r border-base-300 bg-base-100 lg:flex">
         <div>
           {/* Brand */}
-          <div className="h-16 flex items-center px-6 border-b border-gray-100">
+          <div className="h-16 flex items-center px-6 border-b border-base-300">
             <img src="/logo.png" alt="M-Care" width={36} height={42} className="mr-3 h-10 w-9 object-contain" />
             <div>
-              <span className="font-extrabold text-gray-900 tracking-tight text-base">M-CARE</span>
-              <span className="text-xs block font-semibold text-pink-600 uppercase tracking-wider">
+              <span className="font-extrabold text-base-content tracking-tight text-base">M-CARE</span>
+              <span className="text-xs block font-semibold text-primary uppercase tracking-wider">
                 OB-GYN Clinic
               </span>
             </div>
           </div>
 
           {/* User Profile Capsule */}
-          <div className="p-4 mx-3 my-3 bg-pink-50/50 rounded-xl border border-pink-100/60 flex items-center justify-between">
+          <div className="p-4 mx-3 my-3 bg-primary/5 rounded-xl border border-primary/20/60 flex items-center justify-between">
             <div className="truncate pr-2">
-              <p className="text-xs font-bold text-gray-900 truncate">{profile?.full_name}</p>
+              <p className="text-xs font-bold text-base-content truncate">{profile?.full_name}</p>
               <span
                 className={`inline-block px-1.5 py-0.5 text-xs font-bold uppercase tracking-wider rounded mt-0.5 ${
                   profile?.role ? roleColors[profile.role] : ""
@@ -153,10 +149,10 @@ export default function DashboardLayout({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition ${
+                  className={`flex min-h-11 items-center space-x-3 px-3 rounded-lg text-xs font-semibold transition ${
                     isActive
-                      ? "bg-pink-600 text-white shadow-sm"
-                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                      ? "bg-primary text-white shadow-sm"
+                      : "text-base-content/80 hover:bg-base-200 hover:text-base-content"
                   }`}
                 >
                   <Icon name={item.icon} size={18} />
@@ -168,15 +164,15 @@ export default function DashboardLayout({
         </div>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-gray-100">
+        <div className="p-4 border-t border-base-300">
           <button
             onClick={handleSignOut}
-            className="w-full flex items-center justify-center space-x-2 py-2 px-3 border border-gray-200 hover:bg-red-50 hover:border-red-200 hover:text-red-600 text-xs font-semibold rounded-lg text-gray-600 transition"
+            className="w-full flex items-center justify-center space-x-2 py-2 px-3 border border-base-300 hover:bg-red-50 hover:border-red-200 hover:text-red-600 text-xs font-semibold rounded-lg text-base-content/80 transition"
           >
             <Icon name="logout" size={16} />
             <span>Sign Out</span>
           </button>
-          <p className="text-xs text-gray-400 text-center mt-3">
+          <p className="text-xs text-base-content/60 text-center mt-3">
             RA 10173 • DPA 2012 Protected
           </p>
         </div>

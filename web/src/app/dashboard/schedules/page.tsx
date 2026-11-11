@@ -124,17 +124,17 @@ export default function SchedulesPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Doctor Schedules & Leave</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-base-content tracking-tight">Doctor Schedules & Leave</h1>
+          <p className="text-sm text-base-content/70 mt-1">
             Configure weekly clinic hours, blocked times, and conference leave days
           </p>
         </div>
 
         <button
           onClick={() => setShowExceptionModal(true)}
-          className="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-xl text-xs shadow-sm transition flex items-center space-x-2"
+          className="px-4 py-2 bg-primary hover:bg-primary-focus text-white font-semibold rounded-xl text-xs shadow-sm transition flex items-center space-x-2"
         >
           <span>+</span>
           <span>Add Leave / Blocked Day</span>
@@ -144,11 +144,11 @@ export default function SchedulesPage() {
       {/* Content Columns: Weekly Schedule vs Schedule Exceptions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Weekly Consultation Hours */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-          <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+        <div className="bg-base-100 rounded-2xl border border-base-300 shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-base-300">
             <div>
-              <h2 className="text-base font-bold text-gray-900">Weekly Clinical Hours</h2>
-              <p className="text-xs text-gray-500">Regular clinic consultation shifts</p>
+              <h2 className="text-base font-bold text-base-content">Weekly Clinical Hours</h2>
+              <p className="text-xs text-base-content/70">Regular clinic consultation shifts</p>
             </div>
             <span className="text-xs font-semibold px-2.5 py-1 bg-purple-50 text-purple-700 rounded-full border border-purple-200">
               {selectedDoctor?.room ?? "Consultation Room"}
@@ -156,9 +156,9 @@ export default function SchedulesPage() {
           </div>
 
           {loading ? (
-            <div className="py-12 text-center text-xs text-gray-400">Loading hours...</div>
+            <div className="py-12 text-center text-xs text-base-content/60">Loading hours...</div>
           ) : schedules.length === 0 ? (
-            <div className="py-12 text-center text-xs text-gray-400">
+            <div className="py-12 text-center text-xs text-base-content/60">
               No recurring weekly hours found for this physician.
             </div>
           ) : (
@@ -172,8 +172,8 @@ export default function SchedulesPage() {
                     key={weekdayIdx}
                     className={`flex items-center justify-between p-3 rounded-xl border text-xs ${
                       hasHours
-                        ? "bg-emerald-50/40 border-emerald-200 text-gray-900"
-                        : "bg-gray-50/50 border-gray-100 text-gray-400"
+                        ? "bg-emerald-50/40 border-emerald-200 text-base-content"
+                        : "bg-base-200/50 border-base-300 text-base-content/60"
                     }`}
                   >
                     <div className="flex items-center space-x-3">
@@ -187,7 +187,7 @@ export default function SchedulesPage() {
                           {daySchedules.map((s) => (
                             <span
                               key={s.id}
-                              className="font-mono bg-white px-2.5 py-1 rounded-md border border-emerald-200 text-emerald-800 font-bold"
+                              className="font-mono bg-base-100 px-2.5 py-1 rounded-md border border-emerald-200 text-emerald-800 font-bold"
                             >
                               {s.start_time.slice(0, 5)} - {s.end_time.slice(0, 5)}
                             </span>
@@ -205,11 +205,11 @@ export default function SchedulesPage() {
         </div>
 
         {/* Schedule Exceptions & Leaves */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-          <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+        <div className="bg-base-100 rounded-2xl border border-base-300 shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-base-300">
             <div>
-              <h2 className="text-base font-bold text-gray-900">Upcoming Leave & Exceptions</h2>
-              <p className="text-xs text-gray-500">Dates when booking slots are blocked</p>
+              <h2 className="text-base font-bold text-base-content">Upcoming Leave & Exceptions</h2>
+              <p className="text-xs text-base-content/70">Dates when booking slots are blocked</p>
             </div>
             <span className="text-xs font-semibold px-2.5 py-1 bg-rose-50 text-rose-700 rounded-full border border-rose-200">
               {exceptions.length} Blocked
@@ -217,9 +217,9 @@ export default function SchedulesPage() {
           </div>
 
           {loading ? (
-            <div className="py-12 text-center text-xs text-gray-400">Loading exceptions...</div>
+            <div className="py-12 text-center text-xs text-base-content/60">Loading exceptions...</div>
           ) : exceptions.length === 0 ? (
-            <div className="py-12 text-center text-xs text-gray-400 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
+            <div className="py-12 text-center text-xs text-base-content/60 bg-base-200/50 rounded-xl border border-dashed border-base-300">
               No upcoming leaves or blocked times recorded for this physician.
             </div>
           ) : (
@@ -248,7 +248,7 @@ export default function SchedulesPage() {
 
                   <button
                     onClick={() => handleDeleteException(exc.id)}
-                    className="text-gray-400 hover:text-red-600 font-bold p-1"
+                    className="text-base-content/60 hover:text-red-600 font-bold p-1"
                     title="Remove leave block"
                   >
                     ✕
@@ -263,35 +263,35 @@ export default function SchedulesPage() {
       {/* Add Exception Modal */}
       {showExceptionModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100">
-            <h3 className="text-lg font-bold text-gray-900 mb-1">
+          <div className="bg-base-100 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-base-300">
+            <h3 className="text-lg font-bold text-base-content mb-1">
               Block Date / Record Leave
             </h3>
-            <p className="text-xs text-gray-500 mb-4">
+            <p className="text-xs text-base-content/70 mb-4">
               Physician: <strong>{selectedDoctor?.profile.full_name}</strong>
             </p>
 
             <form onSubmit={handleAddException} className="space-y-4">
               <div>
-                <label className="text-xs font-semibold text-gray-700 block mb-1">
+                <label className="text-xs font-semibold text-base-content block mb-1">
                   Exception Date *
                 </label>
                 <input
                   type="date"
                   required
                   value={exceptionDate}
-                  onChange={(e) => setExceptionDate(e.target.value)}
-                  className="w-full text-xs font-medium border border-gray-300 rounded-lg p-2.5"
+                  aria-label="Exception Date" onChange={(e) => setExceptionDate(e.target.value)}
+                  className="w-full text-xs font-medium border border-base-300 rounded-lg p-2.5"
                 />
               </div>
 
               <div>
-                <label className="flex items-center space-x-2 text-xs font-semibold text-gray-700 mb-2 cursor-pointer">
+                <label className="flex items-center space-x-2 text-xs font-semibold text-base-content mb-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={isFullDay}
                     onChange={(e) => setIsFullDay(e.target.checked)}
-                    className="rounded text-pink-600 focus:ring-pink-500"
+                    className="rounded text-primary focus:ring-pink-500"
                   />
                   <span>Block Entire Day</span>
                 </label>
@@ -299,21 +299,21 @@ export default function SchedulesPage() {
                 {!isFullDay && (
                   <div className="grid grid-cols-2 gap-3 pt-1">
                     <div>
-                      <span className="text-xs text-gray-500 block mb-1">Start Time</span>
+                      <span className="text-xs text-base-content/70 block mb-1">Start Time</span>
                       <input
                         type="time"
                         value={startTime}
-                        onChange={(e) => setStartTime(e.target.value)}
-                        className="w-full text-xs border border-gray-300 rounded-lg p-2"
+                        aria-label="Start Time" onChange={(e) => setStartTime(e.target.value)}
+                        className="w-full text-xs border border-base-300 rounded-lg p-2"
                       />
                     </div>
                     <div>
-                      <span className="text-xs text-gray-500 block mb-1">End Time</span>
+                      <span className="text-xs text-base-content/70 block mb-1">End Time</span>
                       <input
                         type="time"
                         value={endTime}
-                        onChange={(e) => setEndTime(e.target.value)}
-                        className="w-full text-xs border border-gray-300 rounded-lg p-2"
+                        aria-label="End Time" onChange={(e) => setEndTime(e.target.value)}
+                        className="w-full text-xs border border-base-300 rounded-lg p-2"
                       />
                     </div>
                   </div>
@@ -321,15 +321,14 @@ export default function SchedulesPage() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-gray-700 block mb-1">
+                <label className="text-xs font-semibold text-base-content block mb-1">
                   Reason for Absence
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Hospital emergency rounds, POGS medical convention, vacation"
                   value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  className="w-full text-xs font-medium border border-gray-300 rounded-lg p-2.5"
+                  aria-label="Reason" onChange={(e) => setReason(e.target.value)}
+                  className="w-full text-xs font-medium border border-base-300 rounded-lg p-2.5"
                 />
               </div>
 
@@ -341,14 +340,14 @@ export default function SchedulesPage() {
                 <button
                   type="button"
                   onClick={() => setShowExceptionModal(false)}
-                  className="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-50"
+                  className="px-4 py-2 border border-base-300 text-base-content/80 rounded-lg text-xs font-semibold hover:bg-base-200"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-2 bg-pink-600 text-white rounded-lg text-xs font-semibold hover:bg-pink-700 transition"
+                  className="px-4 py-2 bg-primary text-white rounded-lg text-xs font-semibold hover:bg-primary-focus transition"
                 >
                   {saving ? "Saving..." : "Save Exception"}
                 </button>

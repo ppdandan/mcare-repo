@@ -200,12 +200,12 @@ export default function AnalyticsPage() {
 
   if (!isAdmin && !loading) {
     return (
-      <div className="bg-white rounded-2xl p-12 text-center border border-gray-200 shadow-sm">
+      <div className="bg-base-100 rounded-2xl p-12 text-center border border-base-300 shadow-sm">
         <div className="w-16 h-16 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-2xl mx-auto mb-4 font-bold">
           🔒
         </div>
-        <h2 className="text-xl font-bold text-gray-900">Administrator Access Restricted</h2>
-        <p className="text-xs text-gray-500 max-w-md mx-auto mt-2 leading-relaxed">
+        <h2 className="text-xl font-bold text-base-content">Administrator Access Restricted</h2>
+        <p className="text-xs text-base-content/70 max-w-md mx-auto mt-2 leading-relaxed">
           Comprehensive clinic revenue metrics, status distribution, and aggregate health reports
           are restricted to Clinic Administrators in compliance with clinic governance policies.
         </p>
@@ -216,21 +216,21 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-8">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm">
         <div>
           <div className="flex items-center space-x-3">
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Clinic Analytics & KPIs</h1>
+            <h1 className="text-2xl font-bold text-base-content tracking-tight">Clinic Analytics & KPIs</h1>
             <span className="px-2.5 py-1 bg-rose-50 text-rose-700 text-xs font-semibold rounded-full border border-rose-200">
               Admin Exclusive
             </span>
           </div>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-base-content/70 mt-1">
             Real-time patient throughput, service utilization, diagnosis distribution, and peak hours
           </p>
         </div>
 
         {/* Date Filter Tabs */}
-        <div className="flex items-center bg-gray-100 p-1 rounded-xl text-xs font-bold">
+        <div className="flex items-center bg-base-200 p-1 rounded-xl text-xs font-bold">
           {(
             [
               { label: "7 Days", val: "7d" },
@@ -244,8 +244,8 @@ export default function AnalyticsPage() {
               onClick={() => setDateRange(t.val)}
               className={`px-3 py-1.5 rounded-lg transition ${
                 dateRange === t.val
-                  ? "bg-white text-pink-600 shadow-sm"
-                  : "text-gray-600 hover:text-gray-900"
+                  ? "bg-base-100 text-primary shadow-sm"
+                  : "text-base-content/80 hover:text-base-content"
               }`}
             >
               {t.label}
@@ -256,32 +256,32 @@ export default function AnalyticsPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Appointments</p>
-          <p className="text-3xl font-extrabold text-gray-900 mt-2">{totalVisits}</p>
-          <p className="text-xs text-gray-400 mt-1">In selected period</p>
+        <div className="bg-base-100 p-5 rounded-xl border border-base-300 shadow-sm">
+          <p className="text-xs font-bold text-base-content/60 uppercase tracking-wider">Total Appointments</p>
+          <p className="text-3xl font-extrabold text-base-content mt-2">{totalVisits}</p>
+          <p className="text-xs text-base-content/60 mt-1">In selected period</p>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Completion Rate</p>
+        <div className="bg-base-100 p-5 rounded-xl border border-base-300 shadow-sm">
+          <p className="text-xs font-bold text-base-content/60 uppercase tracking-wider">Completion Rate</p>
           <p className="text-3xl font-extrabold text-emerald-600 mt-2">{completionRate}%</p>
           <p className="text-xs text-emerald-700 mt-1">{completedCount} consultations concluded</p>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Cancellation Rate</p>
+        <div className="bg-base-100 p-5 rounded-xl border border-base-300 shadow-sm">
+          <p className="text-xs font-bold text-base-content/60 uppercase tracking-wider">Cancellation Rate</p>
           <p className="text-3xl font-extrabold text-rose-600 mt-2">{cancellationRate}%</p>
           <p className="text-xs text-rose-700 mt-1">{cancelledCount} visits cancelled</p>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">No-Show Rate</p>
+        <div className="bg-base-100 p-5 rounded-xl border border-base-300 shadow-sm">
+          <p className="text-xs font-bold text-base-content/60 uppercase tracking-wider">No-Show Rate</p>
           <p className="text-3xl font-extrabold text-amber-600 mt-2">{noShowRate}%</p>
           <p className="text-xs text-amber-700 mt-1">{noShowCount} missed sessions</p>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Patients</p>
+        <div className="bg-base-100 p-5 rounded-xl border border-base-300 shadow-sm">
+          <p className="text-xs font-bold text-base-content/60 uppercase tracking-wider">Total Patients</p>
           <p className="text-3xl font-extrabold text-purple-600 mt-2">{patientCount}</p>
           <p className="text-xs text-purple-700 mt-1">DPA 2012 Registered</p>
         </div>
@@ -290,9 +290,9 @@ export default function AnalyticsPage() {
       {/* Row 1: Appointment Trends & Status Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Trend Area Chart */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-          <h2 className="text-base font-bold text-gray-900 mb-1">Appointment Volume Trends</h2>
-          <p className="text-xs text-gray-400 mb-6">Patient booking influx over time</p>
+        <div className="lg:col-span-2 bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm">
+          <h2 className="text-base font-bold text-base-content mb-1">Appointment Volume Trends</h2>
+          <p className="text-xs text-base-content/60 mb-6">Patient booking influx over time</p>
 
           <div className="h-72 w-full">
             {isMounted && trendData.length > 0 ? (
@@ -320,7 +320,7 @@ export default function AnalyticsPage() {
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-full flex items-center justify-center text-xs text-gray-400">
+              <div className="h-full flex items-center justify-center text-xs text-base-content/60">
                 Not enough date intervals to plot trend curve.
               </div>
             )}
@@ -328,9 +328,9 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Status Breakdown Donut Chart */}
-        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-          <h2 className="text-base font-bold text-gray-900 mb-1">Appointment Status Breakdown</h2>
-          <p className="text-xs text-gray-400 mb-4">Ratio of outcomes</p>
+        <div className="bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm">
+          <h2 className="text-base font-bold text-base-content mb-1">Appointment Status Breakdown</h2>
+          <p className="text-xs text-base-content/60 mb-4">Ratio of outcomes</p>
 
           <div className="h-64 w-full">
             {isMounted && statusPieData.length > 0 ? (
@@ -357,7 +357,7 @@ export default function AnalyticsPage() {
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-full flex items-center justify-center text-xs text-gray-400">
+              <div className="h-full flex items-center justify-center text-xs text-base-content/60">
                 No appointment status data.
               </div>
             )}
@@ -368,9 +368,9 @@ export default function AnalyticsPage() {
       {/* Row 2: Most Common Services & Common Diagnoses */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Most Common Services */}
-        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-          <h2 className="text-base font-bold text-gray-900 mb-1">Top In-Demand Clinical Services</h2>
-          <p className="text-xs text-gray-400 mb-4">Volume per procedure / consultation</p>
+        <div className="bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm">
+          <h2 className="text-base font-bold text-base-content mb-1">Top In-Demand Clinical Services</h2>
+          <p className="text-xs text-base-content/60 mb-4">Volume per procedure / consultation</p>
 
           <div className="h-64 w-full">
             {isMounted && serviceData.length > 0 ? (
@@ -384,7 +384,7 @@ export default function AnalyticsPage() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-full flex items-center justify-center text-xs text-gray-400">
+              <div className="h-full flex items-center justify-center text-xs text-base-content/60">
                 No service data.
               </div>
             )}
@@ -392,12 +392,12 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Most Common Diagnoses */}
-        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-          <h2 className="text-base font-bold text-gray-900 mb-1">Top Clinical Diagnoses</h2>
-          <p className="text-xs text-gray-400 mb-4">Most frequent obstetric & gynecologic findings</p>
+        <div className="bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm">
+          <h2 className="text-base font-bold text-base-content mb-1">Top Clinical Diagnoses</h2>
+          <p className="text-xs text-base-content/60 mb-4">Most frequent obstetric & gynecologic findings</p>
 
           {diagnoses.length === 0 ? (
-            <div className="h-64 flex items-center justify-center text-xs text-gray-400">
+            <div className="h-64 flex items-center justify-center text-xs text-base-content/60">
               No diagnoses recorded yet in medical charts.
             </div>
           ) : (
@@ -405,15 +405,15 @@ export default function AnalyticsPage() {
               {diagnoses.map((d, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-200 text-xs"
+                  className="flex items-center justify-between p-3 rounded-xl bg-base-200 border border-base-300 text-xs"
                 >
                   <div className="flex items-center space-x-3 truncate">
-                    <span className="w-6 h-6 rounded-full bg-pink-100 text-pink-700 flex items-center justify-center font-bold text-xs shrink-0">
+                    <span className="w-6 h-6 rounded-full bg-pink-100 text-primary flex items-center justify-center font-bold text-xs shrink-0">
                       {index + 1}
                     </span>
-                    <span className="font-semibold text-gray-800 truncate">{d.diagnosis}</span>
+                    <span className="font-semibold text-base-content truncate">{d.diagnosis}</span>
                   </div>
-                  <span className="font-bold text-pink-600 shrink-0 bg-pink-50 px-2.5 py-0.5 rounded-full border border-pink-200">
+                  <span className="font-bold text-primary shrink-0 bg-primary/10 px-2.5 py-0.5 rounded-full border border-pink-200">
                     {d.count} cases
                   </span>
                 </div>
@@ -426,9 +426,9 @@ export default function AnalyticsPage() {
       {/* Row 3: Busiest Days & Hours */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Busiest Days */}
-        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-          <h2 className="text-base font-bold text-gray-900 mb-1">Busiest Days of the Week</h2>
-          <p className="text-xs text-gray-400 mb-4">Appointment volume distribution across clinic days</p>
+        <div className="bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm">
+          <h2 className="text-base font-bold text-base-content mb-1">Busiest Days of the Week</h2>
+          <p className="text-xs text-base-content/60 mb-4">Appointment volume distribution across clinic days</p>
 
           <div className="h-60 w-full">
             {isMounted ? (
@@ -446,9 +446,9 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Busiest Hours */}
-        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-          <h2 className="text-base font-bold text-gray-900 mb-1">Peak Consultation Hours</h2>
-          <p className="text-xs text-gray-400 mb-4">Patient volume by time of day</p>
+        <div className="bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm">
+          <h2 className="text-base font-bold text-base-content mb-1">Peak Consultation Hours</h2>
+          <p className="text-xs text-base-content/60 mb-4">Patient volume by time of day</p>
 
           <div className="h-60 w-full">
             {isMounted ? (

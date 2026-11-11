@@ -159,14 +159,14 @@ export default function AppointmentsPage() {
       pending: "bg-amber-100 text-amber-800 border-amber-200",
       approved: "bg-emerald-100 text-emerald-800 border-emerald-200",
       rescheduled: "bg-blue-100 text-blue-800 border-blue-200",
-      completed: "bg-gray-100 text-gray-800 border-gray-200",
+      completed: "bg-base-200 text-base-content border-base-300",
       cancelled: "bg-rose-100 text-rose-800 border-rose-200",
       no_show: "bg-orange-100 text-orange-800 border-orange-200",
     };
     return (
       <span
         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider border ${
-          styles[status] || "bg-gray-100 text-gray-800"
+          styles[status] || "bg-base-200 text-base-content"
         }`}
       >
         {status.replace("_", " ")}
@@ -177,28 +177,28 @@ export default function AppointmentsPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm">
         <div>
           <div className="flex items-center space-x-3">
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Clinic Appointments</h1>
+            <h1 className="text-2xl font-bold text-base-content tracking-tight">Clinic Appointments</h1>
             <span className="flex items-center space-x-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full border border-emerald-200">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>Realtime Connected</span>
             </span>
           </div>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-base-content/70 mt-1">
             Real-time booking triage, doctor schedule allocation, and conflict management
           </p>
         </div>
 
         {/* View Switcher */}
-        <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-xl">
+        <div className="flex items-center space-x-2 bg-base-200 p-1 rounded-xl">
           <button
             onClick={() => setViewMode("list")}
             className={`px-4 py-2 rounded-lg text-xs font-bold transition ${
               viewMode === "list"
-                ? "bg-white text-pink-600 shadow-sm"
-                : "text-gray-600 hover:text-gray-900"
+                ? "bg-base-100 text-primary shadow-sm"
+                : "text-base-content/80 hover:text-base-content"
             }`}
           >
             <Icon name="list" size={15} /> List View
@@ -207,8 +207,8 @@ export default function AppointmentsPage() {
             onClick={() => setViewMode("calendar")}
             className={`px-4 py-2 rounded-lg text-xs font-bold transition ${
               viewMode === "calendar"
-                ? "bg-white text-pink-600 shadow-sm"
-                : "text-gray-600 hover:text-gray-900"
+                ? "bg-base-100 text-primary shadow-sm"
+                : "text-base-content/80 hover:text-base-content"
             }`}
           >
             <Icon name="calendar" size={15} /> Calendar View
@@ -217,16 +217,16 @@ export default function AppointmentsPage() {
       </div>
 
       {/* Control Bar: Filters */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-base-100 p-4 rounded-xl border border-base-300 shadow-sm">
         <div className="flex flex-wrap items-center gap-3">
           <div>
-            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">
+            <label className="text-xs font-bold text-base-content/60 uppercase tracking-wider block mb-1">
               Status Filter
             </label>
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="text-xs font-medium border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              aria-label="Status Filter" onChange={(e) => setStatusFilter(e.target.value)}
+              className="text-xs font-medium border border-base-300 rounded-lg px-3 py-2 bg-base-100 text-base-content focus:outline-none focus:ring-2 focus:ring-pink-500"
             >
               <option value="all">All Statuses ({appointments.length})</option>
               <option value="pending">Pending Review</option>
@@ -248,8 +248,8 @@ export default function AppointmentsPage() {
                 onClick={() => setCalendarView(v)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition ${
                   calendarView === v
-                    ? "bg-pink-100 text-pink-700 border border-pink-200"
-                    : "text-gray-500 hover:bg-gray-100"
+                    ? "bg-pink-100 text-primary border border-pink-200"
+                    : "text-base-content/70 hover:bg-base-200"
                 }`}
               >
                 {v}
@@ -261,19 +261,19 @@ export default function AppointmentsPage() {
 
       {/* Main Content Area */}
       {loading ? (
-        <div className="bg-white rounded-2xl p-12 text-center border border-gray-200">
+        <div className="bg-base-100 rounded-2xl p-12 text-center border border-base-300">
           <div className="w-10 h-10 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider">
+          <p className="text-xs text-base-content/70 font-semibold uppercase tracking-wider">
             Loading Appointments...
           </p>
         </div>
       ) : viewMode === "list" ? (
         /* LIST VIEW */
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-base-100 rounded-2xl border border-base-300 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-gray-50/75 border-b border-gray-200 text-gray-500 font-bold uppercase tracking-wider text-xs">
+                <tr className="bg-base-200/75 border-b border-base-300 text-base-content/70 font-bold uppercase tracking-wider text-xs">
                   <th className="py-3.5 px-4">Patient</th>
                   <th className="py-3.5 px-4">Service</th>
                   <th className="py-3.5 px-4">Doctor & Room</th>
@@ -283,53 +283,53 @@ export default function AppointmentsPage() {
                   <th className="py-3.5 px-4 text-right">Triage Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-base-300">
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-12 text-gray-400">
+                    <td colSpan={7} className="text-center py-12 text-base-content/60">
                       No appointments match the selected filters.
                     </td>
                   </tr>
                 ) : (
                   filtered.map((appt) => (
-                    <tr key={appt.id} className="hover:bg-pink-50/30 transition">
+                    <tr key={appt.id} className="hover:bg-primary/10 transition">
                       <td className="py-3.5 px-4">
-                        <p className="font-bold text-gray-900">
+                        <p className="font-bold text-base-content">
                           {appt.patient?.profile?.full_name ?? "Patient"}
                         </p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-base-content/60">
                           📞 {appt.patient?.profile?.phone ?? "No phone"}
                         </p>
                       </td>
 
                       <td className="py-3.5 px-4">
-                        <p className="font-semibold text-gray-800">{appt.service?.name}</p>
-                        <p className="text-xs text-gray-400">
+                        <p className="font-semibold text-base-content">{appt.service?.name}</p>
+                        <p className="text-xs text-base-content/60">
                           <Icon name="clock" size={14} /> {appt.service?.duration_minutes} mins
                         </p>
                       </td>
 
                       <td className="py-3.5 px-4">
-                        <p className="font-medium text-gray-900">
+                        <p className="font-medium text-base-content">
                           {appt.doctor?.profile?.full_name}
                         </p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-base-content/60">
                           📍 {appt.doctor?.room ?? "Consultation Room"}
                         </p>
                       </td>
 
                       <td className="py-3.5 px-4">
-                        <p className="font-semibold text-gray-900">
+                        <p className="font-semibold text-base-content">
                           {formatManilaDate(appt.start_time, { weekday: "short", month: "short", day: "numeric" })}
                         </p>
-                        <p className="text-xs text-pink-600 font-bold">
+                        <p className="text-xs text-primary font-bold">
                           {formatManilaTime(appt.start_time)}
                         </p>
                       </td>
 
                       <td className="py-3.5 px-4">{getStatusBadge(appt.status)}</td>
 
-                      <td className="py-3.5 px-4 max-w-xs truncate text-gray-500">
+                      <td className="py-3.5 px-4 max-w-xs truncate text-base-content/70">
                         {appt.notes || "—"}
                       </td>
 
@@ -397,8 +397,8 @@ export default function AppointmentsPage() {
         </div>
       ) : (
         /* CALENDAR VIEW (Day, Week, Month) */
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-          <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+        <div className="bg-base-100 rounded-2xl border border-base-300 shadow-sm p-6">
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-base-300">
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => {
@@ -409,11 +409,11 @@ export default function AppointmentsPage() {
                     setCurrentDate(addCalendarDays(currentDate, calendarView === "week" ? -7 : -1));
                   }
                 }}
-                className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 font-bold"
+                className="w-8 h-8 rounded-lg border border-base-300 flex items-center justify-center hover:bg-base-200 text-base-content/80 font-bold"
               >
                 ←
               </button>
-              <h2 className="text-base font-bold text-gray-900">
+              <h2 className="text-base font-bold text-base-content">
                 {formatManilaDate(currentDate, {
                   month: "long", year: "numeric",
                   ...(calendarView === "day" && { day: "numeric", weekday: "long" }),
@@ -428,7 +428,7 @@ export default function AppointmentsPage() {
                     setCurrentDate(addCalendarDays(currentDate, calendarView === "week" ? 7 : 1));
                   }
                 }}
-                className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 font-bold"
+                className="w-8 h-8 rounded-lg border border-base-300 flex items-center justify-center hover:bg-base-200 text-base-content/80 font-bold"
               >
                 →
               </button>
@@ -436,7 +436,7 @@ export default function AppointmentsPage() {
 
             <button
               onClick={() => setCurrentDate(manilaDateKey())}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50"
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-base-300 text-base-content hover:bg-base-200"
             >
               Today
             </button>
@@ -453,17 +453,17 @@ export default function AppointmentsPage() {
               return (
                 <div
                   key={i}
-                  className="bg-gray-50/75 rounded-xl p-3 border border-gray-100 min-h-[360px] flex flex-col"
+                  className="bg-base-200/75 rounded-xl p-3 border border-base-300 min-h-[360px] flex flex-col"
                 >
-                  <div className="text-center pb-2 mb-2 border-b border-gray-200">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  <div className="text-center pb-2 mb-2 border-b border-base-300">
+                    <p className="text-xs font-bold text-base-content/60 uppercase tracking-wider">
                       {formatManilaDate(dayStr, { weekday: "short" })}
                     </p>
                     <p
                       className={`text-sm font-extrabold mt-0.5 ${
                         dayStr === manilaDateKey()
-                          ? "w-7 h-7 mx-auto rounded-full bg-pink-600 text-white flex items-center justify-center"
-                          : "text-gray-800"
+                          ? "w-7 h-7 mx-auto rounded-full bg-primary text-white flex items-center justify-center"
+                          : "text-base-content"
                       }`}
                     >
                       {Number(dayStr.slice(8, 10))}
@@ -474,15 +474,15 @@ export default function AppointmentsPage() {
                     {dayAppts.map((a) => (
                       <div
                         key={a.id}
-                        className="bg-white p-2.5 rounded-lg border border-gray-200 shadow-2xs text-xs"
+                        className="bg-base-100 p-2.5 rounded-lg border border-base-300 shadow-2xs text-xs"
                       >
-                        <p className="font-bold text-gray-900 truncate">
+                        <p className="font-bold text-base-content truncate">
                           {a.patient?.profile?.full_name}
                         </p>
-                        <p className="text-xs text-pink-600 font-semibold truncate">
+                        <p className="text-xs text-primary font-semibold truncate">
                           {a.service?.name}
                         </p>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-xs text-base-content/60 mt-1">
                           ⏰{" "}
                           {formatManilaTime(a.start_time)}
                         </p>
@@ -502,36 +502,36 @@ export default function AppointmentsPage() {
       {/* Reschedule Modal */}
       {rescheduleAppt && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100">
-            <h3 className="text-lg font-bold text-gray-900 mb-1">
+          <div className="bg-base-100 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-base-300">
+            <h3 className="text-lg font-bold text-base-content mb-1">
               Reschedule Appointment
             </h3>
-            <p className="text-xs text-gray-500 mb-4">
+            <p className="text-xs text-base-content/70 mb-4">
               Patient: <strong>{rescheduleAppt.patient?.profile?.full_name}</strong> • Doctor:{" "}
               <strong>{rescheduleAppt.doctor?.profile?.full_name}</strong>
             </p>
 
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-semibold text-gray-700 block mb-1">
+                <label className="text-xs font-semibold text-base-content block mb-1">
                   New Appointment Date
                 </label>
                 <input
                   type="date"
                   value={rescheduleDate}
-                  onChange={(e) => setRescheduleDate(e.target.value)}
-                  className="w-full text-xs font-medium border border-gray-300 rounded-lg p-2.5"
+                  aria-label="New Appointment Date" onChange={(e) => setRescheduleDate(e.target.value)}
+                  className="w-full text-xs font-medium border border-base-300 rounded-lg p-2.5"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-gray-700 block mb-1">
+                <label className="text-xs font-semibold text-base-content block mb-1">
                   New Start Time (Manila Time)
                 </label>
                 <select
                   value={rescheduleTime}
-                  onChange={(e) => setRescheduleTime(e.target.value)}
-                  className="w-full text-xs font-medium border border-gray-300 rounded-lg p-2.5 bg-white"
+                  aria-label="New Start Time (Manila Time)" onChange={(e) => setRescheduleTime(e.target.value)}
+                  className="w-full text-xs font-medium border border-base-300 rounded-lg p-2.5 bg-base-100"
                 >
                   <option value="09:00:00">09:00 AM</option>
                   <option value="09:30:00">09:30 AM</option>
@@ -549,7 +549,7 @@ export default function AppointmentsPage() {
                 </select>
               </div>
 
-              <div className="p-3 bg-pink-50 rounded-lg text-xs text-pink-700 leading-relaxed">
+              <div className="p-3 bg-primary/10 rounded-lg text-xs text-primary leading-relaxed">
                 <Icon name="shield-check" size={15} className="mr-1 inline-block align-[-2px]" /> The database prevents double-booking. If the doctor already has an appointment during this time, the system blocks it.
               </div>
             </div>
@@ -557,14 +557,14 @@ export default function AppointmentsPage() {
             <div className="flex justify-end space-x-2 mt-6">
               <button
                 onClick={() => setRescheduleAppt(null)}
-                className="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-50"
+                className="px-4 py-2 border border-base-300 text-base-content/80 rounded-lg text-xs font-semibold hover:bg-base-200"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmReschedule}
                 disabled={updating}
-                className="px-4 py-2 bg-pink-600 text-white rounded-lg text-xs font-semibold hover:bg-pink-700 transition"
+                className="px-4 py-2 bg-primary text-white rounded-lg text-xs font-semibold hover:bg-primary-focus transition"
               >
                 {updating ? "Saving..." : "Save Reschedule"}
               </button>
