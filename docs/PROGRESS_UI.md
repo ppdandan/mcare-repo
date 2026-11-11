@@ -11,7 +11,10 @@
 
 ## Step 2 — Shared layout and components
 
-- Not started.
+- Added reusable daisyUI components for buttons, cards, text/select fields, badges, alerts, loading/empty/error states, tables, modals, page containers, and site headers/footers. Buttons support primary, secondary, outline, and destructive variants with hover, active, disabled, loading, visible focus, and a 44px minimum height.
+- Updated public and patient headers, the existing login footer, global background/focus styles, and the favicon. Header logo remains `web/public/logo.png`; Next.js now serves its copy as `/icon.png`.
+- Kept the existing inline SVG `Icon` component as the one icon set; no icon package was added.
+- Web TypeScript check and production build passed. Step 2 complete; committed separately.
 
 ## Step 3 — Screen groups
 

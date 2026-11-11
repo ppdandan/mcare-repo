@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { userFacingErrorMessage } from "@m-care/shared";
+import SiteFooter from "@/components/ui/SiteFooter";
 
 type LoginMode = "password" | "otp";
 
@@ -284,16 +285,16 @@ function LoginForm() {
         )}
 
         {/* Regulatory footer */}
-        <div className="mt-6 pt-5 border-t border-gray-100 text-center space-y-1.5">
-          <a href="/privacy" className="text-sm font-semibold text-pink-700 underline">Privacy Policy</a>
-          <p><a href="/delete-account" className="text-sm text-pink-700 underline">Request account deletion</a></p>
-          <p className="text-xs text-gray-400">
+        <SiteFooter className="mt-6 space-y-1.5">
+          <a href="/privacy" className="inline-flex min-h-11 items-center text-sm font-semibold text-primary underline">Privacy Policy</a>
+          <p><a href="/delete-account" className="inline-flex min-h-11 items-center text-sm text-primary underline">Request account deletion</a></p>
+          <p className="text-xs text-base-content/75">
             Republic Act No. 10173 • Philippine Data Privacy Act of 2012
           </p>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-base-content/75">
             All clinic consultations and patient record queries are logged in immutable audit records.
           </p>
-        </div>
+        </SiteFooter>
       </div>
     </div>
   );

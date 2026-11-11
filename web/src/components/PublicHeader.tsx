@@ -1,17 +1,15 @@
 import Link from "next/link";
+import { BrandLink, SiteHeader } from "@/components/ui/SiteHeader";
 
 export default function PublicHeader() {
   return (
-    <header className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6">
-      <Link href="/login" className="inline-flex items-center gap-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-700">
-        <img src="/logo.png" alt="M-Care" width={36} height={42} className="h-10 w-9 object-contain" />
-        <span><strong className="block text-base font-bold text-gray-900">M-Care Clinic</strong><span className="block text-sm text-gray-600">Patient information</span></span>
-      </Link>
-      <nav className="flex flex-wrap items-center gap-1" aria-label="Public navigation">
-        <Link href="/privacy" className="rounded-lg px-3 py-2 text-sm font-semibold text-primary-800 hover:bg-primary-50">Privacy</Link>
-        <Link href="/delete-account" className="rounded-lg px-3 py-2 text-sm font-semibold text-primary-800 hover:bg-primary-50">Account deletion</Link>
-        <Link href="/login" className="rounded-lg bg-primary-700 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-800">Sign in</Link>
+    <SiteHeader className="mx-auto w-full max-w-5xl">
+      <BrandLink href="/login" title="M-Care Clinic" subtitle="Patient information" />
+      <nav className="menu menu-horizontal flex-wrap items-center gap-1 p-0" aria-label="Public navigation">
+        <li><Link href="/privacy" className="min-h-11 rounded-btn px-3 text-sm font-semibold">Privacy</Link></li>
+        <li><Link href="/delete-account" className="min-h-11 rounded-btn px-3 text-sm font-semibold">Account deletion</Link></li>
+        <li><Link href="/login" className="btn btn-primary min-h-11 rounded-btn px-4 text-sm font-semibold">Sign in</Link></li>
       </nav>
-    </header>
+    </SiteHeader>
   );
 }
