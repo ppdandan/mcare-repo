@@ -179,3 +179,13 @@
 - After the user's authorization for safe updates, ran `npm audit fix` without `--force`; npm reported the workspace already up to date and made no package or lockfile changes.
 - A read-only full `npm audit` reports 25 findings: 5 high, 19 moderate, and 1 low. Remaining high findings include `query-string`/`decode-uri-component` (the listed `query-string` fix is v10, a major), `expo-router` and related Expo packages (the listed fixes require Expo SDK 58; downgrading Expo to 52 is also suggested by some advisories), `postcss` under Next 15 (the listed fix is Next 16), and `image-size` (transitive; npm did not apply a safe update). No forced or major upgrades were made.
 - This remains a release security review item. The user authorized safe updates only; no further package changes are authorized without a separate decision.
+
+## Final verification and handoff
+
+- Verified branch `recover-features` and a clean starting worktree. `docs/AGENT_PROMPT.md` was absent; the other requested documents were reviewed. Only dev ref `luccnwicirfnmyzgemzj` is in scope; production ref `pojgizdueifvhgpbvqay` was not queried or changed.
+- Confirmed the shared privacy policy explicitly covers retained transaction records after account deletion.
+- Compared actual filenames with the production runbook and corrected it to enumerate every migration 00014–00025 and all Edge Functions: `create-staff`, `delete-account`, and `send-reminders`.
+- `npx expo config --type introspect --json` in `mobile/` reported INTERNET and POST_NOTIFICATIONS, with READ/WRITE_EXTERNAL_STORAGE blocked. React Native's installed `gradle/libs.versions.toml` resolves `targetSdk = 36`.
+- `npm audit --omit=dev` in `web/`: 2 findings (1 moderate, 1 high); high PostCSS is nested build/CSS tooling and the listed remediation requires Next 16. In `mobile/`: 19 findings (1 low, 13 moderate, 5 high); high paths include bundled `query-string`/`decode-uri-component`, Expo build tooling `deepmerge`, `image-size`, and PostCSS. `image-size` has an npm non-major fix; query-string requires v10 and Expo remediation requires SDK 58. No upgrades were applied.
+- Added `docs/FINAL_REPORT.md` with evidence, unproven items, placeholders, clinic decisions, owner steps including Play Console, and known risks. No screenshots or device checks were taken; no production operation was performed.
+- `git diff --check` passed before staging. Only the three named documentation files are staged and committed for this handoff.

@@ -21,6 +21,8 @@ Review the dry-run output. It must show only the migrations approved for product
 4. `supabase/migrations/00024_reject_weekend_appointments.sql`
 5. `supabase/migrations/00025_transaction_history.sql`
 
+For completeness, the full post-00013 migration set is: `00014_weekday_appointments.sql`, `00015_single_ob_doctor.sql`, `00016_bernice_weekday_schedule.sql`, `00017_initial_booking_services.sql`, `00018_production_access_hardening.sql`, `00019_server_validated_booking_and_audit.sql`, `00020_idempotent_reminder_delivery.sql`, and the five files listed above (`00021_repair_canonical_doctor_identity.sql`, `00022_privacy_deletion_retention.sql`, `00023_ensure_canonical_ob_doctor.sql`, `00024_reject_weekend_appointments.sql`, `00025_transaction_history.sql`). Compare the full set with the production migration list and dry run before pushing; do not push migrations that are already applied or outside the approved release.
+
 If the dry run includes any unexpected migration, stop and resolve the migration history before pushing. If it is correct, push the pending migrations:
 
 ```sh
@@ -30,15 +32,17 @@ npx supabase migration list --linked
 
 Confirm the five migrations above are recorded as applied before continuing.
 
-## 2. Deploy the account-deletion function
+## 2. Deploy Edge Functions
 
-The database migration creates the supporting privacy/deletion records and policies. Deploy the matching Edge Function only after the database migration push succeeds:
+The repository contains these Edge Functions: `create-staff`, `delete-account`, and `send-reminders`. Deploy only the functions approved for this release, after their required database migrations succeed. The account-deletion change requires `delete-account`:
 
 ```sh
 npx supabase functions deploy delete-account --project-ref pojgizdueifvhgpbvqay
 ```
 
 Verify the function in the Supabase dashboard and run the clinic's approved production smoke test with a dedicated test account. Do not use a real patient's account for deletion testing.
+
+`create-staff` and `send-reminders` are also present in the repository. Before deploying either, confirm whether it is already deployed and approved for this release, then use `npx supabase functions deploy create-staff --project-ref pojgizdueifvhgpbvqay` or `npx supabase functions deploy send-reminders --project-ref pojgizdueifvhgpbvqay` respectively. Do not deploy them solely because they are listed here.
 
 ## 3. Publish the website and Android app
 
