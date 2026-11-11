@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile, AppointmentWithDetails } from "@m-care/shared";
+import { formatManilaDate, manilaDateKey, manilaTimeKey, weekdayForDateKey } from "@m-care/shared";
 import {
   AreaChart,
   Area,
@@ -134,8 +135,7 @@ export default function AnalyticsPage() {
   // Chart Data 1: Appointment Trends Over Time
   const trendMap: Record<string, { date: string; total: number; completed: number }> = {};
   filteredAppointments.forEach((a) => {
-    const d = new Date(a.start_time);
-    const key = `${d.getMonth() + 1}/${d.getDate()}`;
+    const key = formatManilaDate(a.start_time, { month: "numeric", day: "numeric" });
     if (!trendMap[key]) {
       trendMap[key] = { date: key, total: 0, completed: 0 };
     }
@@ -169,7 +169,7 @@ export default function AnalyticsPage() {
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const dayCounts = [0, 0, 0, 0, 0, 0, 0];
   filteredAppointments.forEach((a) => {
-    const day = new Date(a.start_time).getDay();
+    const day = weekdayForDateKey(manilaDateKey(a.start_time));
     dayCounts[day] += 1;
   });
   const busiestDaysData = dayNames.map((name, idx) => ({
@@ -182,7 +182,7 @@ export default function AnalyticsPage() {
     "9 AM": 0, "10 AM": 0, "11 AM": 0, "1 PM": 0, "2 PM": 0, "3 PM": 0, "4 PM": 0, "5 PM": 0,
   };
   filteredAppointments.forEach((a) => {
-    const h = new Date(a.start_time).getHours();
+    const h = Number(manilaTimeKey(a.start_time).slice(0, 2));
     if (h === 9) hourMap["9 AM"] += 1;
     else if (h === 10) hourMap["10 AM"] += 1;
     else if (h === 11) hourMap["11 AM"] += 1;

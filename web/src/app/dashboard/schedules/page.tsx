@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { DoctorWithProfile, DoctorSchedule, ScheduleException } from "@m-care/shared";
+import { formatManilaDate, manilaDateKey } from "@m-care/shared";
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -53,7 +54,7 @@ export default function SchedulesPage() {
           .from("schedule_exceptions")
           .select("*")
           .eq("doctor_id", selectedDoctorId)
-          .gte("exception_date", new Date().toISOString().split("T")[0])
+          .gte("exception_date", manilaDateKey())
           .order("exception_date"),
       ]);
 
@@ -230,7 +231,7 @@ export default function SchedulesPage() {
                   <div>
                     <div className="flex items-center space-x-2">
                       <span className="font-bold text-rose-900">
-                        {new Date(exc.exception_date).toLocaleDateString("en-US", {
+                        {formatManilaDate(exc.exception_date, {
                           weekday: "short",
                           month: "short",
                           day: "numeric",

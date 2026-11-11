@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile, UserRole } from "@m-care/shared";
+import { formatManilaDate } from "@m-care/shared";
 
 interface StaffMember extends Profile {
   doctor_details?: {
@@ -211,7 +212,7 @@ export default function StaffManagementPage() {
                     </td>
 
                     <td className="py-3.5 px-4 text-gray-500">
-                      {new Date(s.created_at).toLocaleDateString("en-US", {
+                      {formatManilaDate(s.created_at, {
                         month: "short",
                         day: "numeric",
                         year: "numeric",

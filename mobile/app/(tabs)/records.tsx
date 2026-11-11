@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import Colors from '@/constants/Colors';
+import { formatManilaDate } from '@m-care/shared';
 import type { MedicalRecordWithDetails } from '@m-care/shared';
 
 export default function RecordsScreen() {
@@ -130,12 +131,7 @@ export default function RecordsScreen() {
               >
                 <View style={styles.cardTopRow}>
                   <Text style={styles.visitDate}>
-                    {new Date(rec.visit_date).toLocaleDateString('en-US', {
-                      weekday: 'short',
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
+                    {formatManilaDate(rec.visit_date, { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' })}
                   </Text>
                   <View style={styles.badge}>
                     <Text style={styles.badgeText}>Verified Chart</Text>
@@ -185,9 +181,7 @@ export default function RecordsScreen() {
                   <View>
                     <Text style={styles.modalTitle}>Consultation Record</Text>
                     <Text style={styles.modalSub}>
-                      {new Date(selectedRecord.visit_date).toLocaleDateString('en-US', {
-                        dateStyle: 'full',
-                      })}
+                      {formatManilaDate(selectedRecord.visit_date, { dateStyle: 'full' })}
                     </Text>
                   </View>
                   <TouchableOpacity

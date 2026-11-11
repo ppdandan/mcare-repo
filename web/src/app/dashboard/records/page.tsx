@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { MedicalRecordWithDetails, PatientWithProfile, DoctorWithProfile, Profile } from "@m-care/shared";
+import { formatManilaDate, manilaDateKey } from "@m-care/shared";
 
 export default function MedicalRecordsPage() {
   const [records, setRecords] = useState<MedicalRecordWithDetails[]>([]);
@@ -20,7 +21,7 @@ export default function MedicalRecordsPage() {
   // Form inputs
   const [patientId, setPatientId] = useState("");
   const [doctorId, setDoctorId] = useState("");
-  const [visitDate, setVisitDate] = useState(new Date().toISOString().split("T")[0]);
+  const [visitDate, setVisitDate] = useState(manilaDateKey());
   const [chiefComplaint, setChiefComplaint] = useState("");
   const [hpi, setHpi] = useState("");
   const [bp, setBp] = useState("120/80");
@@ -166,7 +167,7 @@ export default function MedicalRecordsPage() {
   const resetRecordForm = () => {
     if (patients.length > 0) setPatientId(patients[0].id);
     if (doctors.length > 0) setDoctorId(doctors[0].id);
-    setVisitDate(new Date().toISOString().split("T")[0]);
+    setVisitDate(manilaDateKey());
     setChiefComplaint("");
     setHpi("");
     setBp("120/80");
@@ -290,7 +291,7 @@ export default function MedicalRecordsPage() {
                 filteredRecords.map((rec) => (
                   <tr key={rec.id} className="hover:bg-purple-50/20 transition">
                     <td className="py-3.5 px-4 font-semibold text-gray-900 whitespace-nowrap">
-                      {new Date(rec.visit_date).toLocaleDateString("en-US", {
+                      {formatManilaDate(rec.visit_date, {
                         weekday: "short",
                         month: "short",
                         day: "numeric",
@@ -361,7 +362,7 @@ export default function MedicalRecordsPage() {
                   {selectedRecord.patient?.profile?.full_name}
                 </h3>
                 <p className="text-xs text-gray-500">
-                  Visit Date: {new Date(selectedRecord.visit_date).toLocaleDateString("en-US", { dateStyle: "full" })}
+                  Visit Date: {formatManilaDate(selectedRecord.visit_date, { dateStyle: "full" })}
                 </p>
               </div>
               <button

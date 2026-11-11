@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import Colors from '@/constants/Colors';
+import { formatManilaDate, formatManilaDateTime } from '@m-care/shared';
 import type { AppointmentWithDetails, AppointmentStatus } from '@m-care/shared';
 
 export default function AppointmentsScreen() {
@@ -90,9 +91,7 @@ export default function AppointmentsScreen() {
   const handleCancelAppointment = (appt: AppointmentWithDetails) => {
     Alert.alert(
       'Cancel Appointment',
-      `Are you sure you want to cancel your ${appt.service?.name} scheduled for ${new Date(
-        appt.start_time
-      ).toLocaleDateString('en-US', { dateStyle: 'medium' })}?`,
+      `Are you sure you want to cancel your ${appt.service?.name} scheduled for ${formatManilaDate(appt.start_time)}?`,
       [
         { text: 'Keep Appointment', style: 'cancel' },
         {
@@ -241,7 +240,7 @@ export default function AppointmentsScreen() {
                   </View>
 
                   <Text style={styles.doctorName}>
-                    👨‍⚕️ {appt.doctor?.profile?.full_name ?? 'OB-GYN Specialist'}
+                    👩‍⚕️ {appt.doctor?.profile?.full_name ?? 'Dr. Bernice Paule'}
                   </Text>
                   <Text style={styles.roomText}>
                     📍 {appt.doctor?.room ?? 'Room 201'}
@@ -252,12 +251,8 @@ export default function AppointmentsScreen() {
                   <View style={styles.timeRow}>
                     <Text style={styles.timeLabel}>Date & Time:</Text>
                     <Text style={styles.timeValue}>
-                      {new Date(appt.start_time).toLocaleString('en-US', {
-                        weekday: 'short',
-                        month: 'short',
-                        day: 'numeric',
-                        hour: 'numeric',
-                        minute: '2-digit',
+                      {formatManilaDateTime(appt.start_time, {
+                        weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
                       })}
                     </Text>
                   </View>

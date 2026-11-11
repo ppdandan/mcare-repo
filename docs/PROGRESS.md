@@ -71,3 +71,11 @@
 - Added idempotent migration `00023_ensure_canonical_ob_doctor.sql`; a dry run showed only 00023 pending, and it was applied to dev ref `luccnwicirfnmyzgemzj`. A follow-up read confirmed exactly one doctor with the requested name and specialty. Production ref was not queried.
 - Mobile booking now assigns Dr. Bernice automatically. Removed doctor filtering from web appointments, the schedule selector, the records physician selector, and doctor account creation from staff management. Replaced the stale report sign-off name.
 - Mobile TypeScript check passed. Web TypeScript still fails on the existing React 18/19 type conflict in Next/Link and Recharts components. The stale `.next` cache was isolated for the check and restored; package files were not changed.
+
+### Task 3 — Booking calendar and Manila time
+
+- Read dev migration 00019 and confirmed its `book_appointment` RPC validates the patient and slot but did not reject weekends. Mobile booking calls this RPC; there is no direct appointment insert in either app.
+- Replaced the mobile 14-day date list with a month calendar. Past dates, weekends, and dates outside the displayed month are disabled and gray. Scheduled but unavailable times remain visible as disabled slots.
+- Added migration `00024_reject_weekend_appointments.sql`, which rejects weekend appointments in Asia/Manila in both the booking RPC and a database trigger. Applied it to dev ref `luccnwicirfnmyzgemzj` and verified a Saturday insert is rejected. Production was not contacted.
+- Added shared Manila date/time helpers and updated patient-facing mobile screens and web dashboard dates/times to use Asia/Manila. Booking load, slot, and submission failures show the returned error and a Retry action.
+- Mobile TypeScript check passed. Web TypeScript check still fails on the stale `.next/types` reference to a removed route and existing React 18/19 Next/Link and Recharts JSX type conflicts. No packages were changed.

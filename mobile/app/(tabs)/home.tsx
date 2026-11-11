@@ -15,6 +15,7 @@ import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import { registerForPushNotificationsAsync } from '@/lib/notifications';
 import Colors from '@/constants/Colors';
+import { formatManilaDateTime } from '@m-care/shared';
 import type { AppointmentWithDetails } from '@m-care/shared';
 
 export default function HomeScreen() {
@@ -230,7 +231,7 @@ export default function HomeScreen() {
               </View>
 
               <Text style={styles.apptDoctor}>
-                Attending: {nextAppointment.doctor?.profile?.full_name ?? 'OB-GYN Specialist'}
+                Attending: {nextAppointment.doctor?.profile?.full_name ?? 'Dr. Bernice Paule'}
               </Text>
               <Text style={styles.apptRoom}>
                 📍 {nextAppointment.doctor?.room ?? 'Room 201 - Consultation Suite'}
@@ -241,10 +242,7 @@ export default function HomeScreen() {
               <View style={styles.apptTimeRow}>
                 <Text style={styles.apptTimeLabel}>Scheduled Time:</Text>
                 <Text style={styles.apptTimeValue}>
-                  {new Date(nextAppointment.start_time).toLocaleString('en-US', {
-                    dateStyle: 'medium',
-                    timeStyle: 'short',
-                  })}
+                  {formatManilaDateTime(nextAppointment.start_time)}
                 </Text>
               </View>
             </View>

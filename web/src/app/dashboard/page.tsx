@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { AppointmentWithDetails } from "@m-care/shared";
+import { formatManilaDateTime } from "@m-care/shared";
 
 export default function DashboardOverviewPage() {
   const [appointments, setAppointments] = useState<AppointmentWithDetails[]>([]);
@@ -237,12 +238,8 @@ export default function DashboardOverviewPage() {
                       </span>
                     </td>
                     <td className="py-3.5 px-4 font-semibold text-pink-600">
-                      {new Date(appt.start_time).toLocaleString("en-US", {
-                        weekday: "short",
-                        month: "short",
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "2-digit",
+                      {formatManilaDateTime(appt.start_time, {
+                        weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
                       })}
                     </td>
                     <td className="py-3.5 px-4 max-w-xs truncate text-gray-500">

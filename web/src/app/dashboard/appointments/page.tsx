@@ -2,6 +2,15 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
+import {
+  addCalendarDays,
+  formatManilaDate,
+  formatManilaTime,
+  manilaDateKey,
+  manilaDateTimeIso,
+  manilaTimeKey,
+  weekdayForDateKey,
+} from "@m-care/shared";
 import type { AppointmentWithDetails, AppointmentStatus } from "@m-care/shared";
 
 type ViewMode = "list" | "calendar";
@@ -15,7 +24,7 @@ export default function AppointmentsPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [calendarView, setCalendarView] = useState<CalendarViewType>("week");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [currentDate, setCurrentDate] = useState<string>(() => manilaDateKey());
 
   // Reschedule Modal
   const [rescheduleAppt, setRescheduleAppt] = useState<AppointmentWithDetails | null>(null);
@@ -105,7 +114,7 @@ export default function AppointmentsPage() {
 
     setUpdating(true);
     try {
-      const startIso = new Date(`${rescheduleDate}T${rescheduleTime}+08:00`).toISOString();
+      const startIso = manilaDateTimeIso(rescheduleDate, rescheduleTime);
       const duration = rescheduleAppt.service?.duration_minutes || 30;
       const endD = new Date(new Date(startIso).getTime() + duration * 60000);
       const endIso = endD.toISOString();
@@ -309,17 +318,10 @@ export default function AppointmentsPage() {
 
                       <td className="py-3.5 px-4">
                         <p className="font-semibold text-gray-900">
-                          {new Date(appt.start_time).toLocaleDateString("en-US", {
-                            weekday: "short",
-                            month: "short",
-                            day: "numeric",
-                          })}
+                          {formatManilaDate(appt.start_time, { weekday: "short", month: "short", day: "numeric" })}
                         </p>
                         <p className="text-[11px] text-pink-600 font-bold">
-                          {new Date(appt.start_time).toLocaleTimeString("en-US", {
-                            hour: "numeric",
-                            minute: "2-digit",
-                          })}
+                          {formatManilaTime(appt.start_time)}
                         </p>
                       </td>
 
@@ -357,8 +359,9 @@ export default function AppointmentsPage() {
                                 onClick={() => {
                                   setRescheduleAppt(appt);
                                   setRescheduleDate(
-                                    new Date(appt.start_time).toISOString().split("T")[0]
+                                    manilaDateKey(appt.start_time)
                                   );
+                                  setRescheduleTime(manilaTimeKey(appt.start_time));
                                 }}
                                 disabled={updating}
                                 className="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold rounded text-[11px] border border-purple-200 transition"
@@ -397,30 +400,31 @@ export default function AppointmentsPage() {
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => {
-                  const d = new Date(currentDate);
-                  if (calendarView === "month") d.setMonth(d.getMonth() - 1);
-                  else if (calendarView === "week") d.setDate(d.getDate() - 7);
-                  else d.setDate(d.getDate() - 1);
-                  setCurrentDate(d);
+                  if (calendarView === "month") {
+                    const [year, month, day] = currentDate.split("-").map(Number);
+                    setCurrentDate(new Date(Date.UTC(year, month - 2, 1, 12)).toISOString().slice(0, 10));
+                  } else {
+                    setCurrentDate(addCalendarDays(currentDate, calendarView === "week" ? -7 : -1));
+                  }
                 }}
                 className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 font-bold"
               >
                 ←
               </button>
               <h2 className="text-base font-bold text-gray-900">
-                {currentDate.toLocaleDateString("en-US", {
-                  month: "long",
-                  year: "numeric",
+                {formatManilaDate(currentDate, {
+                  month: "long", year: "numeric",
                   ...(calendarView === "day" && { day: "numeric", weekday: "long" }),
                 })}
               </h2>
               <button
                 onClick={() => {
-                  const d = new Date(currentDate);
-                  if (calendarView === "month") d.setMonth(d.getMonth() + 1);
-                  else if (calendarView === "week") d.setDate(d.getDate() + 7);
-                  else d.setDate(d.getDate() + 1);
-                  setCurrentDate(d);
+                  if (calendarView === "month") {
+                    const [year, month, day] = currentDate.split("-").map(Number);
+                    setCurrentDate(new Date(Date.UTC(year, month, 1, 12)).toISOString().slice(0, 10));
+                  } else {
+                    setCurrentDate(addCalendarDays(currentDate, calendarView === "week" ? 7 : 1));
+                  }
                 }}
                 className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 font-bold"
               >
@@ -429,7 +433,7 @@ export default function AppointmentsPage() {
             </div>
 
             <button
-              onClick={() => setCurrentDate(new Date())}
+              onClick={() => setCurrentDate(manilaDateKey())}
               className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50"
             >
               Today
@@ -439,11 +443,9 @@ export default function AppointmentsPage() {
           {/* Week View Grid */}
           <div className="grid grid-cols-7 gap-3">
             {Array.from({ length: 7 }).map((_, i) => {
-              const day = new Date(currentDate);
-              day.setDate(day.getDate() - day.getDay() + i);
-              const dayStr = day.toISOString().split("T")[0];
+              const dayStr = addCalendarDays(currentDate, -weekdayForDateKey(currentDate) + i);
               const dayAppts = filtered.filter(
-                (a) => a.start_time.split("T")[0] === dayStr
+                (a) => manilaDateKey(a.start_time) === dayStr
               );
 
               return (
@@ -453,16 +455,16 @@ export default function AppointmentsPage() {
                 >
                   <div className="text-center pb-2 mb-2 border-b border-gray-200">
                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                      {day.toLocaleDateString("en-US", { weekday: "short" })}
+                      {formatManilaDate(dayStr, { weekday: "short" })}
                     </p>
                     <p
                       className={`text-sm font-extrabold mt-0.5 ${
-                        dayStr === new Date().toISOString().split("T")[0]
+                        dayStr === manilaDateKey()
                           ? "w-7 h-7 mx-auto rounded-full bg-pink-600 text-white flex items-center justify-center"
                           : "text-gray-800"
                       }`}
                     >
-                      {day.getDate()}
+                      {Number(dayStr.slice(8, 10))}
                     </p>
                   </div>
 
@@ -480,10 +482,7 @@ export default function AppointmentsPage() {
                         </p>
                         <p className="text-[10px] text-gray-400 mt-1">
                           ⏰{" "}
-                          {new Date(a.start_time).toLocaleTimeString("en-US", {
-                            hour: "numeric",
-                            minute: "2-digit",
-                          })}
+                          {formatManilaTime(a.start_time)}
                         </p>
                         <div className="mt-1.5 flex justify-between items-center">
                           {getStatusBadge(a.status)}

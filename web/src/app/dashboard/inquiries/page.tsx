@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Inquiry } from "@m-care/shared";
+import { formatManilaDateTime } from "@m-care/shared";
 
 interface InquiryWithDetails extends Inquiry {
   patient?: {
@@ -129,12 +130,7 @@ export default function ReceptionInquiriesPage() {
                 inquiries.map((inq) => (
                   <tr key={inq.id} className="hover:bg-pink-50/25 transition">
                     <td className="py-3.5 px-4 whitespace-nowrap text-gray-500 font-mono">
-                      {new Date(inq.created_at).toLocaleString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "2-digit",
-                      })}
+                      {formatManilaDateTime(inq.created_at, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
                     </td>
 
                     <td className="py-3.5 px-4 font-bold text-gray-900">

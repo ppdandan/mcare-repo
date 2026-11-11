@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import Colors from '@/constants/Colors';
+import { formatManilaDateTime } from '@m-care/shared';
 import type { Notification } from '@m-care/shared';
 
 export default function NotificationsScreen() {
@@ -166,12 +167,7 @@ export default function NotificationsScreen() {
                     </Text>
                   </View>
                   <Text style={styles.timeAgo}>
-                    {new Date(n.created_at).toLocaleTimeString('en-US', {
-                      hour: 'numeric',
-                      minute: '2-digit',
-                      month: 'short',
-                      day: 'numeric',
-                    })}
+                    {formatManilaDateTime(n.created_at, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                   </Text>
                 </View>
                 <Text style={styles.cardBody}>{n.body}</Text>

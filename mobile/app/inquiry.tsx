@@ -15,6 +15,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import Colors from '@/constants/Colors';
+import { formatManilaDateTime, formatManilaTime } from '@m-care/shared';
 import type { Inquiry } from '@m-care/shared';
 
 export default function InquiryScreen() {
@@ -220,7 +221,7 @@ export default function InquiryScreen() {
                 </View>
 
                 <Text style={styles.cardDate}>
-                  Sent: {new Date(inq.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}
+                  Sent: {formatManilaDateTime(inq.created_at)}
                 </Text>
 
                 <View style={styles.patientMsgBox}>
@@ -232,7 +233,7 @@ export default function InquiryScreen() {
                     <Text style={styles.replyLabel}>Clinic Staff Response:</Text>
                     <Text style={styles.replyText}>{inq.reply}</Text>
                     <Text style={styles.replyDate}>
-                      Updated: {new Date(inq.updated_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                      Updated: {formatManilaTime(inq.updated_at)}
                     </Text>
                   </View>
                 ) : (

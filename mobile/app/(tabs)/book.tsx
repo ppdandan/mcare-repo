@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -15,7 +15,23 @@ import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import Colors from '@/constants/Colors';
 import { fetchWithCache } from '@/lib/cache';
-import type { Service, DoctorWithProfile, AvailableSlot } from '@m-care/shared';
+import {
+  formatManilaDate,
+  formatManilaTime,
+  manilaDateKey,
+  manilaDateTimeIso,
+  weekdayForDateKey,
+} from '@m-care/shared';
+import type { Service, DoctorWithProfile, AvailableSlot, DoctorSchedule } from '@m-care/shared';
+
+type BookingSlot = AvailableSlot & { available: boolean };
+
+function getErrorMessage(error: unknown, fallback: string): string {
+  if (error && typeof error === 'object' && 'message' in error) {
+    return String(error.message);
+  }
+  return error instanceof Error ? error.message : fallback;
+}
 
 export default function BookScreen() {
   const router = useRouter();
@@ -25,53 +41,64 @@ export default function BookScreen() {
 
   // Data collections
   const [services, setServices] = useState<Service[]>([]);
-  const [slots, setSlots] = useState<AvailableSlot[]>([]);
+  const [slots, setSlots] = useState<BookingSlot[]>([]);
 
   // Selection states
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [selectedDoctor, setSelectedDoctor] = useState<DoctorWithProfile | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>(''); // YYYY-MM-DD
-  const [selectedSlot, setSelectedSlot] = useState<AvailableSlot | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<BookingSlot | null>(null);
   const [notes, setNotes] = useState<string>('');
 
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingSlots, setLoadingSlots] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [catalogError, setCatalogError] = useState<string | null>(null);
+  const [slotError, setSlotError] = useState<string | null>(null);
+  const [bookingError, setBookingError] = useState<string | null>(null);
+  const [slotRetry, setSlotRetry] = useState(0);
+  const [visibleMonth, setVisibleMonth] = useState(() => {
+    const [year, month] = manilaDateKey().split('-').map(Number);
+    return new Date(Date.UTC(year, month - 1, 1, 12));
+  });
 
   // Fetch services and doctors on mount (cached for fast repeated loads)
-  useEffect(() => {
-    async function loadCatalog() {
-      setLoading(true);
-      try {
-        const servicesData = await fetchWithCache('clinic_services_active', async () => {
-          const { data } = await supabase
-            .from('services')
-            .select('*')
-            .eq('is_active', true)
-            .order('name');
-          return (data as Service[]) || [];
-        }, 15 * 60 * 1000); // 15 mins
-        if (servicesData) setServices(servicesData);
+  const loadCatalog = useCallback(async () => {
+    setLoading(true);
+    setCatalogError(null);
+    try {
+      const servicesData = await fetchWithCache('clinic_services_active', async () => {
+        const { data, error } = await supabase
+          .from('services')
+          .select('*')
+          .eq('is_active', true)
+          .order('name');
+        if (error) throw error;
+        return (data as Service[]) || [];
+      }, 15 * 60 * 1000);
+      setServices(servicesData || []);
 
-        const { data: doctorData, error: doctorError } = await supabase
-            .from('doctors')
-            .select(`
-              *,
-              profile:profiles (*)
-            `)
-            .eq('profile.full_name', 'Dr. Bernice Paule')
-            .eq('specialty', 'OB-GYNE / Sonologist')
-            .maybeSingle();
-        if (doctorError) throw doctorError;
-        setSelectedDoctor(doctorData as unknown as DoctorWithProfile | null);
-      } catch (err) {
-        console.error('Error loading services/doctors:', err);
-      } finally {
-        setLoading(false);
-      }
+      const { data: doctorData, error: doctorError } = await supabase
+        .from('doctors')
+        .select(`*, profile:profiles (*)`)
+        .eq('profile.full_name', 'Dr. Bernice Paule')
+        .eq('specialty', 'OB-GYNE / Sonologist')
+        .maybeSingle();
+      if (doctorError) throw doctorError;
+      if (!doctorData) throw new Error('Dr. Bernice Paule is not available for booking. Please try again later.');
+      setSelectedDoctor(doctorData as unknown as DoctorWithProfile);
+    } catch (err) {
+      const message = getErrorMessage(err, 'Could not load clinic services.');
+      console.error('Error loading booking catalog:', err);
+      setCatalogError(message);
+    } finally {
+      setLoading(false);
     }
-    loadCatalog();
   }, []);
+
+  useEffect(() => {
+    loadCatalog();
+  }, [loadCatalog]);
 
   // When Doctor and Date are selected, query available slots via RPC
   useEffect(() => {
@@ -80,20 +107,54 @@ export default function BookScreen() {
       setLoadingSlots(true);
       setSelectedSlot(null);
       try {
+        setSlotError(null);
         const { data, error } = await supabase.rpc('get_available_slots', {
           p_doctor_id: selectedDoctor.id,
           p_target_date: selectedDate,
           p_slot_duration_minutes: selectedService.duration_minutes || 30,
         });
 
-        if (error) {
-          console.error('RPC Error fetching slots:', error);
-          setSlots([]);
-        } else {
-          setSlots((data as AvailableSlot[]) || []);
-        }
+        if (error) throw error;
+
+        const { data: schedules, error: scheduleError } = await supabase
+          .from('doctor_schedules')
+          .select('*')
+          .eq('doctor_id', selectedDoctor.id)
+          .eq('weekday', weekdayForDateKey(selectedDate))
+          .order('start_time');
+        if (scheduleError) throw scheduleError;
+
+        const freeStarts = new Set(
+          ((data as AvailableSlot[]) || []).map((slot) => new Date(slot.slot_start).getTime())
+        );
+        const duration = selectedService.duration_minutes || 30;
+        const candidates: BookingSlot[] = [];
+        (schedules as DoctorSchedule[]).forEach((schedule) => {
+          const [startHour, startMinute] = schedule.start_time.split(':').map(Number);
+          const [endHour, endMinute] = schedule.end_time.split(':').map(Number);
+          const rangeStart = startHour * 60 + startMinute;
+          const rangeEnd = endHour * 60 + endMinute;
+          for (let minute = rangeStart; minute + duration <= rangeEnd; minute += duration) {
+            const hour = Math.floor(minute / 60);
+            const minuteOfHour = minute % 60;
+            const time = `${String(hour).padStart(2, '0')}:${String(minuteOfHour).padStart(2, '0')}:00`;
+            const slotStart = manilaDateTimeIso(selectedDate, time);
+            const slotEnd = manilaDateTimeIso(
+              selectedDate,
+              `${String(Math.floor((minute + duration) / 60)).padStart(2, '0')}:${String((minute + duration) % 60).padStart(2, '0')}:00`
+            );
+            candidates.push({
+              slot_start: slotStart,
+              slot_end: slotEnd,
+              available: freeStarts.has(new Date(slotStart).getTime()),
+            });
+          }
+        });
+        setSlots(candidates);
       } catch (err) {
+        const message = getErrorMessage(err, 'Could not load appointment slots.');
         console.error('Error fetching slots:', err);
+        setSlotError(message);
         setSlots([]);
       } finally {
         setLoadingSlots(false);
@@ -103,20 +164,25 @@ export default function BookScreen() {
     if (step === 3) {
       fetchSlots();
     }
-  }, [step, selectedDoctor, selectedDate, selectedService]);
+  }, [step, selectedDoctor, selectedDate, selectedService, slotRetry]);
 
-  // Generate next 14 calendar dates
-  const nextDates = Array.from({ length: 14 }).map((_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() + i + 1); // Start from tomorrow
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    const dateStr = `${yyyy}-${mm}-${dd}`;
-    const dayLabel = d.toLocaleDateString('en-US', { weekday: 'short' });
-    const monthLabel = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    return { dateStr, dayLabel, monthLabel };
+  const today = manilaDateKey();
+  const monthYear = visibleMonth.getUTCFullYear();
+  const monthIndex = visibleMonth.getUTCMonth();
+  const firstWeekday = new Date(Date.UTC(monthYear, monthIndex, 1, 12)).getUTCDay();
+  const calendarDays = Array.from({ length: 42 }, (_, index) => {
+    const day = new Date(Date.UTC(monthYear, monthIndex, 1 - firstWeekday + index, 12));
+    const dateStr = day.toISOString().slice(0, 10);
+    const weekday = day.getUTCDay();
+    return {
+      dateStr,
+      dayNumber: day.getUTCDate(),
+      inMonth: day.getUTCMonth() === monthIndex,
+      isWeekend: weekday === 0 || weekday === 6,
+      isPast: dateStr < today,
+    };
   });
+  const monthStart = `${monthYear}-${String(monthIndex + 1).padStart(2, '0')}-01`;
 
   const handleConfirmBooking = async () => {
     if (!patient?.id || !selectedDoctor || !selectedService || !selectedSlot) {
@@ -125,25 +191,21 @@ export default function BookScreen() {
     }
 
     setSubmitting(true);
+    setBookingError(null);
     try {
-      const { error } = await supabase.from('appointments').insert({
-        patient_id: patient.id,
-        doctor_id: selectedDoctor.id,
-        service_id: selectedService.id,
-        start_time: selectedSlot.slot_start,
-        end_time: selectedSlot.slot_end,
-        status: 'pending',
-        notes: notes.trim() || null,
+      const { error } = await supabase.rpc('book_appointment', {
+        p_doctor_id: selectedDoctor.id,
+        p_service_id: selectedService.id,
+        p_start_time: selectedSlot.slot_start,
+        p_notes: notes.trim() || null,
       });
 
       if (error) {
         // Check for exclusion constraint violation (PostgreSQL code 23P01)
         if (error.code === '23P01' || error.message.includes('no_doctor_double_booking')) {
-          Alert.alert(
-            'Slot No Longer Available',
-            'Another patient has just secured this time slot. Please select a different time or date.'
-          );
-          setStep(4);
+          setBookingError(error.message);
+          setStep(3);
+          setSlotRetry((count) => count + 1);
           return;
         }
         throw error;
@@ -162,22 +224,21 @@ export default function BookScreen() {
               setSelectedDate('');
               setSelectedSlot(null);
               setNotes('');
+              setBookingError(null);
               router.replace('/(tabs)/appointments');
             },
           },
         ]
       );
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Could not complete booking.';
-      Alert.alert('Booking Error', message);
+      setBookingError(getErrorMessage(err, 'Could not complete booking.'));
     } finally {
       setSubmitting(false);
     }
   };
 
   const formatSlotTime = (isoString: string) => {
-    const d = new Date(isoString);
-    return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    return formatManilaTime(isoString);
   };
 
   return (
@@ -198,6 +259,14 @@ export default function BookScreen() {
               <ActivityIndicator size="large" color={Colors.primary} />
               <Text style={styles.loadingText}>Loading clinic directory...</Text>
             </View>
+          ) : catalogError ? (
+            <View style={styles.errorBox}>
+              <Text style={styles.errorTitle}>Could not load booking details</Text>
+              <Text style={styles.errorMessage}>{catalogError}</Text>
+              <TouchableOpacity style={styles.retryButton} onPress={loadCatalog}>
+                <Text style={styles.retryButtonText}>Retry</Text>
+              </TouchableOpacity>
+            </View>
           ) : (
             <>
               {/* STEP 1: SELECT SERVICE */}
@@ -207,7 +276,15 @@ export default function BookScreen() {
                   <Text style={styles.sectionSub}>
                     Choose the medical procedure or consultation you require.
                   </Text>
-                  {services.map((svc) => (
+                  {services.length === 0 ? (
+                    <View style={styles.noSlotsBox}>
+                      <Text style={styles.noSlotsTitle}>No services are available</Text>
+                      <Text style={styles.noSlotsDesc}>Please retry or contact the clinic.</Text>
+                      <TouchableOpacity style={styles.retryButton} onPress={loadCatalog}>
+                        <Text style={styles.retryButtonText}>Retry</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ) : services.map((svc) => (
                     <TouchableOpacity
                       key={svc.id}
                       style={[
@@ -239,34 +316,55 @@ export default function BookScreen() {
                     {selectedService?.name} · {selectedDoctor?.profile.full_name} · {selectedDoctor?.specialty}
                     {'\n'}Available at {selectedDoctor?.room ?? 'Consultation Room'}
                   </Text>
-                  <View style={styles.dateGrid}>
-                    {nextDates.map((d) => (
-                      <TouchableOpacity
-                        key={d.dateStr}
-                        style={[
-                          styles.dateCard,
-                          selectedDate === d.dateStr && styles.dateCardActive,
-                        ]}
-                        onPress={() => setSelectedDate(d.dateStr)}
-                      >
-                        <Text
-                          style={[
-                            styles.dateDay,
-                            selectedDate === d.dateStr && styles.textActive,
-                          ]}
-                        >
-                          {d.dayLabel}
-                        </Text>
-                        <Text
-                          style={[
-                            styles.dateMonth,
-                            selectedDate === d.dateStr && styles.textActive,
-                          ]}
-                        >
-                          {d.monthLabel}
-                        </Text>
-                      </TouchableOpacity>
+                  <View style={styles.calendarHeader}>
+                    <TouchableOpacity
+                      accessibilityLabel="Previous month"
+                      style={styles.monthButton}
+                      onPress={() => setVisibleMonth((current) => new Date(Date.UTC(current.getUTCFullYear(), current.getUTCMonth() - 1, 1, 12)))}
+                    >
+                      <Text style={styles.monthButtonText}>‹</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.monthTitle}>{formatManilaDate(monthStart, { month: 'long', year: 'numeric' })}</Text>
+                    <TouchableOpacity
+                      accessibilityLabel="Next month"
+                      style={styles.monthButton}
+                      onPress={() => setVisibleMonth((current) => new Date(Date.UTC(current.getUTCFullYear(), current.getUTCMonth() + 1, 1, 12)))}
+                    >
+                      <Text style={styles.monthButtonText}>›</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.weekdayRow}>
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+                      <Text key={day} style={styles.weekdayLabel}>{day}</Text>
                     ))}
+                  </View>
+                  <View style={styles.calendarGrid}>
+                    {calendarDays.map((day) => {
+                      const disabled = !day.inMonth || day.isPast || day.isWeekend;
+                      const active = selectedDate === day.dateStr;
+                      return (
+                        <TouchableOpacity
+                          key={day.dateStr}
+                          accessibilityRole="button"
+                          accessibilityState={{ disabled, selected: active }}
+                          disabled={disabled}
+                          style={[
+                            styles.calendarDay,
+                            disabled && styles.calendarDayDisabled,
+                            active && styles.calendarDayActive,
+                          ]}
+                          onPress={() => {
+                            setSelectedDate(day.dateStr);
+                            setSelectedSlot(null);
+                            setBookingError(null);
+                          }}
+                        >
+                          <Text style={[styles.calendarDayText, disabled && styles.calendarDayTextDisabled, active && styles.calendarDayTextActive]}>
+                            {day.dayNumber}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
                   </View>
                 </View>
               )}
@@ -276,12 +374,36 @@ export default function BookScreen() {
                 <View>
                   <Text style={styles.sectionHeading}>Available Time Slots</Text>
                   <Text style={styles.sectionSub}>
-                    Date: {new Date(selectedDate).toLocaleDateString('en-US', { dateStyle: 'full' })}
+                    Date: {formatManilaDate(selectedDate, { dateStyle: 'full' })}
                     {'\n'}
                     Physician: {selectedDoctor?.profile.full_name}
                   </Text>
 
-                  {loadingSlots ? (
+                  {bookingError && (
+                    <View style={styles.errorBox}>
+                      <Text style={styles.errorTitle}>That time is no longer available</Text>
+                      <Text style={styles.errorMessage}>{bookingError}</Text>
+                      <TouchableOpacity
+                        style={styles.retryButton}
+                        onPress={() => {
+                          setBookingError(null);
+                          setSlotRetry((count) => count + 1);
+                        }}
+                      >
+                        <Text style={styles.retryButtonText}>Retry</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+
+                  {slotError ? (
+                    <View style={styles.errorBox}>
+                      <Text style={styles.errorTitle}>Could not load time slots</Text>
+                      <Text style={styles.errorMessage}>{slotError}</Text>
+                      <TouchableOpacity style={styles.retryButton} onPress={() => setSlotRetry((count) => count + 1)}>
+                        <Text style={styles.retryButtonText}>Retry</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ) : loadingSlots ? (
                     <View style={styles.centerBox}>
                       <ActivityIndicator size="large" color={Colors.primary} />
                       <Text style={styles.loadingText}>Calculating free clinic slots...</Text>
@@ -289,10 +411,9 @@ export default function BookScreen() {
                   ) : slots.length === 0 ? (
                     <View style={styles.noSlotsBox}>
                       <Text style={styles.noSlotsIcon}>⏳</Text>
-                      <Text style={styles.noSlotsTitle}>No Available Slots</Text>
+                      <Text style={styles.noSlotsTitle}>No Clinic Hours</Text>
                       <Text style={styles.noSlotsDesc}>
-                        The doctor is either fully booked or not in the clinic on this day.
-                        Please select another date.
+                        No appointment hours are scheduled for this weekday. Please select another date.
                       </Text>
                       <TouchableOpacity
                         style={styles.backStepButton}
@@ -304,22 +425,29 @@ export default function BookScreen() {
                   ) : (
                     <View style={styles.slotsGrid}>
                       {slots.map((slot, index) => {
-                        const isSelected =
-                          selectedSlot?.slot_start === slot.slot_start;
+                        const isSelected = selectedSlot?.slot_start === slot.slot_start;
                         return (
                           <TouchableOpacity
-                            key={index}
-                            style={[styles.slotChip, isSelected && styles.slotChipActive]}
-                            onPress={() => setSelectedSlot(slot)}
+                            key={slot.slot_start || index}
+                            accessibilityRole="button"
+                            accessibilityState={{ disabled: !slot.available, selected: isSelected }}
+                            disabled={!slot.available}
+                            style={[styles.slotChip, !slot.available && styles.slotChipDisabled, isSelected && styles.slotChipActive]}
+                            onPress={() => {
+                              setSelectedSlot(slot);
+                              setBookingError(null);
+                            }}
                           >
                             <Text
                               style={[
                                 styles.slotTime,
+                                !slot.available && styles.slotTimeDisabled,
                                 isSelected && styles.slotTimeActive,
                               ]}
                             >
                               {formatSlotTime(slot.slot_start)}
                             </Text>
+                            {!slot.available && <Text style={styles.slotUnavailable}>Unavailable</Text>}
                           </TouchableOpacity>
                         );
                       })}
@@ -356,7 +484,7 @@ export default function BookScreen() {
                     <View style={styles.summaryRow}>
                       <Text style={styles.summaryLabel}>Date</Text>
                       <Text style={styles.summaryValue}>
-                        {new Date(selectedDate).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+                        {formatManilaDate(selectedDate)}
                       </Text>
                     </View>
                     <View style={styles.summaryRow}>
@@ -379,6 +507,20 @@ export default function BookScreen() {
                       numberOfLines={3}
                     />
                   </View>
+
+                  {bookingError && (
+                    <View style={styles.errorBox}>
+                      <Text style={styles.errorTitle}>Booking failed</Text>
+                      <Text style={styles.errorMessage}>{bookingError}</Text>
+                      <TouchableOpacity
+                        style={styles.retryButton}
+                        disabled={submitting}
+                        onPress={handleConfirmBooking}
+                      >
+                        <Text style={styles.retryButtonText}>{submitting ? 'Retrying…' : 'Retry'}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
 
                   <View style={styles.exclusionNote}>
                     <Text style={styles.exclusionText}>
@@ -576,6 +718,78 @@ const styles = StyleSheet.create({
     color: Colors.textLight,
     marginTop: 2,
   },
+  calendarHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  monthButton: {
+    width: 38,
+    height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    backgroundColor: '#FFF0F5',
+  },
+  monthButtonText: {
+    color: Colors.primaryDark,
+    fontSize: 26,
+    fontWeight: '700',
+    lineHeight: 30,
+  },
+  monthTitle: {
+    color: Colors.text,
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  weekdayRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+  },
+  weekdayLabel: {
+    width: '13.5%',
+    textAlign: 'center',
+    fontSize: 11,
+    fontWeight: '700',
+    color: Colors.textSecondary,
+  },
+  calendarGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    rowGap: 4,
+  },
+  calendarDay: {
+    width: '13.5%',
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 9,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
+  },
+  calendarDayDisabled: {
+    backgroundColor: '#E5E7EB',
+    borderColor: '#E5E7EB',
+  },
+  calendarDayActive: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  calendarDayText: {
+    fontSize: 13,
+    color: Colors.text,
+    fontWeight: '600',
+  },
+  calendarDayTextDisabled: {
+    color: '#9CA3AF',
+  },
+  calendarDayTextActive: {
+    color: '#FFFFFF',
+  },
   dateGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -626,6 +840,10 @@ const styles = StyleSheet.create({
     borderColor: Colors.primary,
     backgroundColor: Colors.primary,
   },
+  slotChipDisabled: {
+    borderColor: '#D1D5DB',
+    backgroundColor: '#E5E7EB',
+  },
   slotTime: {
     fontSize: 13,
     fontWeight: '700',
@@ -633,6 +851,46 @@ const styles = StyleSheet.create({
   },
   slotTimeActive: {
     color: '#FFFFFF',
+  },
+  slotTimeDisabled: {
+    color: '#6B7280',
+  },
+  slotUnavailable: {
+    marginTop: 2,
+    fontSize: 9,
+    color: '#6B7280',
+  },
+  errorBox: {
+    padding: 16,
+    marginVertical: 8,
+    backgroundColor: '#FEF2F2',
+    borderWidth: 1,
+    borderColor: '#FECACA',
+    borderRadius: 12,
+  },
+  errorTitle: {
+    color: '#991B1B',
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  errorMessage: {
+    color: '#7F1D1D',
+    fontSize: 12,
+    marginTop: 5,
+    lineHeight: 18,
+  },
+  retryButton: {
+    alignSelf: 'flex-start',
+    backgroundColor: Colors.primary,
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    marginTop: 12,
+  },
+  retryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
   },
   noSlotsBox: {
     backgroundColor: '#FFFFFF',

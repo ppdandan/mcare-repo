@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { AppointmentWithDetails, PatientWithProfile, MedicalRecordWithDetails } from "@m-care/shared";
+import { addCalendarDays, formatManilaDate, formatManilaTime, manilaDateKey } from "@m-care/shared";
 
 export default function ReportsPage() {
   const [appointments, setAppointments] = useState<AppointmentWithDetails[]>([]);
@@ -11,9 +12,9 @@ export default function ReportsPage() {
   const [loading, setLoading] = useState(true);
   const [reportType, setReportType] = useState<"appointments" | "patients" | "clinical">("appointments");
   const [startDate, setStartDate] = useState(
-    new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+    addCalendarDays(manilaDateKey(), -30)
   );
-  const [endDate, setEndDate] = useState(new Date().toISOString().split("T")[0]);
+  const [endDate, setEndDate] = useState(manilaDateKey());
 
   const supabase = createClient();
 
@@ -96,8 +97,8 @@ export default function ReportsPage() {
 
     const rows = appointments.map((a) => [
       `"${a.id}"`,
-      `"${new Date(a.start_time).toISOString().split("T")[0]}"`,
-      `"${new Date(a.start_time).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}"`,
+      `"${manilaDateKey(a.start_time)}"`,
+      `"${formatManilaTime(a.start_time)}"`,
       `"${a.patient?.profile?.full_name || ""}"`,
       `"${a.patient?.profile?.phone || ""}"`,
       `"${a.doctor?.profile?.full_name || ""}"`,
@@ -139,7 +140,7 @@ export default function ReportsPage() {
     ]);
 
     const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
-    downloadCsv(`mcare_patient_registry_${new Date().toISOString().split("T")[0]}.csv`, csv);
+    downloadCsv(`mcare_patient_registry_${manilaDateKey()}.csv`, csv);
   };
 
   const exportClinicalRecordsCsv = () => {
@@ -283,7 +284,7 @@ export default function ReportsPage() {
               Official Clinic Report
             </span>
             <p className="text-xs text-gray-500 mt-2">
-              Generated: {new Date().toLocaleDateString("en-US", { dateStyle: "long" })}
+              Generated: {formatManilaDate(new Date(), { dateStyle: "long" })}
             </p>
             <p className="text-[11px] text-gray-400">
               Period: {startDate} to {endDate}
@@ -314,8 +315,8 @@ export default function ReportsPage() {
                 {appointments.map((a) => (
                   <tr key={a.id}>
                     <td className="py-2 px-3 whitespace-nowrap font-mono text-[11px]">
-                      {new Date(a.start_time).toLocaleDateString("en-US", { month: "short", day: "numeric" })}{" "}
-                      {new Date(a.start_time).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                      {formatManilaDate(a.start_time, { month: "short", day: "numeric" })}{" "}
+                      {formatManilaTime(a.start_time)}
                     </td>
                     <td className="py-2 px-3 font-semibold text-gray-900">{a.patient?.profile?.full_name}</td>
                     <td className="py-2 px-3">{a.service?.name}</td>
