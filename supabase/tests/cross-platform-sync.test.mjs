@@ -14,6 +14,7 @@ assert.ok(anonKey && serviceKey, 'SUPABASE_ANON_KEY and SERVICE_ROLE_KEY are req
 const admin = createClient(url, serviceKey, { auth: { autoRefreshToken: false, persistSession: false } });
 const userIds = [];
 const appointmentIds = [];
+const doctorIds = [];
 const transactionIds = [];
 const auditRecordIds = [];
 const say = (message) => console.log(`PASS ${message}`);
@@ -83,12 +84,22 @@ async function main() {
   if (serviceError) throw serviceError;
   assert.equal(doctors?.length, 1, 'Dev must contain only the canonical OB doctor');
   assert.ok(services?.length, 'Dev must contain an active service');
-  const doctorId = doctors[0].id;
   const serviceId = services[0].id;
   const duration = services[0].duration_minutes;
 
   const patient = await makeAccount('patient');
   const adminAccount = await makeAccount('temporary clinic admin', 'admin');
+  const doctorAccount = await makeAccount('temporary appointment doctor', 'doctor');
+  const { data: testDoctor, error: testDoctorError } = await admin.from('doctors').insert({
+    profile_id: doctorAccount.id, specialty: 'Temporary sync-test doctor', room: 'Temporary test room',
+  }).select('id').single();
+  if (testDoctorError) throw testDoctorError;
+  const doctorId = testDoctor.id;
+  doctorIds.push(doctorId);
+  for (const weekday of [1, 2, 3, 4, 5]) {
+    const { error } = await admin.from('doctor_schedules').insert({ doctor_id: doctorId, weekday, start_time: '09:00', end_time: '17:00' });
+    if (error) throw error;
+  }
   const { data: patientRow, error: patientError } = await admin.from('patients').select('id').eq('profile_id', patient.id).single();
   if (patientError) throw patientError;
   const mobile = createClient(url, anonKey, { auth: { autoRefreshToken: false, persistSession: false } });
@@ -126,7 +137,7 @@ async function main() {
   say(`mobile booking appears on website with matching date, time, status, and Manila display (${manilaDisplay(webBooking.start_time)})`);
 
   const movedSlot = await findOpenSlot(mobile, doctorId, duration, new Set([initialSlot.dateKey]));
-  const { error: rescheduleError } = await adminAccount.client.from('appointments').update({ start_time: movedSlot.slot_start, end_time: movedSlot.slot_end, status: 'rescheduled' }).eq('id', mobileBookingId);
+  const { error: rescheduleError } = await adminAccount.client.rpc('reschedule_appointment', { p_appointment_id: mobileBookingId, p_start_time: movedSlot.slot_start });
   if (rescheduleError) throw rescheduleError;
   const mobileRowsAfterReschedule = await readAppointments(mobile, patientRow.id);
   const mobileRescheduled = mobileRowsAfterReschedule.find((item) => item.id === mobileBookingId);
@@ -159,7 +170,7 @@ async function main() {
   assert.equal((await readAppointments(mobile, patientRow.id)).find((item) => item.id === websiteBookingId)?.status, 'cancelled');
   say('mobile cancellation is visible on website after refresh');
 
-  const { error: completedError } = await adminAccount.client.from('appointments').update({ status: 'completed' }).eq('id', mobileBookingId);
+  const { error: completedError } = await doctorAccount.client.rpc('complete_appointment', { p_appointment_id: mobileBookingId });
   if (completedError) throw completedError;
   const { data: transactionId, error: transactionError } = await adminAccount.client.rpc('record_appointment_transaction', {
     p_appointment_id: mobileBookingId, p_amount: 125.5, p_payment_method: 'Cash', p_currency: 'PHP', p_notes: 'Temporary sync test record',
@@ -195,7 +206,13 @@ try {
     const { error } = await admin.from('appointments').delete().in('id', appointmentIds);
     if (error) errors.push(error.message);
   }
+  if (doctorIds.length) {
+    const { error } = await admin.from('doctors').delete().in('id', doctorIds);
+    if (error) errors.push(error.message);
+  }
   for (const id of userIds.reverse()) {
+    const { error: profileError } = await admin.from('profiles').delete().eq('id', id);
+    if (profileError) errors.push(profileError.message);
     const { error } = await admin.auth.admin.deleteUser(id);
     if (error) errors.push(error.message);
   }

@@ -110,6 +110,14 @@ export default function AppointmentsScreen() {
               });
 
               if (error) throw error;
+              try {
+                const { error: pushError } = await supabase.functions.invoke('dispatch-appointment-notification', {
+                  body: { appointment_id: appt.id },
+                });
+                if (pushError) console.warn('Appointment notification push dispatch was unavailable.');
+              } catch {
+                console.warn('Appointment notification push dispatch was unavailable.');
+              }
               await fetchAppointments();
             } catch (err: unknown) {
               console.error('Appointment cancellation failed:', err);
@@ -136,7 +144,7 @@ export default function AppointmentsScreen() {
       case 'approved':
         return { tone: 'success' as const, label: 'Approved' };
       case 'pending':
-        return { tone: 'warning' as const, label: 'Pending Staff Review' };
+        return { tone: 'warning' as const, label: 'Pending approval' };
       case 'rescheduled':
         return { tone: 'info' as const, label: 'Rescheduled' };
       case 'completed':

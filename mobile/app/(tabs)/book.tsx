@@ -192,7 +192,7 @@ export default function BookScreen() {
     setSubmitting(true);
     setBookingError(null);
     try {
-      const { error } = await supabase.rpc('book_appointment', {
+      const { data: appointmentId, error } = await supabase.rpc('book_appointment', {
         p_doctor_id: selectedDoctor.id,
         p_service_id: selectedService.id,
         p_start_time: selectedSlot.slot_start,
@@ -210,9 +210,20 @@ export default function BookScreen() {
         throw error;
       }
 
+      if (appointmentId) {
+        try {
+          const { error: pushError } = await supabase.functions.invoke('dispatch-appointment-notification', {
+            body: { appointment_id: appointmentId },
+          });
+          if (pushError) console.warn('Appointment notification push dispatch was unavailable.');
+        } catch {
+          console.warn('Appointment notification push dispatch was unavailable.');
+        }
+      }
+
       Alert.alert(
         'Booking Request Submitted! 🎉',
-        'Your appointment request has been scheduled. Clinic staff will verify and confirm your slot shortly.',
+        'Your appointment request is pending approval. Clinic staff will review it shortly.',
         [
           {
             text: 'View My Visits',

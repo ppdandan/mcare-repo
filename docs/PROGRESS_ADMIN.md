@@ -64,7 +64,7 @@ This is the baseline audit; implementation must not change existing RLS, booking
 ## Later steps
 
 - Step 2: complete.
-- Step 3: not started.
+- Step 3: complete; status workflows and notification dispatch pass the dev suites. Physical push delivery cannot be confirmed without a registered test device.
 - Step 4: not started.
 - Step 5: not started.
 - Step 6: not started.
@@ -76,3 +76,12 @@ This is the baseline audit; implementation must not change existing RLS, booking
 - Changed the website login label to staff sign-in. A patient who signs in is signed out and shown a message to use the M-Care mobile app. The existing server-side middleware role check for `/dashboard` and the dashboard layout check remain in place.
 - Removed `PatientHeader.tsx` after searching and confirming its only imports were from the four removed patient route pages. Privacy and deletion pages remain unchanged and public.
 - `npm --workspace=web run build` passed; it listed `/patient-app` and only staff dashboard, public policy, and login pages. `npm --workspace=web exec -- tsc --noEmit` passed. `git diff --check` passed.
+
+## Step 3 — Appointment approval (complete)
+
+- New bookings already used `pending`, so the booking function was not changed. Mobile appointment/home labels now show `Pending approval`, `Approved`, `Rescheduled`, and `Cancelled`; booking confirmation says the request is pending approval.
+- Added idempotent migrations `00026_appointment_workflow.sql` through `00029_link_status_notifications.sql`. They add a cancellation reason, role-checked approve/reschedule/cancel/decline/complete functions, a guard against direct status/time/reason table updates, the safe compatibility path for the existing patient `cancel_my_appointment` RPC, linked notification rows, and completion of rescheduled appointments. Existing RLS policies, `book_appointment`, and migrations 00001–00025 remain unchanged.
+- The appointments workspace now has a pending queue/count, patient/service/date/time/status rows, role-gated confirmation actions, required cancel/decline reasons, date/status/patient filters, RPC-backed available-slot rescheduling, realtime refresh, and clickable week/month calendars with status colors. The browser no longer directly updates appointment status or times.
+- Added `dispatch-appointment-notification`, which verifies the signed-in patient/staff role, sends the linked status notification to that patient’s Expo token, and records `push_sent_at`. Called after mobile bookings/cancellations and staff status changes. Deployed only to dev ref `luccnwicirfnmyzgemzj` after explicit approval. The dispatcher tests pass, but throwaway test accounts have no registered device token, so actual Expo/device delivery remains unverified.
+- Added the appointment workflow attack suite and updated the cross-platform sync test to use approved RPCs and a temporary doctor fixture. The sync test now cleans up its doctor fixture explicitly.
+- `npm --workspace=web exec -- tsc --noEmit`, `npm --workspace=mobile exec -- tsc --noEmit`, JavaScript syntax checks, and `git diff --check` passed. All four dev suites passed: `cross-platform-sync.test.mjs`, `transactions.test.mjs`, `booking-weekend.test.mjs`, and `appointment-workflow.test.mjs`. The workflow suite rejected unauthenticated/patient/nurse actions, duplicate/cancelled approvals, taken/weekend/past/off-grid/out-of-hours reschedules, missing reasons, direct staff status changes, and unauthorized push dispatch; it accepted valid role actions and cleaned up fixtures.

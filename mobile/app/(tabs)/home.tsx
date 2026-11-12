@@ -25,6 +25,15 @@ export default function HomeScreen() {
   const router = useRouter();
   const { user, profile, patient, signOut, refreshProfile } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
+
+  const appointmentStatusLabel = (status: string) => ({
+    pending: 'Pending approval',
+    approved: 'Approved',
+    rescheduled: 'Rescheduled',
+    cancelled: 'Cancelled',
+    completed: 'Completed',
+    no_show: 'No show',
+  }[status] ?? status);
   const [nextAppointment, setNextAppointment] = useState<AppointmentWithDetails | null>(null);
   const [loadingAppt, setLoadingAppt] = useState(true);
 
@@ -226,7 +235,7 @@ export default function HomeScreen() {
             <Card style={styles.appointmentCard}>
               <View style={styles.apptHeader}>
                 <Text style={styles.apptService}>{nextAppointment.service?.name}</Text>
-                <Badge tone={nextAppointment.status === 'approved' ? 'success' : nextAppointment.status === 'rescheduled' ? 'info' : 'warning'}>{nextAppointment.status.toUpperCase()}</Badge>
+              <Badge tone={nextAppointment.status === 'approved' ? 'success' : nextAppointment.status === 'rescheduled' ? 'info' : 'warning'}>{appointmentStatusLabel(nextAppointment.status)}</Badge>
               </View>
 
               <Text style={styles.apptDoctor}>
