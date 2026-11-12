@@ -65,7 +65,7 @@ This is the baseline audit; implementation must not change existing RLS, booking
 
 - Step 2: complete.
 - Step 3: complete; status workflows and notification dispatch pass the dev suites. Physical push delivery cannot be confirmed without a registered test device.
-- Step 4: not started.
+- Step 4: in progress; patient management group complete.
 - Step 5: not started.
 - Step 6: not started.
 
@@ -85,3 +85,10 @@ This is the baseline audit; implementation must not change existing RLS, booking
 - Added `dispatch-appointment-notification`, which verifies the signed-in patient/staff role, sends the linked status notification to that patient’s Expo token, and records `push_sent_at`. Called after mobile bookings/cancellations and staff status changes. Deployed only to dev ref `luccnwicirfnmyzgemzj` after explicit approval. The dispatcher tests pass, but throwaway test accounts have no registered device token, so actual Expo/device delivery remains unverified.
 - Added the appointment workflow attack suite and updated the cross-platform sync test to use approved RPCs and a temporary doctor fixture. The sync test now cleans up its doctor fixture explicitly.
 - `npm --workspace=web exec -- tsc --noEmit`, `npm --workspace=mobile exec -- tsc --noEmit`, JavaScript syntax checks, and `git diff --check` passed. All four dev suites passed: `cross-platform-sync.test.mjs`, `transactions.test.mjs`, `booking-weekend.test.mjs`, and `appointment-workflow.test.mjs`. The workflow suite rejected unauthenticated/patient/nurse actions, duplicate/cancelled approvals, taken/weekend/past/off-grid/out-of-hours reschedules, missing reasons, direct staff status changes, and unauthorized push dispatch; it accepted valid role actions and cleaned up fixtures.
+
+## Step 4 — Dashboard scope completion (in progress)
+
+### Patients group (complete)
+
+- Patient detail cards now load the latest ten appointments for that patient and show service, Manila-local date/time, and status, with loading, empty, and readable error states. Existing search/profile editing and appointment data access are unchanged.
+- `npm --workspace=web exec -- tsc --noEmit` passed.

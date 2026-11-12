@@ -12,6 +12,9 @@ export default function PatientsPage() {
   // Modals
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<PatientWithProfile | null>(null);
+  const [patientAppointments, setPatientAppointments] = useState<Array<{ id: string; start_time: string; status: string; service?: { name: string } | null }>>([]);
+  const [appointmentHistoryLoading, setAppointmentHistoryLoading] = useState(false);
+  const [appointmentHistoryError, setAppointmentHistoryError] = useState<string | null>(null);
   const [editingPatient, setEditingPatient] = useState<PatientWithProfile | null>(null);
 
   // Form states
@@ -172,6 +175,27 @@ export default function PatientsPage() {
     return nameMatch || phoneMatch || bloodMatch;
   });
 
+  const openPatientDetails = async (patient: PatientWithProfile) => {
+    setSelectedPatient(patient);
+    setPatientAppointments([]);
+    setAppointmentHistoryError(null);
+    setAppointmentHistoryLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("appointments")
+        .select("id, start_time, status, service:services (name)")
+        .eq("patient_id", patient.id)
+        .order("start_time", { ascending: false })
+        .limit(10);
+      if (error) throw error;
+      setPatientAppointments((data ?? []) as unknown as typeof patientAppointments);
+    } catch (err) {
+      setAppointmentHistoryError(userFacingErrorMessage(err, "We couldn’t load this patient’s appointment history."));
+    } finally {
+      setAppointmentHistoryLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Top Header */}
@@ -288,7 +312,7 @@ export default function PatientsPage() {
                     <td className="py-3.5 px-4 text-right">
                       <div className="flex items-center justify-end space-x-2">
                         <button
-                          onClick={() => setSelectedPatient(p)}
+                          onClick={() => void openPatientDetails(p)}
                           className="px-2.5 py-1 bg-base-200 hover:bg-gray-200 text-base-content font-semibold rounded text-xs transition"
                         >
                           View Card
@@ -371,6 +395,17 @@ export default function PatientsPage() {
                 <span className="text-base-content/60 font-bold block mb-1">Known Allergies:</span>
                 <p className="p-2 bg-red-50 text-red-800 rounded-lg font-semibold">{selectedPatient.allergies || "None"}</p>
               </div>
+
+              <section className="border-t border-base-300 pt-4" aria-labelledby="patient-appointment-history-title">
+                <h3 id="patient-appointment-history-title" className="font-bold text-base-content">Appointment history</h3>
+                {appointmentHistoryLoading ? <p role="status" className="mt-2 text-sm text-base-content/70">Loading appointments…</p>
+                  : appointmentHistoryError ? <p role="alert" className="mt-2 text-sm text-error">{appointmentHistoryError}</p>
+                  : patientAppointments.length === 0 ? <p className="mt-2 text-sm text-base-content/70">No appointments are recorded for this patient.</p>
+                  : <ul className="mt-2 divide-y divide-base-300">{patientAppointments.map((appointment) => <li key={appointment.id} className="flex flex-wrap items-center justify-between gap-2 py-2 text-sm">
+                    <span>{appointment.service?.name ?? "Clinic visit"} · {new Intl.DateTimeFormat("en-PH", { timeZone: "Asia/Manila", dateStyle: "medium", timeStyle: "short" }).format(new Date(appointment.start_time))}</span>
+                    <span className="badge badge-outline capitalize">{appointment.status.replaceAll("_", " ")}</span>
+                  </li>)}</ul>}
+              </section>
             </div>
 
             <div className="mt-6 flex justify-end">
