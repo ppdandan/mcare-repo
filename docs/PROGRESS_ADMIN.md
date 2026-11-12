@@ -153,3 +153,7 @@ Clinic decision to confirm: the implemented role mapping follows existing permis
 ### Staff, inquiries, and schedules states (complete)
 
 - Staff and inquiry directory failures now show retry controls. Schedule loading now exposes query errors in both weekly-hours and leave panels and retries through the existing read calls.
+
+### Analytics and reports states (complete)
+
+- Analytics and date-range report fetch failures now show retryable, user-facing alerts. Report transaction detail remains hidden when the existing RLS policy denies it.

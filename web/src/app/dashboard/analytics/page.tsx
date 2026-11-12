@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
+import Icon from "@/components/Icon";
 import type { Profile, AppointmentWithDetails } from "@m-care/shared";
-import { designTokens, formatManilaDate, manilaDateKey, manilaTimeKey, weekdayForDateKey, typography } from "@m-care/shared";
+import { designTokens, formatManilaDate, manilaDateKey, manilaTimeKey, weekdayForDateKey, typography, userFacingErrorMessage } from "@m-care/shared";
 import {
   AreaChart,
   Area,
@@ -40,6 +41,7 @@ export default function AnalyticsPage() {
   const [patientCount, setPatientCount] = useState(0);
   const [patientRegistrationDates, setPatientRegistrationDates] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<"7d" | "30d" | "90d" | "all">("30d");
   const [isMounted, setIsMounted] = useState(false);
 
@@ -50,6 +52,7 @@ export default function AnalyticsPage() {
   }, []);
 
   const fetchAnalyticsData = useCallback(async () => {
+    setLoadError(null);
     try {
       const {
         data: { session },
@@ -76,6 +79,7 @@ export default function AnalyticsPage() {
           service:services (*)
         `)
         .order("start_time", { ascending: true });
+      if (!apptData) throw new Error("Analytics data unavailable");
 
       if (apptData) setAppointments(apptData as unknown as AppointmentWithDetails[]);
 
@@ -110,6 +114,7 @@ export default function AnalyticsPage() {
       }).filter((date): date is string => Boolean(date)));
     } catch (err) {
       console.error("Error fetching analytics data:", err);
+      setLoadError(userFacingErrorMessage(err, "We couldn’t load analytics."));
     } finally {
       setLoading(false);
     }
@@ -236,7 +241,7 @@ export default function AnalyticsPage() {
     return (
       <div className="bg-base-100 rounded-2xl p-12 text-center border border-base-300 shadow-sm">
         <div className="w-16 h-16 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-2xl mx-auto mb-4 font-bold">
-          🔒
+          <Icon name="lock" size={24} />
         </div>
         <h2 className="text-xl font-bold text-base-content">Administrator Access Restricted</h2>
         <p className="text-xs text-base-content/70 max-w-md mx-auto mt-2 leading-relaxed">
@@ -249,6 +254,7 @@ export default function AnalyticsPage() {
 
   return (
     <div className="space-y-8">
+      {loadError && <div role="alert" className="alert alert-error"><span>{loadError}</span><button className="btn btn-outline btn-sm" onClick={() => { setLoading(true); void fetchAnalyticsData(); }}>Retry</button></div>}
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm">
         <div>

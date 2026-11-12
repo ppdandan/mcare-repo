@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { AppointmentWithDetails, PatientWithProfile, MedicalRecordWithDetails } from "@m-care/shared";
-import { addCalendarDays, formatManilaDate, formatManilaTime, manilaDateKey } from "@m-care/shared";
+import { addCalendarDays, formatManilaDate, formatManilaTime, manilaDateKey, userFacingErrorMessage } from "@m-care/shared";
 import Icon from "@/components/Icon";
 
 export default function ReportsPage() {
@@ -11,6 +11,7 @@ export default function ReportsPage() {
   const [patients, setPatients] = useState<PatientWithProfile[]>([]);
   const [records, setRecords] = useState<MedicalRecordWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [reportType, setReportType] = useState<"summary" | "appointments" | "patients" | "clinical">("summary");
   const [transactions, setTransactions] = useState<Array<{ amount: number; currency: string; payment_method: string; voided_at: string | null; created_at: string }>>([]);
   const [transactionsAvailable, setTransactionsAvailable] = useState(true);
@@ -23,6 +24,7 @@ export default function ReportsPage() {
 
   const fetchReportData = useCallback(async () => {
     setLoading(true);
+    setLoadError(null);
     try {
       const [apptRes, patRes, recRes, transactionRes] = await Promise.all([
         supabase
@@ -64,6 +66,9 @@ export default function ReportsPage() {
           .order("created_at", { ascending: false }),
       ]);
 
+      const reportError = apptRes.error || patRes.error || recRes.error;
+      if (reportError) throw reportError;
+
       if (apptRes.data) setAppointments(apptRes.data as unknown as AppointmentWithDetails[]);
       if (patRes.data) setPatients(patRes.data as unknown as PatientWithProfile[]);
       if (recRes.data) setRecords(recRes.data as unknown as MedicalRecordWithDetails[]);
@@ -74,6 +79,7 @@ export default function ReportsPage() {
       }
     } catch (err) {
       console.error("Error fetching report data:", err);
+      setLoadError(userFacingErrorMessage(err, "We couldn’t load the selected report."));
     } finally {
       setLoading(false);
     }
@@ -312,6 +318,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Printable Report Document Sheet */}
+      {loadError && <div role="alert" className="alert alert-error"><span>{loadError}</span><button className="btn btn-outline btn-sm" onClick={() => void fetchReportData()}>Retry</button></div>}
       <div className="bg-base-100 rounded-2xl border border-base-300 shadow-sm p-8 print:p-0 print:border-none print:shadow-none">
         {/* Clinic Letterhead Header */}
         <div className="border-b-2 border-pink-600 pb-4 mb-6 flex justify-between items-start">
