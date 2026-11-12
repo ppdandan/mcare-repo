@@ -1,11 +1,11 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { colors, radius, spacing, typography } from '@/theme';
 
-export default function LoadingState({ label = 'Loading…' }: { label?: string }) {
+export default function LoadingState({ label }: { label?: string }) {
   return (
-    <View accessibilityRole="progressbar" accessibilityLabel={label} accessibilityState={{ busy: true }} style={styles.container}>
+    <View accessibilityRole="progressbar" accessibilityLabel={label || 'Loading'} accessibilityState={{ busy: true }} style={styles.container}>
       <ActivityIndicator color={colors.primary} size="large" />
-      <Text style={styles.label}>{label}</Text>
+      {label ? <Text style={styles.label}>{label}</Text> : null}
     </View>
   );
 }

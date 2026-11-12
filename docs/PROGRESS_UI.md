@@ -54,3 +54,8 @@
 
 - Restyled welcome, login, registration, and password reset with the shared mobile cards, buttons, headers, and labeled fields. Kept the password/OTP modes, validation, consent flow, Supabase-backed auth calls, and routes intact. Removed the auth form's example placeholders and added roles/state to the mode and consent controls. Existing logo and safe areas remain in use.
 - `cd mobile && npx tsc --noEmit` passed. Group complete.
+
+### Step 3 — Home
+
+- Restyled the next-visit section and patient identity card with the shared header, card, badge, loading, and empty-state components. Added accessible names to the icon-only notifications/profile actions and dashboard shortcuts. Existing home query, refresh, realtime subscription, notification registration, and routes are unchanged.
+- `cd mobile && npx tsc --noEmit` passed. Group complete.

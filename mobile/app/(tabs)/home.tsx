@@ -19,6 +19,7 @@ import { registerForPushNotificationsAsync } from '@/lib/notifications';
 import { colors as Colors } from '@/theme';
 import { formatManilaDateTime } from '@m-care/shared';
 import type { AppointmentWithDetails } from '@m-care/shared';
+import { Badge, Card, EmptyState, LoadingState, ScreenHeader } from '@/components/ui';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -134,12 +135,16 @@ export default function HomeScreen() {
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
             <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel="Notifications"
               onPress={() => router.push('/(tabs)/notifications')}
               style={styles.iconCircle}
             >
               <Ionicons name="notifications-outline" size={typography.body.fontSize + 2} color={Colors.primary} />
             </TouchableOpacity>
             <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel="Profile"
               onPress={() => router.push('/(tabs)/profile')}
               style={styles.iconCircle}
             >
@@ -151,6 +156,8 @@ export default function HomeScreen() {
         {/* Action Shortcuts */}
         <View style={styles.actionGrid}>
           <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Book Appointment"
             style={styles.primaryActionCard}
             onPress={() => router.push('/(tabs)/book')}
             activeOpacity={0.85}
@@ -167,6 +174,8 @@ export default function HomeScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="My Clinic Visits"
             style={styles.secondaryActionCard}
             onPress={() => router.push('/(tabs)/appointments')}
             activeOpacity={0.85}
@@ -183,6 +192,8 @@ export default function HomeScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Message Clinic Staff"
             style={styles.secondaryActionCard}
             onPress={() => router.push('/inquiry')}
             activeOpacity={0.85}
@@ -201,35 +212,21 @@ export default function HomeScreen() {
 
         {/* Next Appointment Section */}
         <View style={styles.section}>
-          <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>Your Upcoming Visit</Text>
-            <TouchableOpacity onPress={() => router.push('/(tabs)/appointments')}>
-              <Text style={styles.seeAllLink}>View All</Text>
-            </TouchableOpacity>
+          <View style={styles.sectionHeading}>
+            <ScreenHeader title="Your Upcoming Visit" action={(
+              <TouchableOpacity accessibilityRole="link" onPress={() => router.push('/(tabs)/appointments')} style={styles.viewAllAction}>
+                <Text style={styles.seeAllLink}>View All</Text>
+              </TouchableOpacity>
+            )} />
           </View>
 
           {loadingAppt ? (
-            <View style={styles.loadingBox}>
-              <ActivityIndicator color={Colors.primary} />
-            </View>
+            <LoadingState />
           ) : nextAppointment ? (
-            <View style={styles.appointmentCard}>
+            <Card style={styles.appointmentCard}>
               <View style={styles.apptHeader}>
                 <Text style={styles.apptService}>{nextAppointment.service?.name}</Text>
-                <View
-                  style={[
-                    styles.apptBadge,
-                    nextAppointment.status === 'approved'
-                      ? styles.badgeApproved
-                      : nextAppointment.status === 'rescheduled'
-                      ? styles.badgeRescheduled
-                      : styles.badgePending,
-                  ]}
-                >
-                  <Text style={styles.apptBadgeText}>
-                    {nextAppointment.status.toUpperCase()}
-                  </Text>
-                </View>
+                <Badge tone={nextAppointment.status === 'approved' ? 'success' : nextAppointment.status === 'rescheduled' ? 'info' : 'warning'}>{nextAppointment.status.toUpperCase()}</Badge>
               </View>
 
               <Text style={styles.apptDoctor}>
@@ -247,20 +244,14 @@ export default function HomeScreen() {
                   {formatManilaDateTime(nextAppointment.start_time)}
                 </Text>
               </View>
-            </View>
+            </Card>
           ) : (
-            <View style={styles.emptyCard}>
-              <Ionicons name="calendar-outline" size={40} color={Colors.primary} style={styles.emptyIcon} />
-              <Text style={styles.emptyTitle}>No Upcoming Consultations</Text>
-              <Text style={styles.emptyDescription}>
-                You have no pending or confirmed consultations. Tap 'Book Appointment' to discover open slots.
-              </Text>
-            </View>
+            <EmptyState title="No Upcoming Consultations" description="You have no pending or confirmed consultations. Tap 'Book Appointment' to discover open slots." />
           )}
         </View>
 
         {/* Privacy & Health ID Card */}
-        <View style={styles.patientIdCard}>
+        <Card style={styles.patientIdCard}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardClinic}>M-CARE OB-GYNE CLINIC</Text>
             <View style={styles.statusPill}>
@@ -282,7 +273,7 @@ export default function HomeScreen() {
               <Text style={styles.cardValue}>Active (PG Exclude)</Text>
             </View>
           </View>
-        </View>
+        </Card>
       </ScrollView>
     </SafeAreaView>
   );
@@ -412,6 +403,8 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: spacing.xl,
   },
+  sectionHeading: { marginBottom: spacing.sm },
+  viewAllAction: { minHeight: 48, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.xs },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
