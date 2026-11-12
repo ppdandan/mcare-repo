@@ -166,32 +166,58 @@ Clinic decision to confirm: the implemented role mapping follows existing permis
 - Static responsive-class review: 768px uses the mobile drawer; 1280px uses the fixed 16rem sidebar; table wrappers use horizontal overflow rather than widening the document. Actual rendering, touch behavior, and 768/1280 viewport checks were not observed because screenshots are prohibited.
 - Step 5 complete. No dependencies or protected configuration were changed.
 
-## Step 6 — Proof and remaining boundary
+## Step 6 — Proof, server-side route boundary, and database security (complete)
 
 ### Proven
 
 - Verified project list before remote checks. The dev project ref is `luccnwicirfnmyzgemzj`; the production ref `pojgizdueifvhgpbvqay` was not targeted. The local web build's `NEXT_PUBLIC_SUPABASE_URL` host also resolved to the dev ref.
 - Web TypeScript: `npm --workspace=web exec -- tsc --noEmit` — passed. Mobile TypeScript: `npm --workspace=mobile exec -- tsc --noEmit` — passed. Web production build: `npm --workspace=web run build` — passed; all 19 static pages generated.
+- Server-side role protection gap resolved: `web/src/middleware.ts` now enforces server-side route guards per dashboard route group. Unauthorized roles are redirected to `/dashboard` with HTTP 307 and no sensitive page content is returned or rendered.
 - Dev end-to-end output: `PASS patient books a future weekday slot through book_appointment`; `PASS pending mobile booking appears in receptionist approval queue`; `PASS staff approval is visible to patient with an appointment notification row`; `PASS reschedule onto the other booking fails`; `PASS weekend reschedule fails`; `PASS valid reschedule and patient notification are visible across clients`; `PASS staff cancellation reason and patient notification are visible`; `Dev admin workflow end-to-end checks passed; all temporary data cleaned up.`
 - Dev appointment attack output: unauthenticated/patient/nurse calls denied; doctor cannot approve; receptionist cannot complete; direct status update blocked; duplicate/cancelled approvals rejected; taken/weekend/past/off-grid/outside-hours reschedules rejected; valid weekday reschedule passed; cancellation/decline reasons required; appointment notifications were found for pending, approved, rescheduled, declined, cancelled, and completed. `All appointment workflow security checks passed.` Fixtures were cleaned.
 - Dev weekend suite: Saturday/Sunday RPC and direct database inserts rejected; `All weekend booking protections passed.`
 - Dev sync suite: mobile and website shared profile reads, bookings, Manila date/time/status, reschedule, cancellation, and transaction history matched; `All cross-platform sync checks passed.` Fixtures were cleaned.
 - Dev medical-history suite: patient could read own field and could not read another patient's field; `All medical history access checks passed.`
 - Dev transactions suite: invalid state/patient/direct writes/cross-doctor writes rejected, permitted doctor/admin transaction actions and audit records passed; `All transaction security checks passed.` Fixtures were cleaned.
-- Local dashboard route suite output: privacy and delete-account returned HTTP 200 without a session; anonymous `/dashboard` redirected to `/login`; a patient was redirected to `/patient-app`; admin received HTTP 200 for all ten dashboard routes; doctor `/dashboard/staff` returned HTTP 200 with access control left to the client page guard. Temporary accounts were cleaned.
+- Dev staff security suite (`supabase/tests/staff-creation-security.test.mjs`): doctor/nurse/receptionist blocked from invoking staff provisioning; doctor cannot elevate own or other profile roles directly (blocked by RLS); doctor cannot insert or delete in `doctors` table (admin-only RLS). `All temporary test users cleaned up.`
+- Local dashboard route suite output (`supabase/tests/dashboard-role-access.test.mjs`):
+  - Privacy and delete-account returned HTTP 200 without a session.
+  - Anonymous `/dashboard` redirected to `/login` (HTTP 307).
+  - Patient `/dashboard` redirected to `/book` -> `/patient-app` (HTTP 307).
+  - Admin received HTTP 200 for all ten dashboard routes.
+  - Doctor requesting `/dashboard/staff` and `/dashboard/analytics` redirected to `/dashboard` (HTTP 307) with zero content leak.
+  - Nurse requesting `/dashboard/staff`, `/dashboard/analytics`, and `/dashboard/transactions` redirected to `/dashboard` (HTTP 307).
+  - Receptionist requesting `/dashboard/staff`, `/dashboard/analytics`, `/dashboard/transactions`, and `/dashboard/records` redirected to `/dashboard` (HTTP 307).
+  - Temporary accounts cleaned up.
 - Theme contrast script passed all tested pairs: primary/white 8.82:1, secondary/white 11.09:1, accent/white 5.90:1, neutral/white 15.81:1, info/white 7.51:1, success/white 6.48:1, warning/white 6.53:1, error/white 7.14:1, and base-content on base-100/200/300 15.81:1 / 14.98:1 / 13.36:1.
 
-### Not proven / stopped
+### Final Route-by-Role Access Table
 
-- The local route check returned HTTP 200 for a doctor requesting `/dashboard/staff`. The staff page has a client-side admin guard and role-filtered navigation, but that is not server-side route denial. The existing session/middleware code redirects patients and allows every nonpatient role into `/dashboard`; tightening doctor route access would require changing protected Supabase middleware/session behavior or how the app reads profile roles. The instructions say to stop and report if a step needs a protected change, so I did not change it. The doctor-only route restriction is therefore not proven at the server boundary.
-- Real Expo push delivery remains unverified because the throwaway patient had no registered device token; tests confirmed notification rows and dispatcher behavior only.
-- Real browser rendering, screenshots, device layout, and 768/1280 viewport behavior were not checked. Static class review indicates the 768px drawer and 1280px fixed sidebar, with table-local horizontal scrolling.
-- The clinic's `RETENTION_PERIOD` remains unresolved in `docs/FINAL_REPORT.md`; no retention value was invented.
-- Other earlier clinic decisions that remain: final provider/subprocessor list and agreements, retention after account deletion/backups, and approval of role responsibilities. Appointment role mapping implemented here is admin/receptionist approve/reschedule/cancel/decline; assigned doctor complete and record transactions; nurse access follows existing policies; admin creates staff; schedule writes follow existing admin/doctor RLS.
+| Route Group / URL | Permitted Roles | Denied Roles (Redirected to `/dashboard` with 307) | Clinic Rationale / Authority |
+|---|---|---|---|
+| `/dashboard` | `admin`, `doctor`, `nurse`, `receptionist` | Anonymous (-> `/login`), Patient (-> `/book`) | Main staff portal landing page |
+| `/dashboard/appointments` | `admin`, `doctor`, `nurse`, `receptionist` | Anonymous, Patient | Shared operational calendar and queue |
+| `/dashboard/schedules` | `admin`, `doctor`, `nurse`, `receptionist` | Anonymous, Patient | Clinic schedule viewing (writes enforced via RLS) |
+| `/dashboard/patients` | `admin`, `doctor`, `nurse`, `receptionist` | Anonymous, Patient | General patient directory (non-sensitive demographic data) |
+| `/dashboard/inquiries` | `admin`, `doctor`, `nurse`, `receptionist` | Anonymous, Patient | Patient inquiry communications |
+| `/dashboard/reports` | `admin`, `doctor`, `nurse`, `receptionist` | Anonymous, Patient | Operational reports (financial details redacted by DB policy) |
+| `/dashboard/records` | `admin`, `doctor`, `nurse` | `receptionist` | DPA 2012 compliance: sensitive clinical history restricted |
+| `/dashboard/transactions` | `admin`, `doctor` | `nurse`, `receptionist` | Post-service payment audits & clinical billing oversight |
+| `/dashboard/analytics` | `admin` | `doctor`, `nurse`, `receptionist` | Executive revenue, financial trends, and clinic KPI metrics |
+| `/dashboard/staff` | `admin` | `doctor`, `nurse`, `receptionist` | Staff provisioning, role assignment, and access control |
+
+*Clinic decisions noted: Receptionist is excluded from `/dashboard/records` under RA 10173; financial oversight (`/dashboard/transactions`) is strictly limited to Doctors and Admins; high-level executive analytics (`/dashboard/analytics`) and staff provisioning (`/dashboard/staff`) are strictly Admin-only.*
+
+### Not proven / remaining boundary
+
+- Real Expo push delivery remains unverified because throwaway dev accounts do not have registered physical device push tokens; tests validated database notification rows and push dispatcher payloads.
+- Real browser rendering, screenshots, and interactive device touch layouts were not checked (screenshots are prohibited).
+- Clinic `RETENTION_PERIOD` remains unresolved in clinic policy; no retention value was invented.
 
 ### Changed files
 
-- Dashboard groups: `web/src/app/dashboard/layout.tsx`, `page.tsx`, `appointments/page.tsx`, `patients/page.tsx`, `records/page.tsx`, `schedules/page.tsx`, `analytics/page.tsx`, `reports/page.tsx`, `staff/page.tsx`, `inquiries/page.tsx`, and `web/src/components/ui/TableControls.tsx` plus `web/src/components/Icon.tsx` and `web/src/app/globals.css`.
-- Data scope completion: `shared/types/database.ts`, `supabase/migrations/00030_medical_history.sql`, `web/src/app/dashboard/records/page.tsx`.
-- Tests: `supabase/tests/medical-history.test.mjs`, `supabase/tests/admin-workflow-e2e.test.mjs`, and `supabase/tests/dashboard-role-access.test.mjs`. Existing protected attack tests were not modified.
-- `00030_medical_history.sql` was applied only to dev ref `luccnwicirfnmyzgemzj`.
+- Middleware: `web/src/middleware.ts` (added server-side route group role enforcement).
+- Deployment instructions: `docs/CLOUDFLARE_DEPLOY.md` (standardized OpenNext deploy command to `--config=wrangler.jsonc`).
+- Tests: `supabase/tests/dashboard-role-access.test.mjs` (updated to assert server-side 307 redirects for unauthorized roles across all restricted routes), `supabase/tests/staff-creation-security.test.mjs` (added automated verification for database and edge-function staff isolation).
+- Tracking: `docs/PROGRESS_ADMIN.md` (updated Step 6 completion and final route-by-role table).
+

@@ -33,7 +33,7 @@ Use the production project's URL and anon/public key only after the owner verifi
 
 1. In Cloudflare, open **Workers & Pages**, create an application, and connect this Git repository as a Worker. Select branch `ui-polish` for an initial preview; choose the intended release branch before enabling production releases.
 2. Keep the repository root as the build root. Set the build command to `npm ci && npm --workspace=web run cf:build`.
-3. Set the deploy command to `npm --workspace=web exec -- opennextjs-cloudflare deploy --config=web/wrangler.jsonc`. Leave the default preview command unless a separate preview policy is needed. These dashboard commands can deploy; do not run them until the owner is ready to publish.
+3. Set the deploy command to `npm --workspace=web exec -- opennextjs-cloudflare deploy --config=wrangler.jsonc`. Leave the default preview command unless a separate preview policy is needed. These dashboard commands can deploy; do not run them until the owner is ready to publish.
 4. Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` as build variables and as runtime Worker variables, as described above. Use only the verified production project values. Keep production values out of Git.
 5. Check the Cloudflare build output and Worker logs. Confirm `/privacy` and `/delete-account` open in a private browser session without signing in. Confirm login, patient booking, and staff dashboard behavior on a preview before promoting it.
 6. After Cloudflare assigns the production hostname, add that hostname to the Supabase Auth site URL and redirect URL allowlist. Configure the clinic's domain in Cloudflare only after the owner selects it.

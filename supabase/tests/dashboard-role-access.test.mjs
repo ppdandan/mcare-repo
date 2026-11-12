@@ -47,18 +47,26 @@ async function request(path, cookie, redirect = 'manual') {
 
 let failure;
 try {
+  // Public pages without session
   const publicPages = await Promise.all(['/privacy', '/delete-account'].map((path) => request(path)));
   assert.deepEqual(publicPages.map((response) => response.status), [200, 200]);
   report('privacy and account deletion pages are public without a session');
 
+  // Anonymous request to dashboard redirects to login
   const anonymousDashboard = await request('/dashboard');
   assert.equal(anonymousDashboard.status, 307);
   assert.match(anonymousDashboard.headers.get('location') ?? '', /\/login$/);
   report('unauthenticated dashboard request redirects to staff login');
 
-  const [patientCookie, doctorCookie, adminCookie] = await Promise.all([
-    makeRoleSession('patient'), makeRoleSession('doctor'), makeRoleSession('admin'),
+  const [patientCookie, doctorCookie, nurseCookie, receptionistCookie, adminCookie] = await Promise.all([
+    makeRoleSession('patient'),
+    makeRoleSession('doctor'),
+    makeRoleSession('nurse'),
+    makeRoleSession('receptionist'),
+    makeRoleSession('admin'),
   ]);
+
+  // Patient routing
   const patientDashboard = await request('/dashboard', patientCookie);
   assert.equal(patientDashboard.status, 307);
   assert.match(patientDashboard.headers.get('location') ?? '', /\/book$/);
@@ -70,6 +78,7 @@ try {
   assert.match(await patientAppPage.text(), /M-Care mobile app/i);
   report('patient dashboard request routes to the mobile-app notice');
 
+  // Admin access to all 10 dashboard routes
   const dashboardPages = [
     '/dashboard', '/dashboard/appointments', '/dashboard/transactions', '/dashboard/schedules',
     '/dashboard/patients', '/dashboard/records', '/dashboard/inquiries', '/dashboard/analytics',
@@ -81,11 +90,63 @@ try {
   }
   report('admin session can open all ten dashboard routes');
 
-  const doctorDashboard = await request('/dashboard', doctorCookie);
-  assert.equal(doctorDashboard.status, 200);
-  const doctorStaffRoute = await request('/dashboard/staff', doctorCookie);
-  assert.equal(doctorStaffRoute.status, 200);
-  report('doctor session receives dashboard shell for the admin staff URL; page-level guard is client-side');
+  // Helper to assert server-side redirect to /dashboard with no denied page content
+  async function assertDeniedRedirect(roleName, path, cookie) {
+    const response = await request(path, cookie);
+    assert.equal(response.status, 307, `${roleName} was not redirected from ${path} (status ${response.status})`);
+    assert.match(
+      response.headers.get('location') ?? '',
+      /\/dashboard$/,
+      `${roleName} was not redirected to /dashboard from ${path}`
+    );
+    // Confirm body contains no leaked sensitive page content
+    const text = await response.text();
+    assert.ok(!text.includes('Staff Management') && !text.includes('Revenue Analytics'), `Leaked content in ${path} redirect`);
+  }
+
+  // Doctor restrictions: denied /dashboard/staff and /dashboard/analytics
+  const doctorAllowed = [
+    '/dashboard', '/dashboard/appointments', '/dashboard/transactions',
+    '/dashboard/schedules', '/dashboard/patients', '/dashboard/records',
+    '/dashboard/inquiries', '/dashboard/reports'
+  ];
+  for (const path of doctorAllowed) {
+    const response = await request(path, doctorCookie);
+    assert.equal(response.status, 200, `Doctor could not open allowed route ${path}`);
+  }
+  await assertDeniedRedirect('Doctor', '/dashboard/staff', doctorCookie);
+  await assertDeniedRedirect('Doctor', '/dashboard/analytics', doctorCookie);
+  report('doctor session allowed on clinical/operational routes and server-redirected from /dashboard/staff & /dashboard/analytics');
+
+  // Nurse restrictions: denied /dashboard/staff, /dashboard/analytics, /dashboard/transactions
+  const nurseAllowed = [
+    '/dashboard', '/dashboard/appointments', '/dashboard/schedules',
+    '/dashboard/patients', '/dashboard/records', '/dashboard/inquiries', '/dashboard/reports'
+  ];
+  for (const path of nurseAllowed) {
+    const response = await request(path, nurseCookie);
+    assert.equal(response.status, 200, `Nurse could not open allowed route ${path}`);
+  }
+  await assertDeniedRedirect('Nurse', '/dashboard/staff', nurseCookie);
+  await assertDeniedRedirect('Nurse', '/dashboard/analytics', nurseCookie);
+  await assertDeniedRedirect('Nurse', '/dashboard/transactions', nurseCookie);
+  report('nurse session allowed on nursing routes and server-redirected from staff, analytics, and transactions');
+
+  // Receptionist restrictions: denied /dashboard/staff, /dashboard/analytics, /dashboard/transactions, /dashboard/records
+  const receptionistAllowed = [
+    '/dashboard', '/dashboard/appointments', '/dashboard/schedules',
+    '/dashboard/patients', '/dashboard/inquiries', '/dashboard/reports'
+  ];
+  for (const path of receptionistAllowed) {
+    const response = await request(path, receptionistCookie);
+    assert.equal(response.status, 200, `Receptionist could not open allowed route ${path}`);
+  }
+  await assertDeniedRedirect('Receptionist', '/dashboard/staff', receptionistCookie);
+  await assertDeniedRedirect('Receptionist', '/dashboard/analytics', receptionistCookie);
+  await assertDeniedRedirect('Receptionist', '/dashboard/transactions', receptionistCookie);
+  await assertDeniedRedirect('Receptionist', '/dashboard/records', receptionistCookie);
+  report('receptionist session allowed on frontdesk routes and server-redirected from staff, analytics, transactions, and records');
+
 } catch (error) {
   failure = error;
 } finally {
