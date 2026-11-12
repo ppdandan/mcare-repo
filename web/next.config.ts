@@ -6,6 +6,13 @@ import type { NextConfig } from "next";
  */
 const nextConfig: NextConfig = {
   transpilePackages: ["@m-care/shared"],
+  async redirects() {
+    return ["/book", "/appointments", "/transactions", "/profile"].map((source) => ({
+      source,
+      destination: "/patient-app",
+      permanent: false,
+    }));
+  },
 };
 
 export default nextConfig;

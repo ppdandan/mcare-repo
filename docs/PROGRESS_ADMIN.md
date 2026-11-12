@@ -63,8 +63,16 @@ This is the baseline audit; implementation must not change existing RLS, booking
 
 ## Later steps
 
-- Step 2: not started.
+- Step 2: complete.
 - Step 3: not started.
 - Step 4: not started.
 - Step 5: not started.
 - Step 6: not started.
+
+## Step 2 — Remove patient website side (complete)
+
+- Replaced `/` with a clinic landing page showing the logo, clinic name/location, staff sign-in, a short patient mobile-app note with the visible `[to be added]` store-link placeholder, and public privacy/deletion links.
+- Removed the patient booking, appointments, transactions, and profile page implementations. Next.js redirects those four old paths to the public `/patient-app` notice. The redirects are configured in `web/next.config.ts`, which executes before middleware, so unauthenticated visitors also reach the notice without changing the protected Supabase session/middleware files.
+- Changed the website login label to staff sign-in. A patient who signs in is signed out and shown a message to use the M-Care mobile app. The existing server-side middleware role check for `/dashboard` and the dashboard layout check remain in place.
+- Removed `PatientHeader.tsx` after searching and confirming its only imports were from the four removed patient route pages. Privacy and deletion pages remain unchanged and public.
+- `npm --workspace=web run build` passed; it listed `/patient-app` and only staff dashboard, public policy, and login pages. `npm --workspace=web exec -- tsc --noEmit` passed. `git diff --check` passed.

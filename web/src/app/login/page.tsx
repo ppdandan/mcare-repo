@@ -36,7 +36,14 @@ function LoginForm() {
       throw new Error("Unable to retrieve your profile. Please contact the clinic.");
     }
 
-    router.push(profile.role === "patient" ? "/book" : "/dashboard");
+    if (profile.role === "patient") {
+      const { error: signOutError } = await supabase.auth.signOut();
+      if (signOutError) throw signOutError;
+      setSuccess("This website is for clinic staff. Please use the M-Care mobile app. You have been signed out.");
+      return;
+    }
+
+    router.push("/dashboard");
   };
 
   const handlePasswordLogin = async (e: React.FormEvent) => {
@@ -133,10 +140,10 @@ function LoginForm() {
           <img src="/logo.png" alt="M-Care logo" width={64} height={75} className="mx-auto mb-3 h-[75px] w-16 object-contain" />
           <h1 className="text-2xl font-bold tracking-tight text-base-content">M-CARE CLINIC</h1>
           <p className="mt-1 text-sm font-semibold uppercase tracking-wider text-primary">
-            Patient & Clinic Portal
+            Staff sign in
           </p>
           <p className="mt-2 text-xs text-base-content/75">
-            Balibago, Angeles City • Patient and clinic access
+            Balibago, Angeles City • Clinic staff access
           </p>
         </div>
 
