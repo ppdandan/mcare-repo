@@ -1,11 +1,13 @@
+import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, radius, spacing, typography } from '@/theme';
 
-export default function EmptyState({ title, description }: { title: string; description?: string }) {
+export default function EmptyState({ title, description, children }: { title: string; description?: string; children?: ReactNode }) {
   return (
     <View accessibilityRole="summary" style={styles.container}>
       <Text style={styles.title}>{title}</Text>
       {description ? <Text style={styles.description}>{description}</Text> : null}
+      {children}
     </View>
   );
 }

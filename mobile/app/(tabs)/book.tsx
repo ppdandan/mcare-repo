@@ -7,9 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  ActivityIndicator,
   Alert,
-  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -26,6 +24,7 @@ import {
   weekdayForDateKey,
 } from '@m-care/shared';
 import type { Service, DoctorWithProfile, AvailableSlot, DoctorSchedule } from '@m-care/shared';
+import { Badge, Button, Card, EmptyState, ErrorState, LoadingState, ScreenHeader, TextField } from '@/components/ui';
 
 type BookingSlot = AvailableSlot & { available: boolean };
 
@@ -246,27 +245,17 @@ export default function BookScreen() {
       <View style={styles.container}>
         {/* Header with Step Indicator */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Book Clinic Visit</Text>
-              <Text style={styles.stepSubtitle}>Step {step} of 4</Text>
+          <ScreenHeader title="Book Clinic Visit" subtitle={`Step ${step} of 4`} />
           <View style={styles.progressBar}>
             <View style={[styles.progressFill, { width: `${(step / 4) * 100}%` }]} />
           </View>
         </View>
 
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
           {loading ? (
-            <View style={styles.centerBox}>
-              <ActivityIndicator size="large" color={Colors.primary} />
-              <Text style={styles.loadingText}>Loading clinic directory...</Text>
-            </View>
+            <LoadingState label="Loading clinic directory..." />
           ) : catalogError ? (
-            <View style={styles.errorBox}>
-              <Text style={styles.errorTitle}>Could not load booking details</Text>
-              <Text style={styles.errorMessage}>{catalogError}</Text>
-              <TouchableOpacity style={styles.retryButton} onPress={loadCatalog}>
-                <Text style={styles.retryButtonText}>Retry</Text>
-              </TouchableOpacity>
-            </View>
+                    <ErrorState title="Could not load booking details" message={catalogError} onRetry={loadCatalog} />
           ) : (
             <>
               {/* STEP 1: SELECT SERVICE */}
@@ -277,32 +266,27 @@ export default function BookScreen() {
                     Choose the medical procedure or consultation you require.
                   </Text>
                   {services.length === 0 ? (
-                    <View style={styles.noSlotsBox}>
-                      <Text style={styles.noSlotsTitle}>No services are available</Text>
-                      <Text style={styles.noSlotsDesc}>Please retry or contact the clinic.</Text>
-                      <TouchableOpacity style={styles.retryButton} onPress={loadCatalog}>
-                        <Text style={styles.retryButtonText}>Retry</Text>
-                      </TouchableOpacity>
-                    </View>
+                    <EmptyState title="No services are available" description="Please retry or contact the clinic.">
+                      <Button variant="outline" onPress={loadCatalog}>Retry</Button>
+                    </EmptyState>
                   ) : services.map((svc) => (
                     <TouchableOpacity
                       key={svc.id}
-                      style={[
-                        styles.card,
-                        selectedService?.id === svc.id && styles.cardActive,
-                      ]}
+                      accessibilityRole="button"
+                      accessibilityLabel={svc.name}
+                      accessibilityState={{ selected: selectedService?.id === svc.id }}
                       onPress={() => setSelectedService(svc)}
                       activeOpacity={0.8}
                     >
+                      <Card style={[styles.card, selectedService?.id === svc.id && styles.cardActive]}>
                       <View style={styles.serviceRow}>
                         <View style={{ flex: 1 }}>
                           <Text style={styles.cardTitle}>{svc.name}</Text>
                           <Text style={styles.cardDescription}>{svc.description}</Text>
                         </View>
-                        <View style={styles.durationBadge}>
-                          <Text style={styles.durationText}>{svc.duration_minutes} min</Text>
-                        </View>
+                        <Badge tone="neutral">{svc.duration_minutes} min</Badge>
                       </View>
+                      </Card>
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -318,6 +302,7 @@ export default function BookScreen() {
                   </Text>
                   <View style={styles.calendarHeader}>
                     <TouchableOpacity
+                      accessibilityRole="button"
                       accessibilityLabel="Previous month"
                       style={styles.monthButton}
                       onPress={() => setVisibleMonth((current) => new Date(Date.UTC(current.getUTCFullYear(), current.getUTCMonth() - 1, 1, 12)))}
@@ -326,6 +311,7 @@ export default function BookScreen() {
                     </TouchableOpacity>
                     <Text style={styles.monthTitle}>{formatManilaDate(monthStart, { month: 'long', year: 'numeric' })}</Text>
                     <TouchableOpacity
+                      accessibilityRole="button"
                       accessibilityLabel="Next month"
                       style={styles.monthButton}
                       onPress={() => setVisibleMonth((current) => new Date(Date.UTC(current.getUTCFullYear(), current.getUTCMonth() + 1, 1, 12)))}
@@ -333,6 +319,7 @@ export default function BookScreen() {
                       <Text style={styles.monthButtonText}>›</Text>
                     </TouchableOpacity>
                   </View>
+                  <Card style={styles.calendarCard}>
                   <View style={styles.weekdayRow}>
                     {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
                       <Text key={day} style={styles.weekdayLabel}>{day}</Text>
@@ -346,6 +333,7 @@ export default function BookScreen() {
                         <TouchableOpacity
                           key={day.dateStr}
                           accessibilityRole="button"
+                          accessibilityLabel={formatManilaDate(day.dateStr, { dateStyle: 'full' })}
                           accessibilityState={{ disabled, selected: active }}
                           disabled={disabled}
                           style={[
@@ -366,6 +354,7 @@ export default function BookScreen() {
                       );
                     })}
                   </View>
+                  </Card>
                 </View>
               )}
 
@@ -380,48 +369,17 @@ export default function BookScreen() {
                   </Text>
 
                   {bookingError && (
-                    <View style={styles.errorBox}>
-                      <Text style={styles.errorTitle}>That time is no longer available</Text>
-                      <Text style={styles.errorMessage}>{bookingError}</Text>
-                      <TouchableOpacity
-                        style={styles.retryButton}
-                        onPress={() => {
-                          setBookingError(null);
-                          setSlotRetry((count) => count + 1);
-                        }}
-                      >
-                        <Text style={styles.retryButtonText}>Retry</Text>
-                      </TouchableOpacity>
-                    </View>
+                    <ErrorState title="That time is no longer available" message={bookingError} onRetry={() => { setBookingError(null); setSlotRetry((count) => count + 1); }} />
                   )}
 
                   {slotError ? (
-                    <View style={styles.errorBox}>
-                      <Text style={styles.errorTitle}>Could not load time slots</Text>
-                      <Text style={styles.errorMessage}>{slotError}</Text>
-                      <TouchableOpacity style={styles.retryButton} onPress={() => setSlotRetry((count) => count + 1)}>
-                        <Text style={styles.retryButtonText}>Retry</Text>
-                      </TouchableOpacity>
-                    </View>
+                    <ErrorState title="Could not load time slots" message={slotError} onRetry={() => setSlotRetry((count) => count + 1)} />
                   ) : loadingSlots ? (
-                    <View style={styles.centerBox}>
-                      <ActivityIndicator size="large" color={Colors.primary} />
-                      <Text style={styles.loadingText}>Calculating free clinic slots...</Text>
-                    </View>
+                    <LoadingState label="Calculating free clinic slots..." />
                   ) : slots.length === 0 ? (
-                    <View style={styles.noSlotsBox}>
-                      <Ionicons name="time-outline" size={32} color={Colors.textSecondary} style={styles.noSlotsIcon} />
-                      <Text style={styles.noSlotsTitle}>No Clinic Hours</Text>
-                      <Text style={styles.noSlotsDesc}>
-                        No appointment hours are scheduled for this weekday. Please select another date.
-                      </Text>
-                      <TouchableOpacity
-                        style={styles.backStepButton}
-                        onPress={() => setStep(2)}
-                      >
-                        <Text style={styles.backStepText}>Choose Another Date</Text>
-                      </TouchableOpacity>
-                    </View>
+                    <EmptyState title="No Clinic Hours" description="No appointment hours are scheduled for this weekday. Please select another date.">
+                      <Button variant="outline" onPress={() => setStep(2)}>Choose Another Date</Button>
+                    </EmptyState>
                   ) : (
                     <View style={styles.slotsGrid}>
                       {slots.map((slot, index) => {
@@ -464,7 +422,7 @@ export default function BookScreen() {
                     Please review your booking details before submission.
                   </Text>
 
-                  <View style={styles.summaryCard}>
+                  <Card style={styles.summaryCard}>
                     <View style={styles.summaryRow}>
                       <Text style={styles.summaryLabel}>Patient</Text>
                       <Text style={styles.summaryValue}>{patient?.profile_id ? 'Your Profile' : 'Patient'}</Text>
@@ -493,14 +451,11 @@ export default function BookScreen() {
                         {selectedSlot ? formatSlotTime(selectedSlot.slot_start) : ''}
                       </Text>
                     </View>
-                  </View>
+                  </Card>
 
                   <View style={styles.notesGroup}>
-                    <Text style={styles.notesLabel}>Notes or Symptoms (Optional):</Text>
-                    <TextInput
-                      style={styles.notesInput}
-                      placeholder="e.g. 24 weeks checkup, experiencing mild back pain, routine ultrasound"
-                      placeholderTextColor={Colors.textLight}
+                    <TextField
+                      label="Notes or Symptoms (Optional):"
                       value={notes}
                       onChangeText={setNotes}
                       multiline
@@ -509,17 +464,7 @@ export default function BookScreen() {
                   </View>
 
                   {bookingError && (
-                    <View style={styles.errorBox}>
-                      <Text style={styles.errorTitle}>Booking failed</Text>
-                      <Text style={styles.errorMessage}>{bookingError}</Text>
-                      <TouchableOpacity
-                        style={styles.retryButton}
-                        disabled={submitting}
-                        onPress={handleConfirmBooking}
-                      >
-                        <Text style={styles.retryButtonText}>{submitting ? 'Retrying…' : 'Retry'}</Text>
-                      </TouchableOpacity>
-                    </View>
+                    <ErrorState title="Booking failed" message={bookingError} onRetry={handleConfirmBooking} retryLabel={submitting ? 'Retrying…' : 'Retry'} />
                   )}
 
                   <View style={styles.exclusionNote}>
@@ -536,45 +481,21 @@ export default function BookScreen() {
         {/* Bottom Navigation Buttons */}
         <View style={styles.bottomBar}>
           {step > 1 && (
-            <TouchableOpacity
-              style={styles.prevButton}
-              onPress={() => setStep((s) => (s - 1) as 1 | 2 | 3 | 4)}
-              disabled={submitting}
-            >
-              <Text style={styles.prevButtonText}>Back</Text>
-            </TouchableOpacity>
+            <Button variant="outline" style={styles.previousAction} onPress={() => setStep((s) => (s - 1) as 1 | 2 | 3 | 4)} disabled={submitting}>Back</Button>
           )}
 
           {step < 4 ? (
-            <TouchableOpacity
-              style={[
-                styles.nextButton,
-                ((step === 1 && !selectedService) ||
-                  (step === 2 && (!selectedDate || !selectedDoctor)) ||
-                  (step === 3 && !selectedSlot)) &&
-                  styles.buttonDisabled,
-              ]}
+            <Button
+              style={styles.nextAction}
               disabled={
                 (step === 1 && !selectedService) ||
                 (step === 2 && (!selectedDate || !selectedDoctor)) ||
                 (step === 3 && !selectedSlot)
               }
               onPress={() => setStep((s) => (s + 1) as 1 | 2 | 3 | 4)}
-            >
-              <Text style={styles.nextButtonText}>Next</Text>
-            </TouchableOpacity>
+            >Next</Button>
           ) : (
-            <TouchableOpacity
-              style={[styles.confirmButton, submitting && styles.buttonDisabled]}
-              onPress={handleConfirmBooking}
-              disabled={submitting}
-            >
-              {submitting ? (
-                <ActivityIndicator color={Colors.background} />
-              ) : (
-                <Text style={styles.confirmButtonText}>Confirm & Book</Text>
-              )}
-            </TouchableOpacity>
+            <Button style={styles.nextAction} onPress={handleConfirmBooking} loading={submitting} disabled={submitting}>Confirm & Book</Button>
           )}
         </View>
       </View>
@@ -724,9 +645,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: spacing.md,
   },
+  calendarCard: { padding: spacing.sm, marginBottom: spacing.lg },
   monthButton: {
-    width: 38,
-    height: 38,
+    minWidth: 48,
+    minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radius.md,
@@ -763,7 +685,8 @@ const styles = StyleSheet.create({
   },
   calendarDay: {
     width: '13.5%',
-    height: 40,
+    minWidth: 44,
+    minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radius.md,
@@ -829,6 +752,7 @@ const styles = StyleSheet.create({
   },
   slotChip: {
     width: '31%',
+    minHeight: 48,
     backgroundColor: Colors.background,
     borderRadius: radius.md,
     paddingVertical: spacing.md,
@@ -993,6 +917,8 @@ const styles = StyleSheet.create({
     borderTopColor: Colors.brandSoft,
     gap: spacing.md,
   },
+  previousAction: { flex: 1 },
+  nextAction: { flex: 2 },
   prevButton: {
     flex: 1,
     height: 48,
