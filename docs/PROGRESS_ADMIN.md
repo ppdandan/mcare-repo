@@ -133,3 +133,7 @@ Clinic decision to confirm: the implemented role mapping follows existing permis
 ### Records table (complete)
 
 - Clinical records now support visit-date/patient sorting, search, and 10-row pagination. Restricted-access, search, and modal close marks use the same vector icon set rather than emoji glyphs.
+
+### Appointments table (complete)
+
+- The list view now sorts by date or patient and paginates ten appointments at a time. Existing status, date-range, patient filters, workflow actions, and calendar views remain.

@@ -11,6 +11,7 @@ import {
   userFacingErrorMessage,
 } from "@m-care/shared";
 import type { AppointmentStatus, AppointmentWithDetails } from "@m-care/shared";
+import TableControls from "@/components/ui/TableControls";
 
 type CalendarView = "list" | "week" | "month";
 type ActionKind = "approve" | "decline" | "cancel" | "complete";
@@ -88,6 +89,8 @@ export default function AppointmentsPage() {
   const [slotsError, setSlotsError] = useState<string | null>(null);
   const [updating, setUpdating] = useState(false);
   const [feedback, setFeedback] = useState<{ kind: "success" | "error"; message: string } | null>(null);
+  const [tableSort, setTableSort] = useState("date-desc");
+  const [tablePage, setTablePage] = useState(1);
 
   const fetchAppointments = useCallback(async () => {
     setLoadError(null);
@@ -178,6 +181,10 @@ export default function AppointmentsPage() {
         && (!search || patientName(appointment).toLowerCase().includes(search));
     });
   }, [appointments, dateFrom, dateTo, patientSearch, statusFilter]);
+  const sortedFiltered = useMemo(() => [...filtered].sort((a, b) => tableSort === "patient"
+    ? patientName(a).localeCompare(patientName(b))
+    : tableSort === "date-asc" ? a.start_time.localeCompare(b.start_time) : b.start_time.localeCompare(a.start_time)), [filtered, tableSort]);
+  const pageAppointments = sortedFiltered.slice((tablePage - 1) * 10, tablePage * 10);
 
   const openReschedule = (appointment: AppointmentWithDetails) => {
     const day = nextWeekday(manilaDateKey());
@@ -315,22 +322,23 @@ export default function AppointmentsPage() {
           <h2 className="text-lg font-bold">Appointments</h2>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <label className="form-control gap-1"><span className="label-text text-sm font-semibold">Status</span>
-              <select className="select select-bordered" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
+              <select className="select select-bordered" value={statusFilter} onChange={(event) => { setStatusFilter(event.target.value); setTablePage(1); }}>
                 <option value="all">All statuses</option><option value="pending">Pending approval</option><option value="approved">Approved</option><option value="rescheduled">Rescheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option><option value="no_show">No show</option>
               </select>
             </label>
-            <label className="form-control gap-1"><span className="label-text text-sm font-semibold">From date</span><input className="input input-bordered" type="date" value={dateFrom} onChange={(event) => setDateFrom(event.target.value)} /></label>
-            <label className="form-control gap-1"><span className="label-text text-sm font-semibold">To date</span><input className="input input-bordered" type="date" value={dateTo} onChange={(event) => setDateTo(event.target.value)} /></label>
-            <label className="form-control gap-1"><span className="label-text text-sm font-semibold">Patient name</span><input className="input input-bordered" value={patientSearch} onChange={(event) => setPatientSearch(event.target.value)} /></label>
+            <label className="form-control gap-1"><span className="label-text text-sm font-semibold">From date</span><input className="input input-bordered" type="date" value={dateFrom} onChange={(event) => { setDateFrom(event.target.value); setTablePage(1); }} /></label>
+            <label className="form-control gap-1"><span className="label-text text-sm font-semibold">To date</span><input className="input input-bordered" type="date" value={dateTo} onChange={(event) => { setDateTo(event.target.value); setTablePage(1); }} /></label>
+            <label className="form-control gap-1"><span className="label-text text-sm font-semibold">Patient name</span><input className="input input-bordered" value={patientSearch} onChange={(event) => { setPatientSearch(event.target.value); setTablePage(1); }} /></label>
           </div>
 
           {loading ? <div className="flex min-h-40 items-center justify-center gap-3" role="status"><span className="loading loading-spinner loading-md text-primary" /><span>Loading appointments</span></div>
             : loadError ? <div role="alert" className="alert alert-error"><span>{loadError}</span><button className="btn btn-outline btn-sm" onClick={() => { setLoading(true); void fetchAppointments(); }}>Retry</button></div>
             : view === "list" ? (
               <div className="overflow-x-auto rounded-box border border-base-300">
+                <TableControls total={sortedFiltered.length} page={tablePage} sortValue={tableSort} sortOptions={[{ value: "date-desc", label: "Newest date" }, { value: "date-asc", label: "Oldest date" }, { value: "patient", label: "Patient name" }]} onSortChange={(value) => { setTableSort(value); setTablePage(1); }} onPageChange={setTablePage} />
                 <table className="table table-sm table-pin-rows">
                   <thead><tr><th>Patient</th><th>Service</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th></tr></thead>
-                  <tbody>{filtered.map((appointment) => <tr key={appointment.id}>
+                  <tbody>{pageAppointments.map((appointment) => <tr key={appointment.id}>
                     <th>{patientName(appointment)}</th><td>{appointment.service?.name ?? "Service"}</td>
                     <td>{formatManilaDate(appointment.start_time, { year: "numeric", month: "short", day: "numeric" })}</td>
                     <td>{formatManilaTime(appointment.start_time)}</td>
