@@ -125,3 +125,7 @@ Clinic decision to confirm: the implemented role mapping follows existing permis
 - Reworked the dashboard shell into a fixed left sidebar with grouped role-filtered navigation, M-Care logo, signed-in name/role at the bottom, and a sticky top bar with the current page title and sign-out. Small screens use a slide-in drawer.
 - Added consistent global hover, active, disabled, focus, and sticky table-header treatment. Existing Tailwind/daisyUI `mcare` theme config and color tokens are in use; no package changes.
 - `npm --workspace=web exec -- tsc --noEmit` passed. Responsive viewport and contrast checks remain for Step 6.
+
+### Patients table (complete)
+
+- Patient directory now supports name/newest sorting, search, and 10-row pagination with a range summary and previous/next controls. Search and table controls use visible focus styling and the shared M-Care icon set.

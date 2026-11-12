@@ -2,11 +2,15 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
+import Icon from "@/components/Icon";
+import TableControls from "@/components/ui/TableControls";
 import { userFacingErrorMessage, type PatientWithProfile } from "@m-care/shared";
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState<PatientWithProfile[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [patientSort, setPatientSort] = useState("name");
+  const [patientPage, setPatientPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
   // Modals
@@ -174,6 +178,10 @@ export default function PatientsPage() {
     const bloodMatch = p.blood_type?.toLowerCase().includes(q);
     return nameMatch || phoneMatch || bloodMatch;
   });
+  const sortedPatients = [...filteredPatients].sort((a, b) => patientSort === "newest"
+    ? (b.profile?.created_at ?? "").localeCompare(a.profile?.created_at ?? "")
+    : (a.profile?.full_name ?? "").localeCompare(b.profile?.full_name ?? ""));
+  const pagePatients = sortedPatients.slice((patientPage - 1) * 10, patientPage * 10);
 
   const openPatientDetails = async (patient: PatientWithProfile) => {
     setSelectedPatient(patient);
@@ -225,10 +233,10 @@ export default function PatientsPage() {
           <input
             type="text"
             value={searchQuery}
-            aria-label="Search patients" onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label="Search patients" onChange={(e) => { setSearchQuery(e.target.value); setPatientPage(1); }}
             className="w-full text-xs border border-base-300 rounded-lg pl-9 pr-3 py-2 text-base-content placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500"
           />
-          <span className="absolute left-3 top-2.5 text-base-content/60 text-xs">🔍</span>
+          <Icon name="search" size={15} className="absolute left-3 top-3 text-base-content/60" />
         </div>
 
         <div className="flex items-center space-x-4 text-xs text-base-content/70">
@@ -244,6 +252,7 @@ export default function PatientsPage() {
 
       {/* Patients Table */}
       <div className="bg-base-100 rounded-2xl border border-base-300 shadow-sm overflow-hidden">
+        <TableControls total={sortedPatients.length} page={patientPage} sortValue={patientSort} sortOptions={[{ value: "name", label: "Name A to Z" }, { value: "newest", label: "Newest first" }]} onSortChange={(value) => { setPatientSort(value); setPatientPage(1); }} onPageChange={setPatientPage} />
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
@@ -271,7 +280,7 @@ export default function PatientsPage() {
                   </td>
                 </tr>
               ) : (
-                filteredPatients.map((p) => (
+                pagePatients.map((p) => (
                   <tr key={p.id} className="hover:bg-primary/10 transition">
                     <td className="py-3.5 px-4">
                       <p className="font-bold text-base-content">{p.profile?.full_name}</p>
@@ -350,7 +359,7 @@ export default function PatientsPage() {
                 onClick={() => setSelectedPatient(null)}
                 className="text-base-content/60 hover:text-base-content text-sm font-bold"
               >
-                ✕
+                <Icon name="close" size={18} />
               </button>
             </div>
 
