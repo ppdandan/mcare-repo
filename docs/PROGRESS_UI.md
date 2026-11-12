@@ -79,3 +79,7 @@
 
 - Restyled profile details with shared text fields, cards, header, and actions; added a selected accessibility state to the blood-type choices and removed profile-field placeholders. Kept the account deletion panel for its own group. Preserved profile/patient reads and updates, save behavior, and sign-out routing.
 - `cd mobile && npx tsc --noEmit` passed. Group complete.
+
+### Step 3 — Settings
+
+- No standalone Settings route or settings panel exists in `mobile/app`. Existing account details live on the Profile screen and were restyled in the Profile group. No route or new setting was added.
