@@ -108,3 +108,8 @@ This is the baseline audit; implementation must not change existing RLS, booking
 
 - Added a new-patient registration card for the selected period and a chart that groups registrations by day for 7/30-day ranges and by month for 90-day/all-time ranges. The appointment trend chart now plots each status as its own series, in addition to total volume. Existing service and diagnosis analytics remain.
 - `npm --workspace=web exec -- tsc --noEmit` and `git diff --check` passed.
+
+### Reports group (complete)
+
+- Added a date-range clinic summary for appointment totals and status counts, new patient registrations, and transaction totals/counts/voided count. It has a matching summary CSV export and appears in the existing print-friendly report sheet. Existing detailed appointment, patient, and clinical CSVs remain.
+- Transaction summary visibility follows the existing transaction RLS rules; when the current role cannot read transactions, the summary says it is unavailable. No transaction write behavior changed. `npm --workspace=web exec -- tsc --noEmit` and `git diff --check` passed.

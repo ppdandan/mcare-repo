@@ -11,7 +11,9 @@ export default function ReportsPage() {
   const [patients, setPatients] = useState<PatientWithProfile[]>([]);
   const [records, setRecords] = useState<MedicalRecordWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
-  const [reportType, setReportType] = useState<"appointments" | "patients" | "clinical">("appointments");
+  const [reportType, setReportType] = useState<"summary" | "appointments" | "patients" | "clinical">("summary");
+  const [transactions, setTransactions] = useState<Array<{ amount: number; currency: string; payment_method: string; voided_at: string | null; created_at: string }>>([]);
+  const [transactionsAvailable, setTransactionsAvailable] = useState(true);
   const [startDate, setStartDate] = useState(
     addCalendarDays(manilaDateKey(), -30)
   );
@@ -22,7 +24,7 @@ export default function ReportsPage() {
   const fetchReportData = useCallback(async () => {
     setLoading(true);
     try {
-      const [apptRes, patRes, recRes] = await Promise.all([
+      const [apptRes, patRes, recRes, transactionRes] = await Promise.all([
         supabase
           .from("appointments")
           .select(`
@@ -54,11 +56,22 @@ export default function ReportsPage() {
           .gte("visit_date", startDate)
           .lte("visit_date", endDate)
           .order("visit_date", { ascending: false }),
+        supabase
+          .from("transactions")
+          .select("amount, currency, payment_method, voided_at, created_at")
+          .gte("created_at", `${startDate}T00:00:00+08:00`)
+          .lte("created_at", `${endDate}T23:59:59+08:00`)
+          .order("created_at", { ascending: false }),
       ]);
 
       if (apptRes.data) setAppointments(apptRes.data as unknown as AppointmentWithDetails[]);
       if (patRes.data) setPatients(patRes.data as unknown as PatientWithProfile[]);
       if (recRes.data) setRecords(recRes.data as unknown as MedicalRecordWithDetails[]);
+      if (transactionRes.error) setTransactionsAvailable(false);
+      else {
+        setTransactionsAvailable(true);
+        setTransactions((transactionRes.data ?? []) as typeof transactions);
+      }
     } catch (err) {
       console.error("Error fetching report data:", err);
     } finally {
@@ -177,6 +190,32 @@ export default function ReportsPage() {
     downloadCsv(`mcare_clinical_records_${startDate}_to_${endDate}.csv`, csv);
   };
 
+  const periodPatients = patients.filter((patient) => {
+    const createdAt = patient.profile?.created_at;
+    if (!createdAt) return false;
+    const date = manilaDateKey(createdAt);
+    return date >= startDate && date <= endDate;
+  });
+  const appointmentStatusSummary = appointments.reduce<Record<string, number>>((counts, appointment) => {
+    counts[appointment.status] = (counts[appointment.status] ?? 0) + 1;
+    return counts;
+  }, {});
+  const validTransactions = transactions.filter((transaction) => !transaction.voided_at);
+  const transactionTotal = validTransactions.reduce((total, transaction) => total + Number(transaction.amount), 0);
+  const exportSummaryCsv = () => {
+    const rows = [
+      ["Summary", "Metric", "Value"],
+      ["Appointments", "Total", String(appointments.length)],
+      ...Object.entries(appointmentStatusSummary).map(([status, count]) => ["Appointments", status, String(count)]),
+      ["Patients", "New registrations", String(periodPatients.length)],
+      ["Transactions", "Count", String(transactions.length)],
+      ["Transactions", "Not voided count", String(validTransactions.length)],
+      ["Transactions", "Not voided amount", `${validTransactions[0]?.currency ?? "PHP"} ${transactionTotal.toFixed(2)}`],
+      ["Transactions", "Voided count", String(transactions.length - validTransactions.length)],
+    ];
+    downloadCsv(`mcare_summary_${startDate}_to_${endDate}.csv`, rows.map((row) => row.map((field) => `"${field.replace(/"/g, '""')}"`).join(",")).join("\n"));
+  };
+
   const handlePrintPdf = () => {
     window.print();
   };
@@ -195,7 +234,8 @@ export default function ReportsPage() {
         <div className="flex items-center space-x-2">
           <button
             onClick={() => {
-              if (reportType === "appointments") exportAppointmentsCsv();
+              if (reportType === "summary") exportSummaryCsv();
+              else if (reportType === "appointments") exportAppointmentsCsv();
               else if (reportType === "patients") exportPatientsCsv();
               else exportClinicalRecordsCsv();
             }}
@@ -218,6 +258,12 @@ export default function ReportsPage() {
       <div className="flex flex-wrap items-center justify-between gap-4 bg-base-100 p-4 rounded-xl border border-base-300 shadow-sm print:hidden">
         {/* Report Category Switcher */}
         <div className="flex items-center space-x-2 bg-base-200 p-1 rounded-xl">
+          <button
+            onClick={() => setReportType("summary")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${reportType === "summary" ? "bg-base-100 text-primary shadow-sm" : "text-base-content/80"}`}
+          >
+            Clinic Summary
+          </button>
           <button
             onClick={() => setReportType("appointments")}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
@@ -296,6 +342,33 @@ export default function ReportsPage() {
         {/* Content Table */}
         {loading ? (
           <div className="py-12 text-center text-xs text-base-content/60">Loading report records...</div>
+        ) : reportType === "summary" ? (
+          <section aria-labelledby="clinic-report-summary-title">
+            <h3 id="clinic-report-summary-title" className="text-sm font-bold text-base-content mb-4">Clinic activity summary</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <article className="rounded-xl border border-base-300 p-4">
+                <h4 className="font-bold text-base-content">Appointments</h4>
+                <p className="mt-2 text-2xl font-bold">{appointments.length}</p>
+                <p className="text-xs text-base-content/70">Appointments in date range</p>
+                <ul className="mt-3 space-y-1 text-xs capitalize">
+                  {Object.entries(appointmentStatusSummary).map(([status, count]) => <li key={status} className="flex justify-between"><span>{status.replaceAll("_", " ")}</span><strong>{count}</strong></li>)}
+                </ul>
+              </article>
+              <article className="rounded-xl border border-base-300 p-4">
+                <h4 className="font-bold text-base-content">Patients</h4>
+                <p className="mt-2 text-2xl font-bold">{periodPatients.length}</p>
+                <p className="text-xs text-base-content/70">New registrations in date range</p>
+              </article>
+              <article className="rounded-xl border border-base-300 p-4">
+                <h4 className="font-bold text-base-content">Transactions</h4>
+                {transactionsAvailable ? <>
+                  <p className="mt-2 text-2xl font-bold">PHP {transactionTotal.toFixed(2)}</p>
+                  <p className="text-xs text-base-content/70">{validTransactions.length} active transactions · {transactions.length - validTransactions.length} voided</p>
+                  <p className="mt-2 text-xs text-base-content/70">Recorded in date range: {transactions.length}</p>
+                </> : <p className="mt-2 text-sm text-base-content/70">Transaction summaries are unavailable for your role.</p>}
+              </article>
+            </div>
+          </section>
         ) : reportType === "appointments" ? (
           <div>
             <h3 className="text-sm font-bold text-base-content mb-3">
