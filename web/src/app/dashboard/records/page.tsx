@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
+import Icon from "@/components/Icon";
+import TableControls from "@/components/ui/TableControls";
 import type { MedicalRecordWithDetails, PatientWithProfile, DoctorWithProfile, Profile } from "@m-care/shared";
 import { formatManilaDate, manilaDateKey, userFacingErrorMessage } from "@m-care/shared";
 
@@ -12,6 +14,8 @@ export default function MedicalRecordsPage() {
   const [currentProfile, setCurrentProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchPatient, setSearchPatient] = useState("");
+  const [recordSort, setRecordSort] = useState("newest");
+  const [recordPage, setRecordPage] = useState(1);
 
   // Modals
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -193,7 +197,7 @@ export default function MedicalRecordsPage() {
     return (
       <div className="bg-base-100 rounded-2xl p-12 text-center border border-base-300 shadow-sm">
         <div className="w-16 h-16 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-2xl mx-auto mb-4 font-bold">
-          🔒
+          <Icon name="lock" size={24} />
         </div>
         <h2 className="text-lg font-bold text-base-content">Access Restricted by Privacy Policy</h2>
         <p className="text-xs text-base-content/70 max-w-md mx-auto mt-2 leading-relaxed">
@@ -212,6 +216,10 @@ export default function MedicalRecordsPage() {
     const diag = r.diagnosis?.toLowerCase() || "";
     return patName.includes(q) || docName.includes(q) || diag.includes(q);
   });
+  const sortedRecords = [...filteredRecords].sort((a, b) => recordSort === "patient"
+    ? (a.patient?.profile?.full_name ?? "").localeCompare(b.patient?.profile?.full_name ?? "")
+    : b.visit_date.localeCompare(a.visit_date));
+  const pageRecords = sortedRecords.slice((recordPage - 1) * 10, recordPage * 10);
 
   return (
     <div className="space-y-6">
@@ -249,10 +257,10 @@ export default function MedicalRecordsPage() {
           <input
             type="text"
             value={searchPatient}
-            aria-label="Search medical records" onChange={(e) => setSearchPatient(e.target.value)}
+            aria-label="Search medical records" onChange={(e) => { setSearchPatient(e.target.value); setRecordPage(1); }}
             className="w-full text-xs border border-base-300 rounded-lg pl-9 pr-3 py-2 text-base-content placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500"
           />
-          <span className="absolute left-3 top-2.5 text-base-content/60 text-xs">🔍</span>
+          <Icon name="search" size={15} className="absolute left-3 top-3 text-base-content/60" />
         </div>
 
         <div className="text-xs text-base-content/70">
@@ -264,6 +272,7 @@ export default function MedicalRecordsPage() {
 
       {/* Records Table */}
       <div className="bg-base-100 rounded-2xl border border-base-300 shadow-sm overflow-hidden">
+        <TableControls total={sortedRecords.length} page={recordPage} sortValue={recordSort} sortOptions={[{ value: "newest", label: "Newest visit" }, { value: "patient", label: "Patient name" }]} onSortChange={(value) => { setRecordSort(value); setRecordPage(1); }} onPageChange={setRecordPage} />
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
@@ -291,7 +300,7 @@ export default function MedicalRecordsPage() {
                   </td>
                 </tr>
               ) : (
-                filteredRecords.map((rec) => (
+                pageRecords.map((rec) => (
                   <tr key={rec.id} className="hover:bg-purple-50/20 transition">
                     <td className="py-3.5 px-4 font-semibold text-base-content whitespace-nowrap">
                       {formatManilaDate(rec.visit_date, {
@@ -372,7 +381,7 @@ export default function MedicalRecordsPage() {
                 onClick={() => setSelectedRecord(null)}
                 className="text-base-content/60 hover:text-base-content text-sm font-bold"
               >
-                ✕
+                <Icon name="close" size={18} />
               </button>
             </div>
 
@@ -469,7 +478,7 @@ export default function MedicalRecordsPage() {
               )}
 
               <div className="pt-2 text-xs text-base-content/60 text-center border-t border-base-300">
-                🔒 DPA 2012 Audit Trail: View access recorded by {currentProfile?.full_name} ({currentProfile?.role}).
+                DPA 2012 Audit Trail: View access recorded by {currentProfile?.full_name} ({currentProfile?.role}).
               </div>
             </div>
 

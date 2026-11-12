@@ -129,3 +129,7 @@ Clinic decision to confirm: the implemented role mapping follows existing permis
 ### Patients table (complete)
 
 - Patient directory now supports name/newest sorting, search, and 10-row pagination with a range summary and previous/next controls. Search and table controls use visible focus styling and the shared M-Care icon set.
+
+### Records table (complete)
+
+- Clinical records now support visit-date/patient sorting, search, and 10-row pagination. Restricted-access, search, and modal close marks use the same vector icon set rather than emoji glyphs.
