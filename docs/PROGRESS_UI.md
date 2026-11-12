@@ -88,3 +88,8 @@
 
 - Restyled the policy surface with the shared card while retaining the system stack title, safe areas, selectable policy text, and the existing clinic-review draft wording. The policy text and data source were not changed.
 - `cd mobile && npx tsc --noEmit` passed. Group complete.
+
+### Step 3 — Delete account
+
+- Restyled the existing account-deletion panel with the shared card, password field, and destructive button. Removed the password example placeholder and provided a nonvisual accessible name for the password input. Preserved the confirmation alert, password requirement, Edge Function call, sign-out, and route behavior. There is no standalone deletion route in the mobile app.
+- `cd mobile && npx tsc --noEmit` passed. Group complete.

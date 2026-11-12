@@ -6,7 +6,7 @@ import type { Ref } from 'react';
 import { colors, radius, spacing, typography } from '@/theme';
 
 type Props = TextInputProps & {
-  label: string;
+  label?: string;
   error?: string;
   containerStyle?: ViewStyle;
   leadingIcon?: ReactNode;
@@ -18,7 +18,7 @@ export default function TextField({ label, error, containerStyle, leadingIcon, t
   const [focused, setFocused] = useState(false);
   return (
     <View style={[styles.container, containerStyle]}>
-      <Text style={styles.label}>{label}</Text>
+      {label ? <Text style={styles.label}>{label}</Text> : null}
       <View style={[styles.control, focused && styles.focused, error && styles.invalid]}>
         {leadingIcon}
         <TextInput

@@ -4,11 +4,9 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -192,22 +190,19 @@ export default function ProfileScreen() {
           <TouchableOpacity onPress={() => router.push('/privacy' as never)} accessibilityRole="link" style={{ padding: spacing.lg }}>
             <Text style={{ color: Colors.primary, textAlign: 'center', textDecorationLine: 'underline' }}>Privacy Policy</Text>
           </TouchableOpacity>
-          <View style={styles.deleteCard}>
+          <Card style={styles.deleteCard}>
             <Text style={styles.cardSectionTitle}>Delete account</Text>
             <Text style={styles.deleteDescription}>Enter your password if you have not signed in within the last 10 minutes. You can also sign out and sign in again before continuing.</Text>
-            <TextInput
-              style={styles.input}
+            <TextField
+              accessibilityLabel="Password"
               value={deletionPassword}
               onChangeText={setDeletionPassword}
-              placeholder="Password (optional for recent sign-in)"
               secureTextEntry
               autoCapitalize="none"
               editable={!deleting}
-             placeholderTextColor={Colors.textLight} />
-            <TouchableOpacity style={[styles.deleteBtn, deleting && styles.btnDisabled]} onPress={handleDeleteAccount} disabled={deleting}>
-              {deleting ? <ActivityIndicator color={Colors.background} /> : <Text style={styles.deleteBtnText}>Delete my account</Text>}
-            </TouchableOpacity>
-          </View>
+            />
+            <Button variant="destructive" onPress={handleDeleteAccount} loading={deleting} disabled={deleting}>Delete my account</Button>
+          </Card>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -290,13 +285,9 @@ const styles = StyleSheet.create({
   },
   signOutText: { color: Colors.error, fontSize: typography.small.fontSize, fontWeight: '700' },
   deleteCard: {
-    backgroundColor: Colors.background,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
     marginTop: spacing.xs,
     marginBottom: spacing.lg,
-    borderWidth: 1,
-    borderColor: Colors.errorBackground,
+    borderColor: Colors.error,
   },
   deleteDescription: { fontSize: typography.caption.fontSize, color: Colors.textSecondary, marginBottom: spacing.md, lineHeight: typography.caption.lineHeight },
   deleteBtn: {
