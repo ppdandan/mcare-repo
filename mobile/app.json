@@ -23,6 +23,7 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.mcare.patient",
+      "targetSdkVersion": 36,
       "permissions": [
         "android.permission.POST_NOTIFICATIONS"
       ],

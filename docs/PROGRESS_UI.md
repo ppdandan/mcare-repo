@@ -98,3 +98,11 @@
 
 - Applied the shared header, buttons, text fields, cards, badges, and loading/empty states to the existing inquiry screen. Removed its example input placeholders and kept the inquiry queries, realtime subscription, submission flow, and message text intact. Added flexible centered title support to the shared screen header for the existing centered welcome screen.
 - `cd mobile && npx tsc --noEmit` passed. Group complete.
+
+### Step 4 — Checks
+
+- `cd mobile && npx tsc --noEmit` passed. `cd mobile && npx expo-doctor` passed all 18 checks.
+- `cd mobile && npx expo config --type introspect --json` (filtered to Android permissions and target) reported `android.permission.POST_NOTIFICATIONS`, `android.permission.INTERNET`, and target SDK `36`. Made the SDK 54 Android target explicit in `mobile/app.json` so the required target is visible in introspection.
+- Ran the contrast script against the shared theme: body/surface 15.81:1, muted/surface 7.01:1, white/brand button 8.82:1, primary badge 9.37:1, success 5.75:1, warning 5.97:1, error 6.24:1, info 6.59:1. All checked text pairs meet WCAG AA.
+- Ran `cross-platform-sync.test.mjs`, `transactions.test.mjs`, and `booking-weekend.test.mjs` against the `.env` dev ref `luccnwicirfnmyzgemzj`; all synchronization and security checks passed and temporary test data was cleaned up.
+- Confirmed no app-screen `placeholder=` props or `allowFontScaling={false}` overrides remain. No screenshots or physical-device layout checks were performed, per the requested constraints.
