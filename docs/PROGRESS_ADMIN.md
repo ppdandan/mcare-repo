@@ -137,3 +137,7 @@ Clinic decision to confirm: the implemented role mapping follows existing permis
 ### Appointments table (complete)
 
 - The list view now sorts by date or patient and paginates ten appointments at a time. Existing status, date-range, patient filters, workflow actions, and calendar views remain.
+
+### Dashboard overview (complete)
+
+- The overview retains its pending-approval task list and KPI cards. Its duplicate direct table-update approval/cancel buttons now link staff into the server-RPC approval workspace, so the overview cannot bypass appointment transition rules. Replaced decorative emoji with text labels.

@@ -4,14 +4,13 @@ import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { AppointmentWithDetails } from "@m-care/shared";
-import { formatManilaDateTime, userFacingErrorMessage } from "@m-care/shared";
+import { formatManilaDateTime } from "@m-care/shared";
 import Icon from "@/components/Icon";
 
 export default function DashboardOverviewPage() {
   const [appointments, setAppointments] = useState<AppointmentWithDetails[]>([]);
   const [patientCount, setPatientCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(false);
 
   const supabase = createClient();
 
@@ -62,39 +61,6 @@ export default function DashboardOverviewPage() {
       supabase.removeChannel(channel);
     };
   }, [fetchOverviewData, supabase]);
-
-  const handleApprove = async (id: string) => {
-    setActionLoading(true);
-    try {
-      const { error } = await supabase
-        .from("appointments")
-        .update({ status: "approved" })
-        .eq("id", id);
-      if (error) throw error;
-      await fetchOverviewData();
-    } catch (err: unknown) {
-      alert(userFacingErrorMessage(err, "We couldn’t approve this appointment. Refresh and try again."));
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  const handleCancel = async (id: string) => {
-    if (!confirm("Are you sure you want to cancel this booking?")) return;
-    setActionLoading(true);
-    try {
-      const { error } = await supabase
-        .from("appointments")
-        .update({ status: "cancelled" })
-        .eq("id", id);
-      if (error) throw error;
-      await fetchOverviewData();
-    } catch (err: unknown) {
-      alert(userFacingErrorMessage(err, "We couldn’t cancel this appointment. Refresh and try again."));
-    } finally {
-      setActionLoading(false);
-    }
-  };
 
   // Metrics computed using Asia/Manila clinic local time (UTC+8)
   const todayStr = new Intl.DateTimeFormat("en-CA", {
@@ -210,7 +176,7 @@ export default function DashboardOverviewPage() {
                 <th className="py-3 px-4">Doctor & Room</th>
                 <th className="py-3 px-4">Requested Date/Time</th>
                 <th className="py-3 px-4">Patient Notes</th>
-                <th className="py-3 px-4 text-right">Action</th>
+                <th className="py-3 px-4 text-right">Review</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-base-300">
@@ -226,7 +192,7 @@ export default function DashboardOverviewPage() {
                     <td className="py-3.5 px-4 font-bold text-base-content">
                       {appt.patient?.profile?.full_name}
                       <span className="block text-xs text-base-content/60 font-normal">
-                        📞 {appt.patient?.profile?.phone}
+                        Phone: {appt.patient?.profile?.phone || "Not provided"}
                       </span>
                     </td>
                     <td className="py-3.5 px-4 font-semibold text-base-content">
@@ -235,7 +201,7 @@ export default function DashboardOverviewPage() {
                     <td className="py-3.5 px-4 text-base-content">
                       {appt.doctor?.profile?.full_name}
                       <span className="block text-xs text-base-content/60">
-                        📍 {appt.doctor?.room}
+                        Room: {appt.doctor?.room || "Not assigned"}
                       </span>
                     </td>
                     <td className="py-3.5 px-4 font-semibold text-primary">
@@ -247,22 +213,7 @@ export default function DashboardOverviewPage() {
                       {appt.notes || "—"}
                     </td>
                     <td className="py-3.5 px-4 text-right">
-                      <div className="flex items-center justify-end space-x-2">
-                        <button
-                          onClick={() => handleApprove(appt.id)}
-                          disabled={actionLoading}
-                          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded text-xs transition shadow-sm"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => handleCancel(appt.id)}
-                          disabled={actionLoading}
-                          className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold rounded text-xs border border-rose-200 transition"
-                        >
-                          Cancel
-                        </button>
-                      </div>
+                      <Link href="/dashboard/appointments" className="btn btn-primary btn-sm">Review request</Link>
                     </td>
                   </tr>
                 ))
