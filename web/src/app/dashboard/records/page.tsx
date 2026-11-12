@@ -23,6 +23,7 @@ export default function MedicalRecordsPage() {
   const [doctorId, setDoctorId] = useState("");
   const [visitDate, setVisitDate] = useState(manilaDateKey());
   const [chiefComplaint, setChiefComplaint] = useState("");
+  const [medicalHistory, setMedicalHistory] = useState("");
   const [hpi, setHpi] = useState("");
   const [bp, setBp] = useState("120/80");
   const [hr, setHr] = useState("78 bpm");
@@ -116,6 +117,7 @@ export default function MedicalRecordsPage() {
         doctor_id: doctorId,
         visit_date: visitDate,
         chief_complaint: chiefComplaint.trim() || null,
+        medical_history: medicalHistory.trim() || null,
         history_of_present_illness: hpi.trim() || null,
         blood_pressure: bp.trim() || null,
         heart_rate: hr.trim() || null,
@@ -154,6 +156,7 @@ export default function MedicalRecordsPage() {
     setDoctorId(rec.doctor_id);
     setVisitDate(rec.visit_date);
     setChiefComplaint(rec.chief_complaint || "");
+    setMedicalHistory(rec.medical_history || "");
     setHpi(rec.history_of_present_illness || "");
     setBp(rec.blood_pressure || "");
     setHr(rec.heart_rate || "");
@@ -169,6 +172,7 @@ export default function MedicalRecordsPage() {
     if (doctors.length > 0) setDoctorId(doctors[0].id);
     setVisitDate(manilaDateKey());
     setChiefComplaint("");
+    setMedicalHistory("");
     setHpi("");
     setBp("120/80");
     setHr("78 bpm");
@@ -420,6 +424,11 @@ export default function MedicalRecordsPage() {
                   <p className="text-base-content">
                     <strong>Complaint:</strong> {selectedRecord.chief_complaint || "Routine evaluation"}
                   </p>
+                  {selectedRecord.medical_history && (
+                    <p className="text-base-content">
+                      <strong>Medical history:</strong> {selectedRecord.medical_history}
+                    </p>
+                  )}
                   {selectedRecord.history_of_present_illness && (
                     <p className="text-base-content">
                       <strong>HPI:</strong> {selectedRecord.history_of_present_illness}
@@ -575,6 +584,16 @@ export default function MedicalRecordsPage() {
                   type="text"
                   value={chiefComplaint}
                   aria-label="Chief Complaint" onChange={(e) => setChiefComplaint(e.target.value)}
+                  className="w-full border border-base-300 rounded-lg p-2 text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-base-content block mb-1">Medical History</label>
+                <textarea
+                  rows={3}
+                  value={medicalHistory}
+                  aria-label="Medical History" onChange={(e) => setMedicalHistory(e.target.value)}
                   className="w-full border border-base-300 rounded-lg p-2 text-xs"
                 />
               </div>

@@ -92,3 +92,9 @@ This is the baseline audit; implementation must not change existing RLS, booking
 
 - Patient detail cards now load the latest ten appointments for that patient and show service, Manila-local date/time, and status, with loading, empty, and readable error states. Existing search/profile editing and appointment data access are unchanged.
 - `npm --workspace=web exec -- tsc --noEmit` passed.
+
+### Medical records group (complete)
+
+- Added the distinct `medical_history` field in idempotent migration `00030_medical_history.sql`; the existing medical-record RLS policies continue to govern the added field, including patient-own-row reads. Applied only to verified dev ref `luccnwicirfnmyzgemzj`.
+- The records form now creates and updates medical history alongside visit-specific HPI, diagnosis, and prescription, and chart details display the new field. Shared database types include it. Mobile remains untouched per the Step 4 protected-area rule, so the mobile record screen does not display this new general-history field.
+- Added `supabase/tests/medical-history.test.mjs`. Against dev it passed: patient can read own field; another patient cannot read it. `npm --workspace=web exec -- tsc --noEmit` and `git diff --check` passed.

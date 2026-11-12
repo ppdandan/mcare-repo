@@ -83,6 +83,7 @@ export interface MedicalRecord {
   appointment_id: string | null;
   visit_date: string; // YYYY-MM-DD
   chief_complaint: string | null;
+  medical_history: string | null;
   history_of_present_illness: string | null;
   blood_pressure: string | null;
   heart_rate: string | null;
