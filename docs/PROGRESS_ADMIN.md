@@ -157,3 +157,7 @@ Clinic decision to confirm: the implemented role mapping follows existing permis
 ### Analytics and reports states (complete)
 
 - Analytics and date-range report fetch failures now show retryable, user-facing alerts. Report transaction detail remains hidden when the existing RLS policy denies it.
+
+### Dashboard overview states (complete)
+
+- The overview now shows a retryable error message if its appointment or patient summary fetch fails.

@@ -6,15 +6,18 @@ import { createClient } from "@/lib/supabase/client";
 import type { AppointmentWithDetails } from "@m-care/shared";
 import { formatManilaDateTime } from "@m-care/shared";
 import Icon from "@/components/Icon";
+import { userFacingErrorMessage } from "@m-care/shared";
 
 export default function DashboardOverviewPage() {
   const [appointments, setAppointments] = useState<AppointmentWithDetails[]>([]);
   const [patientCount, setPatientCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const supabase = createClient();
 
   const fetchOverviewData = useCallback(async () => {
+    setLoadError(null);
     try {
       const [apptRes, patRes] = await Promise.all([
         supabase
@@ -39,6 +42,7 @@ export default function DashboardOverviewPage() {
       if (patRes.count !== null) setPatientCount(patRes.count);
     } catch (err) {
       console.error("Error loading dashboard overview:", err);
+      setLoadError(userFacingErrorMessage(err, "We couldn’t load the clinic overview."));
     } finally {
       setLoading(false);
     }
@@ -167,6 +171,7 @@ export default function DashboardOverviewPage() {
           </Link>
         </div>
 
+        {loadError && <div role="alert" className="alert alert-error m-4"><span>{loadError}</span><button className="btn btn-outline btn-sm" onClick={() => { setLoading(true); void fetchOverviewData(); }}>Retry</button></div>}
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
