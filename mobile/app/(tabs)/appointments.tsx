@@ -7,17 +7,16 @@ import {
   StyleSheet,
   ScrollView,
   RefreshControl,
-  ActivityIndicator,
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import { colors as Colors } from '@/theme';
 import { formatManilaDate, formatManilaDateTime } from '@m-care/shared';
 import type { AppointmentWithDetails, AppointmentStatus } from '@m-care/shared';
+import { Badge, Button, Card, EmptyState, ErrorState, LoadingState, ScreenHeader } from '@/components/ui';
 
 export default function AppointmentsScreen() {
   const router = useRouter();
@@ -135,19 +134,19 @@ export default function AppointmentsScreen() {
   const getStatusBadgeStyle = (status: AppointmentStatus) => {
     switch (status) {
       case 'approved':
-        return { bg: Colors.successBackground, text: Colors.success, label: 'Approved' };
+        return { tone: 'success' as const, label: 'Approved' };
       case 'pending':
-        return { bg: Colors.warningBackground, text: Colors.warning, label: 'Pending Staff Review' };
+        return { tone: 'warning' as const, label: 'Pending Staff Review' };
       case 'rescheduled':
-        return { bg: Colors.infoBackground, text: Colors.info, label: 'Rescheduled' };
+        return { tone: 'info' as const, label: 'Rescheduled' };
       case 'completed':
-        return { bg: Colors.border, text: Colors.text, label: 'Completed' };
+        return { tone: 'neutral' as const, label: 'Completed' };
       case 'cancelled':
-        return { bg: Colors.errorBackground, text: Colors.error, label: 'Cancelled' };
+        return { tone: 'error' as const, label: 'Cancelled' };
       case 'no_show':
-        return { bg: Colors.warningBackground, text: Colors.warning, label: 'No Show' };
+        return { tone: 'warning' as const, label: 'No Show' };
       default:
-        return { bg: Colors.surfaceAlt, text: Colors.text, label: status };
+        return { tone: 'neutral' as const, label: status };
     }
   };
 
@@ -156,14 +155,13 @@ export default function AppointmentsScreen() {
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>My Clinic Visits</Text>
-          <Text style={styles.headerSubtitle}>
-            Live appointment tracking & consultation history
-          </Text>
+          <ScreenHeader title="My Clinic Visits" subtitle="Live appointment tracking & consultation history" />
 
           {/* Segmented Tabs */}
           <View style={styles.tabContainer}>
             <TouchableOpacity
+              accessibilityRole="tab"
+              accessibilityState={{ selected: activeTab === 'upcoming' }}
               style={[styles.tabButton, activeTab === 'upcoming' && styles.tabButtonActive]}
               onPress={() => setActiveTab('upcoming')}
             >
@@ -175,6 +173,8 @@ export default function AppointmentsScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
+              accessibilityRole="tab"
+              accessibilityState={{ selected: activeTab === 'history' }}
               style={[styles.tabButton, activeTab === 'history' && styles.tabButtonActive]}
               onPress={() => setActiveTab('history')}
             >
@@ -190,6 +190,7 @@ export default function AppointmentsScreen() {
         {/* Content List */}
         <ScrollView
           contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -199,55 +200,32 @@ export default function AppointmentsScreen() {
           }
         >
           {loading ? (
-            <View style={styles.centerBox}>
-              <ActivityIndicator size="large" color={Colors.primary} />
-              <Text style={styles.loadingText}>Syncing appointments with clinic...</Text>
-            </View>
+            <LoadingState label="Syncing appointments with clinic..." />
           ) : loadError ? (
-            <View style={styles.emptyCard}>
-              <Text style={styles.emptyTitle}>Appointments unavailable</Text>
-              <Text style={styles.emptyText}>{loadError}</Text>
-              <TouchableOpacity style={styles.bookCTA} onPress={() => { setLoading(true); void fetchAppointments(); }}>
-                <Text style={styles.bookCTAText}>Retry</Text>
-              </TouchableOpacity>
-            </View>
+            <ErrorState title="Appointments unavailable" message={loadError} onRetry={() => { setLoading(true); void fetchAppointments(); }} />
           ) : filteredAppointments.length === 0 ? (
-            <View style={styles.emptyCard}>
-              <Ionicons name={activeTab === 'upcoming' ? 'calendar-outline' : 'time-outline'} size={40} color={Colors.primary} style={styles.emptyIcon} />
-              <Text style={styles.emptyTitle}>
-                {activeTab === 'upcoming'
-                  ? 'No Upcoming Appointments'
-                  : 'No Past Appointments Found'}
-              </Text>
-              <Text style={styles.emptyText}>
-                {activeTab === 'upcoming'
-                  ? 'You currently have no active or pending appointments booked with M-Care Clinic.'
-                  : 'Your completed or archived clinic consultations will be listed here.'}
-              </Text>
-
+            <EmptyState
+              title={activeTab === 'upcoming'
+                ? 'No Upcoming Appointments'
+                : 'No Past Appointments Found'}
+              description={activeTab === 'upcoming'
+                ? 'You currently have no active or pending appointments booked with M-Care Clinic.'
+                : 'Your completed or archived clinic consultations will be listed here.'}
+            >
               {activeTab === 'upcoming' && (
-                <TouchableOpacity
-                  style={styles.bookCTA}
-                  onPress={() => router.push('/(tabs)/book')}
-                >
-                  <Text style={styles.bookCTAText}>Book an Appointment Now</Text>
-                </TouchableOpacity>
+                <Button onPress={() => router.push('/(tabs)/book')}>Book an Appointment Now</Button>
               )}
-            </View>
+            </EmptyState>
           ) : (
             filteredAppointments.map((appt) => {
               const badge = getStatusBadgeStyle(appt.status);
               const isUpcoming = ['pending', 'approved', 'rescheduled'].includes(appt.status);
 
               return (
-                <View key={appt.id} style={styles.card}>
+                <Card key={appt.id} style={styles.card}>
                   <View style={styles.cardHeader}>
                     <Text style={styles.serviceName}>{appt.service?.name}</Text>
-                    <View style={[styles.badge, { backgroundColor: badge.bg }]}>
-                      <Text style={[styles.badgeText, { color: badge.text }]}>
-                        {badge.label}
-                      </Text>
-                    </View>
+                    <Badge tone={badge.tone}>{badge.label}</Badge>
                   </View>
 
                   <Text style={styles.doctorName}>
@@ -277,20 +255,17 @@ export default function AppointmentsScreen() {
 
                   {isUpcoming && (
                     <View style={styles.cardActions}>
-                      <TouchableOpacity
-                        style={styles.cancelBtn}
+                      <Button
+                        variant="destructive"
                         onPress={() => handleCancelAppointment(appt)}
+                        loading={cancellingId === appt.id}
                         disabled={cancellingId === appt.id}
                       >
-                        {cancellingId === appt.id ? (
-                          <ActivityIndicator size="small" color={Colors.error} />
-                        ) : (
-                          <Text style={styles.cancelBtnText}>Cancel Booking</Text>
-                        )}
-                      </TouchableOpacity>
+                        Cancel Booking
+                      </Button>
                     </View>
                   )}
-                </View>
+                </Card>
               );
             })
           )}
@@ -334,6 +309,7 @@ const styles = StyleSheet.create({
   },
   tabButton: {
     flex: 1,
+    minHeight: 48,
     paddingVertical: spacing.sm,
     alignItems: 'center',
     borderRadius: radius.md,
@@ -420,6 +396,7 @@ const styles = StyleSheet.create({
   },
   cardHeader: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: spacing.sm,
@@ -458,6 +435,7 @@ const styles = StyleSheet.create({
   },
   timeRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
@@ -466,6 +444,7 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
   },
   timeValue: {
+    flexShrink: 1,
     fontSize: typography.caption.fontSize,
     fontWeight: '700',
     color: Colors.primaryDark,

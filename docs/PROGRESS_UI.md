@@ -64,3 +64,8 @@
 
 - Applied the shared header, cards, badge, text field, buttons, and loading/empty/error states to the booking steps. Calendar day and month controls now provide larger touch targets. Removed the example notes placeholder. Preserved service/catalog and slot queries, calendar calculations, selection state, retry behavior, validation, booking RPC, and navigation.
 - `cd mobile && npx tsc --noEmit` passed. Group complete.
+
+### Step 3 — Appointments
+
+- Replaced the appointment list cards and status chips with shared cards and badges. Added shared loading, retryable error, empty state, and button components; made the upcoming/history tabs accessible and responsive. Preserved the appointment query, ordering/filter rules, realtime refresh, cancellation confirmation, and cancel RPC.
+- `cd mobile && npx tsc --noEmit` passed. Group complete.
