@@ -19,6 +19,7 @@ interface InquiryWithDetails extends Inquiry {
 export default function ReceptionInquiriesPage() {
   const [inquiries, setInquiries] = useState<InquiryWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedInquiry, setSelectedInquiry] = useState<InquiryWithDetails | null>(null);
   const [replyText, setReplyText] = useState("");
   const [sending, setSending] = useState(false);
@@ -32,6 +33,7 @@ export default function ReceptionInquiriesPage() {
   const pageInquiries = sortedInquiries.slice((page - 1) * 10, page * 10);
 
   const fetchInquiries = useCallback(async () => {
+    setLoadError(null);
     try {
       const { data, error } = await supabase
         .from("inquiries")
@@ -47,6 +49,7 @@ export default function ReceptionInquiriesPage() {
       if (data) setInquiries(data as unknown as InquiryWithDetails[]);
     } catch (err) {
       console.error("Error fetching inquiries:", err);
+      setLoadError(userFacingErrorMessage(err, "We couldn’t load patient inquiries."));
     } finally {
       setLoading(false);
     }
@@ -133,7 +136,9 @@ export default function ReceptionInquiriesPage() {
                     Loading patient inquiries...
                   </td>
                 </tr>
-              ) : inquiries.length === 0 ? (
+              ) : loadError ? (
+                <tr><td colSpan={6} className="p-6"><div role="alert" className="alert alert-error"><span>{loadError}</span><button className="btn btn-outline btn-sm" onClick={() => { setLoading(true); void fetchInquiries(); }}>Retry</button></div></td></tr>
+              ) : sortedInquiries.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="text-center py-12 text-base-content/60">
                     No inquiries received from mobile patients.

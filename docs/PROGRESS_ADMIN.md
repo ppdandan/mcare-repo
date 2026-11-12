@@ -149,3 +149,7 @@ Clinic decision to confirm: the implemented role mapping follows existing permis
 ### Patient and medical-record loading states (complete)
 
 - Patient and medical-record fetch failures now show safe, readable retry states in their tables; the existing Supabase/RLS behavior is unchanged.
+
+### Staff, inquiries, and schedules states (complete)
+
+- Staff and inquiry directory failures now show retry controls. Schedule loading now exposes query errors in both weekly-hours and leave panels and retries through the existing read calls.

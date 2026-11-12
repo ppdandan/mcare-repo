@@ -18,6 +18,7 @@ export default function StaffManagementPage() {
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [currentUserProfile, setCurrentUserProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("name");
   const [page, setPage] = useState(1);
@@ -33,6 +34,7 @@ export default function StaffManagementPage() {
   const supabase = createClient();
 
   const fetchStaff = useCallback(async () => {
+    setLoadError(null);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
@@ -70,6 +72,7 @@ export default function StaffManagementPage() {
       }
     } catch (err) {
       console.error("Error loading staff:", err);
+      setLoadError(userFacingErrorMessage(err, "We couldn’t load the staff directory."));
     } finally {
       setLoading(false);
     }
@@ -193,6 +196,8 @@ export default function StaffManagementPage() {
                     Loading clinic staff directory...
                   </td>
                 </tr>
+              ) : loadError ? (
+                <tr><td colSpan={6} className="p-6"><div role="alert" className="alert alert-error"><span>{loadError}</span><button className="btn btn-outline btn-sm" onClick={() => { setLoading(true); void fetchStaff(); }}>Retry</button></div></td></tr>
               ) : (
                 pageStaff.map((s) => (
                   <tr key={s.id} className="hover:bg-base-200/50 transition">

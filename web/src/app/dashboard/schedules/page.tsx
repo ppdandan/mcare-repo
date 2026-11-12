@@ -16,6 +16,7 @@ export default function SchedulesPage() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [currentRole, setCurrentRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [weeklyDay, setWeeklyDay] = useState("1");
   const [weeklyStart, setWeeklyStart] = useState("09:00");
   const [weeklyEnd, setWeeklyEnd] = useState("17:00");
@@ -49,6 +50,7 @@ export default function SchedulesPage() {
   const fetchDoctorSchedule = useCallback(async () => {
     if (!selectedDoctorId) return;
     setLoading(true);
+    setLoadError(null);
     try {
       const [schedRes, excRes] = await Promise.all([
         supabase
@@ -67,8 +69,10 @@ export default function SchedulesPage() {
 
       if (schedRes.data) setSchedules(schedRes.data as DoctorSchedule[]);
       if (excRes.data) setExceptions(excRes.data as ScheduleException[]);
+      if (schedRes.error || excRes.error) throw schedRes.error || excRes.error;
     } catch (err) {
       console.error("Error fetching schedules:", err);
+      setLoadError(userFacingErrorMessage(err, "We couldn’t load the doctor schedule."));
     } finally {
       setLoading(false);
     }
@@ -226,6 +230,8 @@ export default function SchedulesPage() {
 
           {loading ? (
             <div className="py-12 text-center text-xs text-base-content/60">Loading hours...</div>
+          ) : loadError ? (
+            <div role="alert" className="alert alert-error"><span>{loadError}</span><button className="btn btn-outline btn-sm" onClick={() => void fetchDoctorSchedule()}>Retry</button></div>
           ) : schedules.length === 0 ? (
             <div className="py-12 text-center text-xs text-base-content/60">
               No recurring weekly hours found for this physician.
@@ -288,6 +294,8 @@ export default function SchedulesPage() {
 
           {loading ? (
             <div className="py-12 text-center text-xs text-base-content/60">Loading exceptions...</div>
+          ) : loadError ? (
+            <div role="alert" className="alert alert-error"><span>{loadError}</span><button className="btn btn-outline btn-sm" onClick={() => void fetchDoctorSchedule()}>Retry</button></div>
           ) : exceptions.length === 0 ? (
             <div className="py-12 text-center text-xs text-base-content/60 bg-base-200/50 rounded-xl border border-dashed border-base-300">
               No upcoming leaves or blocked times recorded for this physician.
@@ -321,7 +329,7 @@ export default function SchedulesPage() {
                     className="text-base-content/60 hover:text-red-600 font-bold p-1"
                     title="Remove leave block"
                   >
-                    ✕
+                    <Icon name="close" size={16} />
                   </button>
                 </div>
               ))}
