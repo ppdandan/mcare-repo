@@ -4,12 +4,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
   RefreshControl,
-  ActivityIndicator,
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,6 +18,7 @@ import { supabase } from '@/lib/supabase';
 import { colors as Colors } from '@/theme';
 import { formatManilaDateTime, formatManilaTime } from '@m-care/shared';
 import type { Inquiry } from '@m-care/shared';
+import { Badge, Button, Card, EmptyState, LoadingState, ScreenHeader, TextField } from '@/components/ui';
 
 export default function InquiryScreen() {
   const router = useRouter();
@@ -122,22 +121,14 @@ export default function InquiryScreen() {
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
             <Text style={styles.backBtnText}>← Back</Text>
           </TouchableOpacity>
-          <View style={styles.headerTitleRow}>
-            <Text style={styles.title}>Clinic Inquiry & Support</Text>
-            <TouchableOpacity
-              onPress={() => setShowForm(!showForm)}
-              style={styles.newBtn}
-            >
-              <Text style={styles.newBtnText}>{showForm ? 'Cancel' : '+ New Message'}</Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.subtitle}>
-            Direct messaging with M-Care clinic reception desk
-          </Text>
+          <ScreenHeader title="Clinic Inquiry & Support" subtitle="Direct messaging with M-Care clinic reception desk" action={(
+            <Button variant="outline" onPress={() => setShowForm(!showForm)}>{showForm ? 'Cancel' : '+ New Message'}</Button>
+          )} />
         </View>
 
         <ScrollView
           contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -148,79 +139,31 @@ export default function InquiryScreen() {
         >
           {/* New Inquiry Compose Box */}
           {showForm && (
-            <View style={styles.formCard}>
+            <Card style={styles.formCard}>
               <Text style={styles.formHeading}>Compose Inquiry to Clinic</Text>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Subject</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="e.g. Question on Ultrasound fasting requirements"
-                  value={subject}
-                  onChangeText={setSubject}
-                 placeholderTextColor={Colors.textLight} />
-              </View>
+              <TextField label="Subject" containerStyle={styles.inputGroup} value={subject} onChangeText={setSubject} />
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Your Message</Text>
-                <TextInput
-                  style={[styles.input, styles.textArea]}
-                  placeholder="Type your question or inquiry here..."
-                  value={message}
-                  onChangeText={setMessage}
-                  multiline
-                  numberOfLines={4}
-                 placeholderTextColor={Colors.textLight} />
-              </View>
+              <TextField label="Your Message" containerStyle={styles.inputGroup} value={message} onChangeText={setMessage} multiline numberOfLines={4} />
 
-              <TouchableOpacity
-                style={[styles.sendBtn, submitting && styles.btnDisabled]}
-                onPress={handleSendInquiry}
-                disabled={submitting}
-              >
-                {submitting ? (
-                  <ActivityIndicator color={Colors.background} />
-                ) : (
-                  <Text style={styles.sendBtnText}>Send Message to Clinic</Text>
-                )}
-              </TouchableOpacity>
-            </View>
+              <Button onPress={handleSendInquiry} loading={submitting} disabled={submitting}>Send Message to Clinic</Button>
+            </Card>
           )}
 
           {/* Messages List */}
           {loading ? (
-            <View style={styles.centerBox}>
-              <ActivityIndicator size="large" color={Colors.primary} />
-              <Text style={styles.loadingText}>Loading inquiries...</Text>
-            </View>
+            <LoadingState label="Loading inquiries..." />
           ) : inquiries.length === 0 ? (
-            <View style={styles.emptyCard}>
-              <Ionicons name="chatbubble-ellipses-outline" size={40} color={Colors.primary} style={styles.emptyIcon} />
-              <Text style={styles.emptyTitle}>No Inquiries Sent</Text>
-              <Text style={styles.emptyText}>
-                Have a question about a service, procedure preparation, or scheduling?
-                Tap "+ New Message" to send a direct message to our staff.
-              </Text>
-            </View>
+            <EmptyState
+              title="No Inquiries Sent"
+              description={'Have a question about a service, procedure preparation, or scheduling? Tap "+ New Message" to send a direct message to our staff.'}
+            />
           ) : (
             inquiries.map((inq) => (
-              <View key={inq.id} style={styles.card}>
+              <Card key={inq.id} style={styles.card}>
                 <View style={styles.cardHeader}>
                   <Text style={styles.cardSubject}>{inq.subject}</Text>
-                  <View
-                    style={[
-                      styles.statusPill,
-                      inq.status === 'replied'
-                        ? styles.pillReplied
-                        : inq.status === 'closed'
-                        ? styles.pillClosed
-                        : styles.pillOpen,
-                    ]}
-                  >
-                    <Text style={styles.statusPillText}>
-                      {inq.status.toUpperCase()}
-                    </Text>
-                  </View>
+                  <Badge tone={inq.status === 'replied' ? 'success' : inq.status === 'closed' ? 'neutral' : 'warning'}>{inq.status.toUpperCase()}</Badge>
                 </View>
 
                 <Text style={styles.cardDate}>
@@ -246,7 +189,7 @@ export default function InquiryScreen() {
                     </Text>
                   </View>
                 )}
-              </View>
+              </Card>
             ))
           )}
         </ScrollView>

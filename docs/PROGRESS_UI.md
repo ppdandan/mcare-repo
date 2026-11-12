@@ -93,3 +93,8 @@
 
 - Restyled the existing account-deletion panel with the shared card, password field, and destructive button. Removed the password example placeholder and provided a nonvisual accessible name for the password input. Preserved the confirmation alert, password requirement, Edge Function call, sign-out, and route behavior. There is no standalone deletion route in the mobile app.
 - `cd mobile && npx tsc --noEmit` passed. Group complete.
+
+### Step 3 — Clinic inquiry
+
+- Applied the shared header, buttons, text fields, cards, badges, and loading/empty states to the existing inquiry screen. Removed its example input placeholders and kept the inquiry queries, realtime subscription, submission flow, and message text intact. Added flexible centered title support to the shared screen header for the existing centered welcome screen.
+- `cd mobile && npx tsc --noEmit` passed. Group complete.
