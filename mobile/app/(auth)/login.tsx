@@ -7,7 +7,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -18,6 +17,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { colors as Colors } from '@/theme';
 import { Ionicons } from '@expo/vector-icons';
+import { Button, Card, ScreenHeader, TextField } from '@/components/ui';
 
 type LoginMode = 'password' | 'otp';
 
@@ -127,14 +127,15 @@ export default function LoginScreen() {
               resizeMode="contain"
               style={{ width: 80, height: 93 }}
             />
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>M-Care OB-GYN & Ultrasound Clinic</Text>
+            <ScreenHeader title="Welcome Back" subtitle="M-Care OB-GYN & Ultrasound Clinic" centered />
             <Text style={styles.patientBadge}>Patient Portal</Text>
           </View>
 
           {/* Login Mode Selector Tabs */}
           <View style={styles.tabContainer}>
             <TouchableOpacity
+              accessibilityRole="tab"
+              accessibilityState={{ selected: mode === 'password' }}
               style={[styles.tabButton, mode === 'password' && styles.tabButtonActive]}
               onPress={() => {
                 setMode('password');
@@ -155,6 +156,8 @@ export default function LoginScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
+              accessibilityRole="tab"
+              accessibilityState={{ selected: mode === 'otp' }}
               style={[styles.tabButton, mode === 'otp' && styles.tabButtonActive]}
               onPress={() => {
                 setMode('otp');
@@ -176,112 +179,82 @@ export default function LoginScreen() {
           </View>
 
           {/* Form Card */}
-          <View style={styles.card}>
+          <Card style={styles.card}>
             {errorMessage && (
-              <View style={styles.errorBox}>
+              <View accessibilityRole="alert" style={styles.errorBox}>
                 <Ionicons name="alert-circle" size={18} color={Colors.error} style={{ marginRight: spacing.sm }} />
                 <Text style={styles.errorText}>{errorMessage}</Text>
               </View>
             )}
 
             {successMessage && (
-              <View style={styles.successBox}>
+              <View accessibilityRole="summary" style={styles.successBox}>
                 <Ionicons name="checkmark-circle" size={18} color={Colors.success} style={{ marginRight: spacing.sm }} />
                 <Text style={styles.successText}>{successMessage}</Text>
               </View>
             )}
 
             {/* Email Field with email keyboard & auto-trim */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email Address</Text>
-              <View style={styles.inputWrapper}>
-                <Ionicons name="mail-outline" size={19} color={Colors.textLight} style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="e.g. bea.alonzo@example.com"
-                  placeholderTextColor={Colors.textLight}
-                  value={email}
-                  onChangeText={(text) => setEmail(text.trim())}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  autoComplete="email"
-                  textContentType="emailAddress"
-                  returnKeyType={mode === 'password' ? 'next' : otpSent ? 'next' : 'send'}
-                  onSubmitEditing={() => {
-                    if (mode === 'password') {
-                      passwordInputRef.current?.focus();
-                    } else if (otpSent) {
-                      otpInputRef.current?.focus();
-                    } else {
-                      handleRequestOtp();
-                    }
-                  }}
-                  blurOnSubmit={false}
-                />
-              </View>
-            </View>
+            <TextField
+              label="Email Address"
+              containerStyle={styles.inputGroup}
+              leadingIcon={<Ionicons name="mail-outline" size={19} color={Colors.textLight} />}
+              value={email}
+              onChangeText={(text) => setEmail(text.trim())}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="email"
+              textContentType="emailAddress"
+              returnKeyType={mode === 'password' ? 'next' : otpSent ? 'next' : 'send'}
+              onSubmitEditing={() => {
+                if (mode === 'password') {
+                  passwordInputRef.current?.focus();
+                } else if (otpSent) {
+                  otpInputRef.current?.focus();
+                } else {
+                  handleRequestOtp();
+                }
+              }}
+              blurOnSubmit={false}
+            />
 
             {/* Password Flow */}
             {mode === 'password' && (
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Password</Text>
-                <View style={styles.passwordContainer}>
-                  <Ionicons name="lock-closed-outline" size={19} color={Colors.textLight} style={styles.inputIcon} />
-                  <TextInput
-                    ref={passwordInputRef}
-                    style={styles.passwordInput}
-                    placeholder="Enter your password"
-                    placeholderTextColor={Colors.textLight}
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!showPassword}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    textContentType="password"
-                    returnKeyType="go"
-                    onSubmitEditing={handlePasswordLogin}
-                  />
-                  <TouchableOpacity
-                    onPress={() => setShowPassword(!showPassword)}
-                    style={styles.eyeButton}
-                    activeOpacity={0.7}
-                    hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-                  >
-                    <Ionicons
-                      name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                      size={22}
-                      color={Colors.primary}
-                    />
-                  </TouchableOpacity>
-                </View>
-
-                {/* Forgot Password Link */}
+                <TextField
+                  label="Password"
+                  inputRef={passwordInputRef}
+                  leadingIcon={<Ionicons name="lock-closed-outline" size={19} color={Colors.textLight} />}
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  textContentType="password"
+                  returnKeyType="go"
+                  onSubmitEditing={handlePasswordLogin}
+                  trailing={(
+                    <TouchableOpacity
+                      accessibilityRole="button"
+                      accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                      onPress={() => setShowPassword(!showPassword)}
+                      style={styles.eyeButton}
+                      activeOpacity={0.7}
+                      hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                    >
+                      <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={22} color={Colors.primary} />
+                    </TouchableOpacity>
+                  )}
+                />
                 <View style={styles.forgotRow}>
-                  <TouchableOpacity
-                    onPress={() => router.push('/(auth)/forgot-password')}
-                    activeOpacity={0.7}
-                  >
+                  <TouchableOpacity accessibilityRole="link" onPress={() => router.push('/(auth)/forgot-password')} activeOpacity={0.7}>
                     <Text style={styles.forgotText}>Forgot password?</Text>
                   </TouchableOpacity>
                 </View>
-
-                {/* Submit Button */}
-                <TouchableOpacity
-                  style={[styles.button, loading && styles.buttonDisabled]}
-                  onPress={handlePasswordLogin}
-                  disabled={loading}
-                  activeOpacity={0.85}
-                >
-                  {loading ? (
-                    <View style={styles.loadingRow}>
-                      <ActivityIndicator color={Colors.textOnPrimary} size="small" />
-                      <Text style={[styles.buttonText, { marginLeft: spacing.sm }]}>Signing in...</Text>
-                    </View>
-                  ) : (
-                    <Text style={styles.buttonText}>Sign In</Text>
-                  )}
-                </TouchableOpacity>
+                <Button onPress={handlePasswordLogin} loading={loading} disabled={loading}>
+                  {loading ? 'Signing in...' : 'Sign In'}
+                </Button>
               </View>
             )}
 
@@ -290,67 +263,32 @@ export default function LoginScreen() {
               <View style={styles.inputGroup}>
                 {otpSent ? (
                   <>
-                    <Text style={styles.label}>Enter 6-Digit OTP Code</Text>
-                    <View style={styles.inputWrapper}>
-                      <Ionicons
-                        name="keypad-outline"
-                        size={19}
-                        color={Colors.textLight}
-                        style={styles.inputIcon}
-                      />
-                      <TextInput
-                        ref={otpInputRef}
-                        style={[styles.input, { letterSpacing: 4, fontWeight: '700' }]}
-                        placeholder="123456"
-                        placeholderTextColor={Colors.textLight}
-                        value={otpCode}
-                        onChangeText={setOtpCode}
-                        keyboardType="number-pad"
-                        maxLength={8}
-                        returnKeyType="go"
-                        onSubmitEditing={handleVerifyOtp}
-                      />
-                    </View>
-
+                    <TextField
+                      label="Enter 6-Digit OTP Code"
+                      inputRef={otpInputRef}
+                      leadingIcon={<Ionicons name="keypad-outline" size={19} color={Colors.textLight} />}
+                      style={{ letterSpacing: 4, fontWeight: '700' }}
+                      value={otpCode}
+                      onChangeText={setOtpCode}
+                      keyboardType="number-pad"
+                      maxLength={8}
+                      returnKeyType="go"
+                      onSubmitEditing={handleVerifyOtp}
+                    />
                     <View style={styles.resendRow}>
                       <Text style={styles.resendLabel}>Didn't receive the code? </Text>
-                      <TouchableOpacity onPress={handleRequestOtp} disabled={loading}>
+                      <TouchableOpacity accessibilityRole="link" onPress={handleRequestOtp} disabled={loading}>
                         <Text style={styles.resendLink}>Resend OTP</Text>
                       </TouchableOpacity>
                     </View>
-
-                    <TouchableOpacity
-                      style={[styles.button, loading && styles.buttonDisabled]}
-                      onPress={handleVerifyOtp}
-                      disabled={loading}
-                      activeOpacity={0.85}
-                    >
-                      {loading ? (
-                        <View style={styles.loadingRow}>
-                          <ActivityIndicator color={Colors.textOnPrimary} size="small" />
-                          <Text style={[styles.buttonText, { marginLeft: spacing.sm }]}>Verifying...</Text>
-                        </View>
-                      ) : (
-                        <Text style={styles.buttonText}>Verify & Sign In</Text>
-                      )}
-                    </TouchableOpacity>
+                    <Button onPress={handleVerifyOtp} loading={loading} disabled={loading}>
+                      {loading ? 'Verifying...' : 'Verify & Sign In'}
+                    </Button>
                   </>
                 ) : (
-                  <TouchableOpacity
-                    style={[styles.button, loading && styles.buttonDisabled]}
-                    onPress={handleRequestOtp}
-                    disabled={loading}
-                    activeOpacity={0.85}
-                  >
-                    {loading ? (
-                      <View style={styles.loadingRow}>
-                        <ActivityIndicator color={Colors.textOnPrimary} size="small" />
-                        <Text style={[styles.buttonText, { marginLeft: spacing.sm }]}>Sending code...</Text>
-                      </View>
-                    ) : (
-                      <Text style={styles.buttonText}>Send One-Time Code</Text>
-                    )}
-                  </TouchableOpacity>
+                  <Button onPress={handleRequestOtp} loading={loading} disabled={loading}>
+                    {loading ? 'Sending code...' : 'Send One-Time Code'}
+                  </Button>
                 )}
               </View>
             )}
@@ -358,7 +296,7 @@ export default function LoginScreen() {
             {/* Registration Link */}
             <View style={styles.registerPrompt}>
               <Text style={styles.promptText}>New patient at M-Care? </Text>
-              <TouchableOpacity onPress={() => router.push('/(auth)/register')} activeOpacity={0.7}>
+              <TouchableOpacity accessibilityRole="link" onPress={() => router.push('/(auth)/register')} activeOpacity={0.7}>
                 <Text style={styles.registerLink}>Create Account</Text>
               </TouchableOpacity>
             </View>
@@ -373,7 +311,7 @@ export default function LoginScreen() {
                 Clinic staff & doctors sign in via the reception web terminal.
               </Text>
             </View>
-          </View>
+          </Card>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -473,16 +411,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   card: {
-    backgroundColor: Colors.background,
-    borderRadius: radius.xl,
-    padding: spacing['2xl'],
-    borderWidth: 1,
-    borderColor: Colors.brandSoft,
-    shadowColor: Colors.primaryDark,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.08,
-    shadowRadius: 18,
-    elevation: 4,
+    padding: spacing.lg,
   },
   errorBox: {
     flexDirection: 'row',

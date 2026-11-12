@@ -4,10 +4,8 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -17,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { colors as Colors } from '@/theme';
+import { Button, Card, ScreenHeader, TextField } from '@/components/ui';
 
 const BLOOD_TYPES = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'Unknown'];
 
@@ -112,148 +111,62 @@ export default function RegisterScreen() {
           {/* Header */}
           <View style={styles.header}>
             <TouchableOpacity
+              accessibilityRole="button"
               onPress={() => router.back()}
               style={styles.backButton}
             >
               <Text style={styles.backButtonText}>← Back</Text>
             </TouchableOpacity>
 
-            <Text style={styles.title}>Patient Registration</Text>
-            <Text style={styles.subtitle}>
-              M-Care OB-GYN Clinic & Ultrasound Record Setup
-            </Text>
+            <ScreenHeader title="Patient Registration" subtitle="M-Care OB-GYN Clinic & Ultrasound Record Setup" />
           </View>
 
           {errorMsg && (
-            <View style={styles.errorBox}>
+            <View accessibilityRole="alert" style={styles.errorBox}>
               <Text style={styles.errorText}>{errorMsg}</Text>
             </View>
           )}
 
           {/* Section 1: Account & Identity */}
-          <View style={styles.sectionCard}>
+          <Card style={styles.sectionCard}>
             <Text style={styles.sectionTitle}>1. Account Information</Text>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Full Name *</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g. Maria Clara Santos"
-                placeholderTextColor={Colors.textLight}
-                value={fullName}
-                onChangeText={setFullName}
-              />
-            </View>
+            <TextField label="Full Name *" containerStyle={styles.inputGroup} value={fullName} onChangeText={setFullName} />
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email Address *</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g. maria@example.com"
-                placeholderTextColor={Colors.textLight}
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            </View>
+            <TextField label="Email Address *" containerStyle={styles.inputGroup} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Mobile Phone Number *</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g. 0917 123 4567"
-                placeholderTextColor={Colors.textLight}
-                value={phone}
-                onChangeText={setPhone}
-                keyboardType="phone-pad"
-              />
-            </View>
+            <TextField label="Mobile Phone Number *" containerStyle={styles.inputGroup} value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Password (minimum 6 characters) *</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Create a strong password"
-                placeholderTextColor={Colors.textLight}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-              />
-            </View>
+            <TextField label="Password (minimum 6 characters) *" containerStyle={styles.inputGroup} value={password} onChangeText={setPassword} secureTextEntry />
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Confirm Password *</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Re-type your password"
-                placeholderTextColor={Colors.textLight}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry
-              />
-            </View>
-          </View>
+            <TextField label="Confirm Password *" containerStyle={styles.inputGroup} value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry />
+          </Card>
 
           {/* Section 2: Personal Details */}
-          <View style={styles.sectionCard}>
+          <Card style={styles.sectionCard}>
             <Text style={styles.sectionTitle}>2. Personal Profile</Text>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Date of Birth (YYYY-MM-DD)</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g. 1996-05-18"
-                placeholderTextColor={Colors.textLight}
-                value={dateOfBirth}
-                onChangeText={setDateOfBirth}
-              />
-            </View>
+            <TextField label="Date of Birth (YYYY-MM-DD)" containerStyle={styles.inputGroup} value={dateOfBirth} onChangeText={setDateOfBirth} />
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Home Address</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Barangay, City/Town, Province"
-                placeholderTextColor={Colors.textLight}
-                value={address}
-                onChangeText={setAddress}
-              />
-            </View>
-          </View>
+            <TextField label="Home Address" containerStyle={styles.inputGroup} value={address} onChangeText={setAddress} />
+          </Card>
 
           {/* Section 3: Clinical & Emergency Information */}
-          <View style={styles.sectionCard}>
+          <Card style={styles.sectionCard}>
             <Text style={styles.sectionTitle}>3. Clinical & Emergency Details</Text>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Emergency Contact Person & Relationship</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g. Juan Santos (Spouse)"
-                placeholderTextColor={Colors.textLight}
-                value={emergencyContactName}
-                onChangeText={setEmergencyContactName}
-              />
-            </View>
+            <TextField label="Emergency Contact Person & Relationship" containerStyle={styles.inputGroup} value={emergencyContactName} onChangeText={setEmergencyContactName} />
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Emergency Contact Phone</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g. 0918 987 6543"
-                placeholderTextColor={Colors.textLight}
-                value={emergencyContactPhone}
-                onChangeText={setEmergencyContactPhone}
-                keyboardType="phone-pad"
-              />
-            </View>
+            <TextField label="Emergency Contact Phone" containerStyle={styles.inputGroup} value={emergencyContactPhone} onChangeText={setEmergencyContactPhone} keyboardType="phone-pad" />
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Blood Type</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow}>
                 {BLOOD_TYPES.map((bt) => (
                   <TouchableOpacity
+                    accessibilityRole="button"
+                    accessibilityLabel={`Blood Type ${bt}`}
+                    accessibilityState={{ selected: bloodType === bt }}
                     key={bt}
                     style={[styles.chip, bloodType === bt && styles.chipActive]}
                     onPress={() => setBloodType(bt)}
@@ -268,34 +181,16 @@ export default function RegisterScreen() {
               </ScrollView>
             </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Known Drug or Food Allergies</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g. Penicillin, Aspirin, or None"
-                placeholderTextColor={Colors.textLight}
-                value={allergies}
-                onChangeText={setAllergies}
-              />
-            </View>
+            <TextField label="Known Drug or Food Allergies" containerStyle={styles.inputGroup} value={allergies} onChangeText={setAllergies} />
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Obstetric / Gynecologic Notes</Text>
-              <TextInput
-                style={[styles.input, styles.multilineInput]}
-                placeholder="e.g. First pregnancy (G1P0), previous cesarean, or irregular cycle"
-                placeholderTextColor={Colors.textLight}
-                value={obstetricHistory}
-                onChangeText={setObstetricHistory}
-                multiline
-                numberOfLines={3}
-              />
-            </View>
-          </View>
+            <TextField label="Obstetric / Gynecologic Notes" containerStyle={styles.inputGroup} value={obstetricHistory} onChangeText={setObstetricHistory} multiline numberOfLines={3} />
+          </Card>
 
           {/* Section 4: Philippine Data Privacy Act Consent */}
-          <View style={styles.consentCard}>
+          <Card style={styles.consentCard}>
             <TouchableOpacity
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: privacyConsent }}
               style={styles.checkboxContainer}
               onPress={() => setPrivacyConsent(!privacyConsent)}
               activeOpacity={0.8}
@@ -321,21 +216,10 @@ export default function RegisterScreen() {
                 </Text>
               </View>
             </TouchableOpacity>
-          </View>
+          </Card>
 
           {/* Submit Button */}
-          <TouchableOpacity
-            style={[styles.submitButton, loading && styles.buttonDisabled]}
-            onPress={handleRegister}
-            disabled={loading}
-            activeOpacity={0.85}
-          >
-            {loading ? (
-              <ActivityIndicator color={Colors.textOnPrimary} />
-            ) : (
-              <Text style={styles.submitButtonText}>Create Patient Account</Text>
-            )}
-          </TouchableOpacity>
+          <Button onPress={handleRegister} loading={loading} disabled={loading}>Create Patient Account</Button>
 
           <View style={styles.footerPrompt}>
             <Text style={styles.footerText}>Already registered? </Text>
@@ -399,17 +283,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   sectionCard: {
-    backgroundColor: Colors.background,
-    borderRadius: radius.xl,
-    padding: spacing.lg,
     marginBottom: spacing.lg,
-    borderWidth: 1,
-    borderColor: Colors.brandSoft,
-    shadowColor: Colors.primaryDark,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.04,
-    shadowRadius: 10,
-    elevation: 2,
   },
   sectionTitle: {
     fontSize: typography.body.fontSize,

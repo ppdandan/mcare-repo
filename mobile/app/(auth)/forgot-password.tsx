@@ -3,10 +3,8 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
@@ -14,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { colors as Colors } from '@/theme';
+import { Button, Card, ScreenHeader, TextField } from '@/components/ui';
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
@@ -39,18 +38,15 @@ export default function ForgotPasswordScreen() {
       >
         <View style={styles.content}>
           <TouchableOpacity
+            accessibilityRole="button"
             onPress={() => router.back()}
             style={styles.backButton}
           >
             <Text style={styles.backButtonText}>← Back to Sign In</Text>
           </TouchableOpacity>
 
-          <View style={styles.card}>
-            <Text style={styles.title}>Reset Password</Text>
-            <Text style={styles.description}>
-              Enter the email address registered with your M-Care patient account.
-              We will send you a secure link to reset your password.
-            </Text>
+          <Card style={styles.card}>
+            <ScreenHeader title="Reset Password" subtitle="Enter the email address registered with your M-Care patient account. We will send you a secure link to reset your password." />
 
             {submitted ? (
               <View style={styles.successBox}>
@@ -59,43 +55,16 @@ export default function ForgotPasswordScreen() {
                   A password reset link has been dispatched to {email}. Follow the
                   link in the email to set a new password.
                 </Text>
-                <TouchableOpacity
-                  style={styles.returnButton}
-                  onPress={() => router.replace('/(auth)/login')}
-                >
-                  <Text style={styles.returnButtonText}>Return to Login</Text>
-                </TouchableOpacity>
+                <Button variant="secondary" onPress={() => router.replace('/(auth)/login')}>Return to Login</Button>
               </View>
             ) : (
               <>
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>Email Address</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="e.g. maria@example.com"
-                    placeholderTextColor={Colors.textLight}
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                  />
-                </View>
+                <TextField label="Email Address" containerStyle={styles.inputGroup} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
 
-                <TouchableOpacity
-                  style={[styles.button, loading && styles.buttonDisabled]}
-                  onPress={handleSubmit}
-                  disabled={loading || !email.trim()}
-                  activeOpacity={0.85}
-                >
-                  {loading ? (
-                    <ActivityIndicator color={Colors.textOnPrimary} />
-                  ) : (
-                    <Text style={styles.buttonText}>Send Reset Link</Text>
-                  )}
-                </TouchableOpacity>
+                <Button onPress={handleSubmit} loading={loading} disabled={loading || !email.trim()}>Send Reset Link</Button>
               </>
             )}
-          </View>
+          </Card>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -126,16 +95,7 @@ const styles = StyleSheet.create({
     color: Colors.primary,
   },
   card: {
-    backgroundColor: Colors.background,
-    borderRadius: radius.xl,
-    padding: spacing['2xl'],
-    borderWidth: 1,
-    borderColor: Colors.brandSoft,
-    shadowColor: Colors.primaryDark,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.06,
-    shadowRadius: 16,
-    elevation: 3,
+    padding: spacing.lg,
   },
   title: {
     fontSize: typography.title.fontSize,

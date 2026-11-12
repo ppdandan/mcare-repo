@@ -3,7 +3,6 @@ import React from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
   ScrollView,
   Image,
@@ -11,6 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { colors as Colors } from '@/theme';
+import { Button, Card, ScreenHeader } from '@/components/ui';
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -26,13 +26,12 @@ export default function WelcomeScreen() {
             resizeMode="contain"
             style={{ width: 88, height: 103 }}
           />
-          <Text style={styles.clinicTitle}>M-CARE</Text>
-          <Text style={styles.clinicSubtitle}>OB-GYN Clinic & Ultrasound</Text>
+          <ScreenHeader title="M-CARE" subtitle="OB-GYN Clinic & Ultrasound" centered />
           <Text style={styles.location}>Balibago, Angeles City, Pampanga</Text>
         </View>
 
         {/* Hero Card */}
-        <View style={styles.heroCard}>
+        <Card style={styles.heroCard}>
           <Text style={styles.heroHeading}>
             Compassionate Care for Every Stage of Womanhood
           </Text>
@@ -56,25 +55,13 @@ export default function WelcomeScreen() {
               <Text style={styles.bulletText}>Strict Data Privacy Act of 2012 protection</Text>
             </View>
           </View>
-        </View>
+        </Card>
 
         {/* Actions */}
         <View style={styles.actionContainer}>
-          <TouchableOpacity
-            style={styles.primaryButton}
-            onPress={() => router.push('/(auth)/login')}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.primaryButtonText}>Sign In to My Account</Text>
-          </TouchableOpacity>
+          <Button onPress={() => router.push('/(auth)/login')}>Sign In to My Account</Button>
 
-          <TouchableOpacity
-            style={styles.secondaryButton}
-            onPress={() => router.push('/(auth)/register')}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.secondaryButtonText}>Create New Patient Account</Text>
-          </TouchableOpacity>
+          <Button variant="outline" onPress={() => router.push('/(auth)/register')}>Create New Patient Account</Button>
 
           <Text style={styles.privacyNote}>
             Republic Act No. 10173 • Philippine Data Privacy Act Compliant
@@ -139,16 +126,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   heroCard: {
-    backgroundColor: Colors.background,
-    borderRadius: radius.xl,
-    padding: spacing['2xl'],
-    borderWidth: 1,
-    borderColor: Colors.brandSoft,
-    shadowColor: Colors.primaryDark,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    elevation: 3,
+    marginBottom: spacing.xl,
   },
   heroHeading: {
     fontSize: typography.subhead.fontSize,
@@ -184,41 +162,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   actionContainer: {
-    marginTop: 0,
-    marginBottom: spacing.md,
-  },
-  primaryButton: {
-    backgroundColor: Colors.primary,
-    height: 52,
-    borderRadius: radius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.md,
-    shadowColor: Colors.primaryDark,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  primaryButtonText: {
-    color: Colors.background,
-    fontSize: typography.body.fontSize,
-    fontWeight: '700',
-  },
-  secondaryButton: {
-    backgroundColor: Colors.background,
-    height: 52,
-    borderRadius: radius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: Colors.primary,
-    marginBottom: spacing.lg,
-  },
-  secondaryButtonText: {
-    color: Colors.primary,
-    fontSize: typography.small.fontSize,
-    fontWeight: '700',
+    gap: spacing.md,
   },
   privacyNote: {
     fontSize: typography.caption.fontSize,

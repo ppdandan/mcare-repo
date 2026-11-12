@@ -49,3 +49,8 @@
 - Added dependency-free React Native `Button`, `Card`, `TextField`, `Badge`, `ScreenHeader`, `EmptyState`, `ErrorState`, `LoadingState`, and `ListRow` primitives. Buttons have four variants, pressed/disabled/loading states, accessibility state and a 48px minimum. Controls retain system font scaling and have explicit accessible roles/names where applicable.
 - Kept the existing safe-area provider and screen-level safe areas. The login screen and app splash use `assets/logo.png`; the welcome and route splash screens already used it. Updated the native splash image reference to the same logo.
 - `cd mobile && npx tsc --noEmit` passed. Step 2 complete.
+
+### Step 3 — Login and signup
+
+- Restyled welcome, login, registration, and password reset with the shared mobile cards, buttons, headers, and labeled fields. Kept the password/OTP modes, validation, consent flow, Supabase-backed auth calls, and routes intact. Removed the auth form's example placeholders and added roles/state to the mode and consent controls. Existing logo and safe areas remain in use.
+- `cd mobile && npx tsc --noEmit` passed. Group complete.

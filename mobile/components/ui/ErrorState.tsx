@@ -2,10 +2,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import Button from './Button';
 import { colors, radius, spacing, typography } from '@/theme';
 
-export default function ErrorState({ title, message, onRetry, retryLabel = 'Retry' }: { title: string; message: string; onRetry: () => void; retryLabel?: string }) {
+export default function ErrorState({ title, message, onRetry, retryLabel = 'Retry' }: { title?: string; message: string; onRetry: () => void; retryLabel?: string }) {
   return (
     <View accessibilityRole="alert" style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
+      {title ? <Text style={styles.title}>{title}</Text> : null}
       <Text style={styles.message}>{message}</Text>
       <Button variant="outline" onPress={onRetry}>{retryLabel}</Button>
     </View>
