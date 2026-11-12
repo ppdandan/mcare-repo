@@ -83,3 +83,8 @@
 ### Step 3 — Settings
 
 - No standalone Settings route or settings panel exists in `mobile/app`. Existing account details live on the Profile screen and were restyled in the Profile group. No route or new setting was added.
+
+### Step 3 — Privacy policy
+
+- Restyled the policy surface with the shared card while retaining the system stack title, safe areas, selectable policy text, and the existing clinic-review draft wording. The policy text and data source were not changed.
+- `cd mobile && npx tsc --noEmit` passed. Group complete.
