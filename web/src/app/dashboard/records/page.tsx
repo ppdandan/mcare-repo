@@ -13,6 +13,7 @@ export default function MedicalRecordsPage() {
   const [doctors, setDoctors] = useState<DoctorWithProfile[]>([]);
   const [currentProfile, setCurrentProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [searchPatient, setSearchPatient] = useState("");
   const [recordSort, setRecordSort] = useState("newest");
   const [recordPage, setRecordPage] = useState(1);
@@ -49,6 +50,7 @@ export default function MedicalRecordsPage() {
   }, [supabase]);
 
   const fetchMedicalRecords = useCallback(async () => {
+    setLoadError(null);
     try {
       const { data, error } = await supabase
         .from("medical_records")
@@ -67,11 +69,13 @@ export default function MedicalRecordsPage() {
 
       if (error) {
         console.error("Error fetching medical records (RLS enforced):", error);
+        setLoadError(userFacingErrorMessage(error, "We couldn’t load medical records."));
       } else if (data) {
         setRecords(data as unknown as MedicalRecordWithDetails[]);
       }
     } catch (err) {
       console.error("Records error:", err);
+      setLoadError(userFacingErrorMessage(err, "We couldn’t load medical records."));
     } finally {
       setLoading(false);
     }
@@ -293,6 +297,8 @@ export default function MedicalRecordsPage() {
                     Loading medical records...
                   </td>
                 </tr>
+              ) : loadError ? (
+                <tr><td colSpan={7} className="p-6"><div role="alert" className="alert alert-error"><span>{loadError}</span><button className="btn btn-outline btn-sm" onClick={() => { setLoading(true); void fetchMedicalRecords(); }}>Retry</button></div></td></tr>
               ) : filteredRecords.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="text-center py-12 text-base-content/60">

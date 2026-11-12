@@ -12,6 +12,7 @@ export default function PatientsPage() {
   const [patientSort, setPatientSort] = useState("name");
   const [patientPage, setPatientPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   // Modals
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -37,6 +38,7 @@ export default function PatientsPage() {
   const supabase = createClient();
 
   const fetchPatients = useCallback(async () => {
+    setLoadError(null);
     try {
       const { data, error } = await supabase
         .from("patients")
@@ -48,11 +50,13 @@ export default function PatientsPage() {
 
       if (error) {
         console.error("Error fetching patients:", error);
+        setLoadError(userFacingErrorMessage(error, "We couldn’t load the patient directory."));
       } else if (data) {
         setPatients(data as unknown as PatientWithProfile[]);
       }
     } catch (err) {
       console.error("Error:", err);
+      setLoadError(userFacingErrorMessage(err, "We couldn’t load the patient directory."));
     } finally {
       setLoading(false);
     }
@@ -273,6 +277,8 @@ export default function PatientsPage() {
                     Loading patients directory...
                   </td>
                 </tr>
+              ) : loadError ? (
+                <tr><td colSpan={7} className="p-6"><div role="alert" className="alert alert-error"><span>{loadError}</span><button className="btn btn-outline btn-sm" onClick={() => { setLoading(true); void fetchPatients(); }}>Retry</button></div></td></tr>
               ) : filteredPatients.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="text-center py-12 text-base-content/60">

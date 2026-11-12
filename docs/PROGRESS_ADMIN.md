@@ -145,3 +145,7 @@ Clinic decision to confirm: the implemented role mapping follows existing permis
 ### Staff and inquiries tables (complete)
 
 - Staff directory now supports name/role sorting, search, and 10-row pagination. Patient inquiries supports patient/subject search, newest/oldest sorting, and pagination. Decorative phone/location emoji were replaced with text.
+
+### Patient and medical-record loading states (complete)
+
+- Patient and medical-record fetch failures now show safe, readable retry states in their tables; the existing Supabase/RLS behavior is unchanged.
