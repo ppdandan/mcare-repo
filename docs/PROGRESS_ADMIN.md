@@ -103,3 +103,8 @@ This is the baseline audit; implementation must not change existing RLS, booking
 
 - The schedules page can now add and remove recurring weekday shifts and continues to manage dated full-day/partial-day blocks. The write controls are shown to the selected doctor or an admin, matching the existing RLS policy; database access remains the authority.
 - The existing booking slot function and calendar already read `doctor_schedules` and `schedule_exceptions`; neither was changed. `npm --workspace=web exec -- tsc --noEmit` and `git diff --check` passed.
+
+### Analytics group (complete)
+
+- Added a new-patient registration card for the selected period and a chart that groups registrations by day for 7/30-day ranges and by month for 90-day/all-time ranges. The appointment trend chart now plots each status as its own series, in addition to total volume. Existing service and diagnosis analytics remain.
+- `npm --workspace=web exec -- tsc --noEmit` and `git diff --check` passed.

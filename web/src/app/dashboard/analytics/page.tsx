@@ -7,6 +7,7 @@ import { designTokens, formatManilaDate, manilaDateKey, manilaTimeKey, weekdayFo
 import {
   AreaChart,
   Area,
+  Line,
   BarChart,
   Bar,
   PieChart,
@@ -37,6 +38,7 @@ export default function AnalyticsPage() {
   const [appointments, setAppointments] = useState<AppointmentWithDetails[]>([]);
   const [diagnoses, setDiagnoses] = useState<{ diagnosis: string; count: number }[]>([]);
   const [patientCount, setPatientCount] = useState(0);
+  const [patientRegistrationDates, setPatientRegistrationDates] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState<"7d" | "30d" | "90d" | "all">("30d");
   const [isMounted, setIsMounted] = useState(false);
@@ -100,6 +102,12 @@ export default function AnalyticsPage() {
       // Fetch total patient count
       const { count } = await supabase.from("patients").select("id", { count: "exact", head: true });
       if (count !== null) setPatientCount(count);
+
+      const { data: patientRows } = await supabase.from("patients").select("profile:profiles!inner(created_at)");
+      setPatientRegistrationDates((patientRows ?? []).map((row) => {
+        const profile = Array.isArray(row.profile) ? row.profile[0] : row.profile;
+        return profile?.created_at;
+      }).filter((date): date is string => Boolean(date)));
     } catch (err) {
       console.error("Error fetching analytics data:", err);
     } finally {
@@ -134,14 +142,15 @@ export default function AnalyticsPage() {
   const noShowRate = totalVisits > 0 ? Math.round((noShowCount / totalVisits) * 100) : 0;
 
   // Chart Data 1: Appointment Trends Over Time
-  const trendMap: Record<string, { date: string; total: number; completed: number }> = {};
+  const trendMap: Record<string, { date: string; [key: string]: number | string }> = {};
   filteredAppointments.forEach((a) => {
     const key = formatManilaDate(a.start_time, { month: "numeric", day: "numeric" });
     if (!trendMap[key]) {
-      trendMap[key] = { date: key, total: 0, completed: 0 };
+      trendMap[key] = { date: key, total: 0, completed: 0, pending: 0, approved: 0, rescheduled: 0, cancelled: 0, no_show: 0 };
     }
-    trendMap[key].total += 1;
-    if (a.status === "completed") trendMap[key].completed += 1;
+    trendMap[key].total = Number(trendMap[key].total) + 1;
+    if (a.status === "completed") trendMap[key].completed = Number(trendMap[key].completed) + 1;
+    trendMap[key][a.status] = Number(trendMap[key][a.status] ?? 0) + 1;
   });
   const trendData = Object.values(trendMap);
 
@@ -194,6 +203,31 @@ export default function AnalyticsPage() {
     else if (h === 17) hourMap["5 PM"] += 1;
   });
   const busiestHoursData = Object.entries(hourMap).map(([hour, count]) => ({ hour, count }));
+
+  const registrationRange = patientRegistrationDates.filter((createdAt) => {
+    if (dateRange === "all") return true;
+    const days = (now.getTime() - new Date(createdAt).getTime()) / 86_400_000;
+    const limit = dateRange === "7d" ? 7 : dateRange === "30d" ? 30 : 90;
+    return days >= 0 && days <= limit;
+  });
+  const registrationBucket = dateRange === "7d" || dateRange === "30d" ? "day" : "month";
+  const registrationCounts: Record<string, number> = {};
+  registrationRange.forEach((createdAt) => {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Manila",
+      year: "numeric",
+      month: "2-digit",
+      ...(registrationBucket === "day" ? { day: "2-digit" } : {}),
+    }).formatToParts(new Date(createdAt));
+    const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+    const bucket = registrationBucket === "day"
+      ? `${values.year}-${values.month}-${values.day}`
+      : `${values.year}-${values.month}`;
+    registrationCounts[bucket] = (registrationCounts[bucket] ?? 0) + 1;
+  });
+  const patientRegistrationData = Object.entries(registrationCounts)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([period, patients]) => ({ period, patients }));
 
   // Admin access validation
   const isAdmin = profile?.role === "admin";
@@ -255,7 +289,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <div className="bg-base-100 p-5 rounded-xl border border-base-300 shadow-sm">
           <p className="text-xs font-bold text-base-content/60 uppercase tracking-wider">Total Appointments</p>
           <p className="text-3xl font-extrabold text-base-content mt-2">{totalVisits}</p>
@@ -285,7 +319,31 @@ export default function AnalyticsPage() {
           <p className="text-3xl font-extrabold text-purple-600 mt-2">{patientCount}</p>
           <p className="text-xs text-purple-700 mt-1">DPA 2012 Registered</p>
         </div>
+
+        <div className="bg-base-100 p-5 rounded-xl border border-base-300 shadow-sm">
+          <p className="text-xs font-bold text-base-content/60 uppercase tracking-wider">New Patients</p>
+          <p className="text-3xl font-extrabold text-primary mt-2">{registrationRange.length}</p>
+          <p className="text-xs text-base-content/60 mt-1">In selected period</p>
+        </div>
       </div>
+
+      <section className="bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm" aria-labelledby="patient-registration-chart-title">
+        <h2 id="patient-registration-chart-title" className="text-base font-bold text-base-content mb-1">Patient Registrations</h2>
+        <p className="text-xs text-base-content/60 mb-4">{registrationBucket === "day" ? "New patients per day" : "New patients per month"} based on profile creation date</p>
+        <div className="h-64 w-full">
+          {isMounted && patientRegistrationData.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={patientRegistrationData}>
+                <CartesianGrid strokeDasharray="3 3" stroke={colors.divider} />
+                <XAxis dataKey="period" stroke={colors.textMuted} fontSize={typography.caption.fontSize} />
+                <YAxis stroke={colors.textMuted} fontSize={typography.caption.fontSize} allowDecimals={false} />
+                <Tooltip />
+                <Bar dataKey="patients" name="New patients" fill={colors.brandStrong} radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : <div className="h-full flex items-center justify-center text-xs text-base-content/60">No patient registrations in this period.</div>}
+        </div>
+      </section>
 
       {/* Row 1: Appointment Trends & Status Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -297,7 +355,7 @@ export default function AnalyticsPage() {
           <div className="h-72 w-full">
             {isMounted && trendData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={trendData}>
+                  <AreaChart data={trendData}>
                   <defs>
                     <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor={colors.brand} stopOpacity={0.4} />
@@ -308,15 +366,18 @@ export default function AnalyticsPage() {
                   <XAxis dataKey="date" stroke={colors.textMuted} fontSize={typography.caption.fontSize} />
                   <YAxis stroke={colors.textMuted} fontSize={typography.caption.fontSize} allowDecimals={false} />
                   <Tooltip />
-                  <Area
-                    type="monotone"
-                    dataKey="total"
-                    name="Appointments Booked"
-                    stroke={colors.brand}
-                    strokeWidth={2}
-                    fillOpacity={1}
-                    fill="url(#colorTotal)"
-                  />
+                    <Area
+                      type="monotone"
+                      dataKey="total"
+                      name="Appointments"
+                      stroke={colors.brand}
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#colorTotal)"
+                    />
+                    {(["pending", "approved", "rescheduled", "completed", "cancelled", "no_show"] as const).map((status) => (
+                      <Line key={status} type="monotone" dataKey={status} name={status.replace("_", " ")} stroke={STATUS_COLORS[status]} strokeWidth={2} dot={false} />
+                    ))}
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
