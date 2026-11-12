@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
+import Icon from "@/components/Icon";
+import TableControls from "@/components/ui/TableControls";
 import type { Inquiry } from "@m-care/shared";
 import { formatManilaDateTime, userFacingErrorMessage } from "@m-care/shared";
 
@@ -20,8 +22,14 @@ export default function ReceptionInquiriesPage() {
   const [selectedInquiry, setSelectedInquiry] = useState<InquiryWithDetails | null>(null);
   const [replyText, setReplyText] = useState("");
   const [sending, setSending] = useState(false);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("newest");
+  const [page, setPage] = useState(1);
 
   const supabase = createClient();
+  const filteredInquiries = inquiries.filter((inquiry) => `${inquiry.subject} ${inquiry.patient?.profile?.full_name ?? ""}`.toLowerCase().includes(search.toLowerCase()));
+  const sortedInquiries = [...filteredInquiries].sort((a, b) => sort === "oldest" ? a.created_at.localeCompare(b.created_at) : b.created_at.localeCompare(a.created_at));
+  const pageInquiries = sortedInquiries.slice((page - 1) * 10, page * 10);
 
   const fetchInquiries = useCallback(async () => {
     try {
@@ -101,6 +109,11 @@ export default function ReceptionInquiriesPage() {
 
       {/* Inquiries Table */}
       <div className="bg-base-100 rounded-2xl border border-base-300 shadow-sm overflow-hidden">
+        <div className="relative p-3">
+          <Icon name="search" size={15} className="absolute left-6 top-6 text-base-content/60" />
+          <input aria-label="Search inquiries" value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} className="input input-bordered w-full pl-10 sm:max-w-md" />
+        </div>
+        <TableControls total={sortedInquiries.length} page={page} sortValue={sort} sortOptions={[{ value: "newest", label: "Newest first" }, { value: "oldest", label: "Oldest first" }]} onSortChange={(value) => { setSort(value); setPage(1); }} onPageChange={setPage} />
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
@@ -127,7 +140,7 @@ export default function ReceptionInquiriesPage() {
                   </td>
                 </tr>
               ) : (
-                inquiries.map((inq) => (
+                pageInquiries.map((inq) => (
                   <tr key={inq.id} className="hover:bg-primary/10 transition">
                     <td className="py-3.5 px-4 whitespace-nowrap text-base-content/70 font-mono">
                       {formatManilaDateTime(inq.created_at, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
@@ -136,7 +149,7 @@ export default function ReceptionInquiriesPage() {
                     <td className="py-3.5 px-4 font-bold text-base-content">
                       {inq.patient?.profile?.full_name || "Patient"}
                       <span className="block text-xs text-base-content/60 font-normal">
-                        📞 {inq.patient?.profile?.phone || "No phone"}
+                        Phone: {inq.patient?.profile?.phone || "No phone"}
                       </span>
                     </td>
 

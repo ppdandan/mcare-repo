@@ -141,3 +141,7 @@ Clinic decision to confirm: the implemented role mapping follows existing permis
 ### Dashboard overview (complete)
 
 - The overview retains its pending-approval task list and KPI cards. Its duplicate direct table-update approval/cancel buttons now link staff into the server-RPC approval workspace, so the overview cannot bypass appointment transition rules. Replaced decorative emoji with text labels.
+
+### Staff and inquiries tables (complete)
+
+- Staff directory now supports name/role sorting, search, and 10-row pagination. Patient inquiries supports patient/subject search, newest/oldest sorting, and pagination. Decorative phone/location emoji were replaced with text.

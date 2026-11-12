@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Icon from "@/components/Icon";
+import TableControls from "@/components/ui/TableControls";
 import type { Profile, UserRole } from "@m-care/shared";
 import { formatManilaDate, userFacingErrorMessage } from "@m-care/shared";
 
@@ -17,6 +18,9 @@ export default function StaffManagementPage() {
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [currentUserProfile, setCurrentUserProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("name");
+  const [page, setPage] = useState(1);
 
   // Modal
   const [showModal, setShowModal] = useState(false);
@@ -112,12 +116,15 @@ export default function StaffManagementPage() {
   };
 
   const isAdmin = currentUserProfile?.role === "admin";
+  const filteredStaff = staff.filter((member) => `${member.full_name} ${member.role} ${member.phone ?? ""}`.toLowerCase().includes(search.toLowerCase()));
+  const sortedStaff = [...filteredStaff].sort((a, b) => sort === "role" ? a.role.localeCompare(b.role) : a.full_name.localeCompare(b.full_name));
+  const pageStaff = sortedStaff.slice((page - 1) * 10, page * 10);
 
   if (!isAdmin && !loading) {
     return (
       <div className="bg-base-100 rounded-2xl p-12 text-center border border-base-300 shadow-sm">
         <div className="w-16 h-16 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-2xl mx-auto mb-4 font-bold">
-          🔒
+          <Icon name="lock" size={24} />
         </div>
         <h2 className="text-xl font-bold text-base-content">Administrator Access Restricted</h2>
         <p className="text-xs text-base-content/70 max-w-md mx-auto mt-2 leading-relaxed">
@@ -162,6 +169,11 @@ export default function StaffManagementPage() {
 
       {/* Staff Table */}
       <div className="bg-base-100 rounded-2xl border border-base-300 shadow-sm overflow-hidden">
+        <div className="relative p-3">
+          <Icon name="search" size={15} className="absolute left-6 top-6 text-base-content/60" />
+          <input aria-label="Search staff" value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} className="input input-bordered w-full pl-10 sm:max-w-md" />
+        </div>
+        <TableControls total={sortedStaff.length} page={page} sortValue={sort} sortOptions={[{ value: "name", label: "Name A to Z" }, { value: "role", label: "Role" }]} onSortChange={(value) => { setSort(value); setPage(1); }} onPageChange={setPage} />
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
@@ -182,7 +194,7 @@ export default function StaffManagementPage() {
                   </td>
                 </tr>
               ) : (
-                staff.map((s) => (
+                pageStaff.map((s) => (
                   <tr key={s.id} className="hover:bg-base-200/50 transition">
                     <td className="py-3.5 px-4">
                       <p className="font-bold text-base-content">{s.full_name}</p>
@@ -205,7 +217,7 @@ export default function StaffManagementPage() {
                       {s.doctor_details ? (
                         <div>
                           <p className="font-semibold text-base-content">{s.doctor_details.specialty}</p>
-                          <p className="text-xs text-base-content/60">📍 {s.doctor_details.room}</p>
+                          <p className="text-xs text-base-content/60">Room: {s.doctor_details.room}</p>
                         </div>
                       ) : (
                         <span className="text-base-content/60">Clinic Department</span>
