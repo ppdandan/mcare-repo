@@ -74,3 +74,8 @@
 
 - Replaced the transaction history states, cards, void indicator, and actions with shared loading/error/empty, card, badge, and button components. Important amounts and references are selectable. Preserved the transaction query, ordering, realtime subscription, formatting, and appointment link.
 - `cd mobile && npx tsc --noEmit` passed. Group complete.
+
+### Step 3 — Profile
+
+- Restyled profile details with shared text fields, cards, header, and actions; added a selected accessibility state to the blood-type choices and removed profile-field placeholders. Kept the account deletion panel for its own group. Preserved profile/patient reads and updates, save behavior, and sign-out routing.
+- `cd mobile && npx tsc --noEmit` passed. Group complete.

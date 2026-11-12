@@ -18,6 +18,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import { colors as Colors } from '@/theme';
+import { Button, Card, ScreenHeader, TextField } from '@/components/ui';
 
 const BLOOD_TYPES = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'Unknown'];
 
@@ -133,81 +134,39 @@ export default function ProfileScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Patient Profile & Health Details</Text>
-            <Text style={styles.subtitle}>
-              Keep your contact and emergency information up to date
-            </Text>
+            <ScreenHeader title="Patient Profile & Health Details" subtitle="Keep your contact and emergency information up to date" />
           </View>
 
           {/* Section 1: Basic Information */}
-          <View style={styles.card}>
+          <Card style={styles.card}>
             <Text style={styles.cardSectionTitle}>Account Details</Text>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Full Name</Text>
-              <TextInput
-                style={styles.input}
-                value={fullName}
-                onChangeText={setFullName}
-                placeholder="Full Name"
-               placeholderTextColor={Colors.textLight} />
-            </View>
+            <TextField label="Full Name" containerStyle={styles.inputGroup} value={fullName} onChangeText={setFullName} />
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Mobile Phone</Text>
-              <TextInput
-                style={styles.input}
-                value={phone}
-                onChangeText={setPhone}
-                placeholder="0917 123 4567"
-                keyboardType="phone-pad"
-               placeholderTextColor={Colors.textLight} />
-            </View>
+            <TextField label="Mobile Phone" containerStyle={styles.inputGroup} value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Home Address</Text>
-              <TextInput
-                style={styles.input}
-                value={address}
-                onChangeText={setAddress}
-                placeholder="Barangay, City, Province"
-               placeholderTextColor={Colors.textLight} />
-            </View>
-          </View>
+            <TextField label="Home Address" containerStyle={styles.inputGroup} value={address} onChangeText={setAddress} />
+          </Card>
 
           {/* Section 2: Clinical & Emergency Information */}
-          <View style={styles.card}>
+          <Card style={styles.card}>
             <Text style={styles.cardSectionTitle}>Clinical & Emergency Records</Text>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Emergency Contact Person</Text>
-              <TextInput
-                style={styles.input}
-                value={emergencyName}
-                onChangeText={setEmergencyName}
-                placeholder="Name and relationship"
-               placeholderTextColor={Colors.textLight} />
-            </View>
+            <TextField label="Emergency Contact Person" containerStyle={styles.inputGroup} value={emergencyName} onChangeText={setEmergencyName} />
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Emergency Phone</Text>
-              <TextInput
-                style={styles.input}
-                value={emergencyPhone}
-                onChangeText={setEmergencyPhone}
-                placeholder="Emergency Contact Phone"
-                keyboardType="phone-pad"
-               placeholderTextColor={Colors.textLight} />
-            </View>
+            <TextField label="Emergency Phone" containerStyle={styles.inputGroup} value={emergencyPhone} onChangeText={setEmergencyPhone} keyboardType="phone-pad" />
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Blood Type</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow}>
                 {BLOOD_TYPES.map((bt) => (
                   <TouchableOpacity
+                    accessibilityRole="button"
+                    accessibilityLabel={`Blood Type ${bt}`}
+                    accessibilityState={{ selected: bloodType === bt }}
                     key={bt}
                     style={[styles.chip, bloodType === bt && styles.chipActive]}
                     onPress={() => setBloodType(bt)}
@@ -220,46 +179,16 @@ export default function ProfileScreen() {
               </ScrollView>
             </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Known Drug or Food Allergies</Text>
-              <TextInput
-                style={styles.input}
-                value={allergies}
-                onChangeText={setAllergies}
-                placeholder="e.g. Penicillin, Aspirin, or None"
-               placeholderTextColor={Colors.textLight} />
-            </View>
+            <TextField label="Known Drug or Food Allergies" containerStyle={styles.inputGroup} value={allergies} onChangeText={setAllergies} />
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Obstetric / Gynecologic History</Text>
-              <TextInput
-                style={[styles.input, styles.multilineInput]}
-                value={obstetricHistory}
-                onChangeText={setObstetricHistory}
-                placeholder="e.g. G2P1 (1 CS delivery), menstrual cycle notes"
-                multiline
-                numberOfLines={3}
-               placeholderTextColor={Colors.textLight} />
-            </View>
-          </View>
+            <TextField label="Obstetric / Gynecologic History" containerStyle={styles.inputGroup} value={obstetricHistory} onChangeText={setObstetricHistory} multiline numberOfLines={3} />
+          </Card>
 
           {/* Save Button */}
-          <TouchableOpacity
-            style={[styles.saveBtn, saving && styles.btnDisabled]}
-            onPress={handleSaveProfile}
-            disabled={saving}
-          >
-            {saving ? (
-              <ActivityIndicator color={Colors.background} />
-            ) : (
-              <Text style={styles.saveBtnText}>Save Profile Changes</Text>
-            )}
-          </TouchableOpacity>
+          <Button onPress={handleSaveProfile} loading={saving} disabled={saving}>Save Profile Changes</Button>
 
           {/* Sign Out Button */}
-          <TouchableOpacity style={styles.signOutBtn} onPress={handleSignOut}>
-            <Text style={styles.signOutText}>Sign Out of Patient Account</Text>
-          </TouchableOpacity>
+          <Button variant="outline" onPress={handleSignOut}>Sign Out of Patient Account</Button>
           <TouchableOpacity onPress={() => router.push('/privacy' as never)} accessibilityRole="link" style={{ padding: spacing.lg }}>
             <Text style={{ color: Colors.primary, textAlign: 'center', textDecorationLine: 'underline' }}>Privacy Policy</Text>
           </TouchableOpacity>
