@@ -1,22 +1,20 @@
 import { spacing, typography, radius } from '@/theme';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
   RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import { colors as Colors } from '@/theme';
 import { formatManilaDate, formatManilaDateTime } from '@m-care/shared';
 import type { TransactionWithAppointment } from '@m-care/shared';
+import { Badge, Button, Card, EmptyState, ErrorState, LoadingState, ScreenHeader } from '@/components/ui';
 
 function formatAmount(amount: number, currency: string) {
   try {
@@ -94,44 +92,30 @@ export default function TransactionsScreen() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>Transaction History</Text>
-          <Text style={styles.subtitle}>In-person payments recorded by the clinic after your visit.</Text>
+          <ScreenHeader title="Transaction History" subtitle="In-person payments recorded by the clinic after your visit." />
           <Text style={styles.note}>This screen is for records only. It does not collect payments.</Text>
         </View>
 
         <ScrollView
           contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}
         >
           {loading ? (
-            <View style={styles.stateCard}>
-              <ActivityIndicator size="large" color={Colors.primaryDark} />
-              <Text style={styles.stateText}>Loading transaction history…</Text>
-            </View>
+            <LoadingState label="Loading transaction history…" />
           ) : error ? (
-            <View style={styles.errorCard}>
-              <Text style={styles.stateTitle}>History unavailable</Text>
-              <Text style={styles.errorText}>{error}</Text>
-              <TouchableOpacity style={styles.primaryButton} onPress={() => { setLoading(true); void fetchTransactions(); }}>
-                <Text style={styles.primaryButtonText}>Retry</Text>
-              </TouchableOpacity>
-            </View>
+            <ErrorState title="History unavailable" message={error} onRetry={() => { setLoading(true); void fetchTransactions(); }} />
           ) : transactions.length === 0 ? (
-            <View style={styles.stateCard}>
-              <Ionicons name="receipt-outline" size={40} color={Colors.primary} style={styles.emptyIcon} />
-              <Text style={styles.stateTitle}>No transactions yet</Text>
-              <Text style={styles.stateText}>After your clinic visit is completed and paid in person, the clinic can add the record here.</Text>
-              <TouchableOpacity style={styles.secondaryButton} onPress={() => router.push('/(tabs)/appointments')}>
-                <Text style={styles.secondaryButtonText}>View appointments</Text>
-              </TouchableOpacity>
-            </View>
+            <EmptyState title="No transactions yet" description="After your clinic visit is completed and paid in person, the clinic can add the record here.">
+              <Button variant="outline" onPress={() => router.push('/(tabs)/appointments')}>View appointments</Button>
+            </EmptyState>
           ) : transactions.map((transaction) => (
-            <View key={transaction.id} style={styles.card}>
+            <Card key={transaction.id} style={styles.card}>
               <View style={styles.cardTop}>
                 <Text style={styles.serviceName}>{transaction.appointment?.service?.name ?? 'Clinic service'}</Text>
-                {transaction.voided_at ? <Text style={styles.voidBadge}>Voided</Text> : null}
+                {transaction.voided_at ? <Badge tone="error">Voided</Badge> : null}
               </View>
-              <Text style={styles.amount}>{formatAmount(transaction.amount, transaction.currency)}</Text>
+              <Text selectable style={styles.amount}>{formatAmount(transaction.amount, transaction.currency)}</Text>
               <View style={styles.divider} />
               <View style={styles.detailRow}>
                 <Text style={styles.label}>Appointment</Text>
@@ -151,13 +135,13 @@ export default function TransactionsScreen() {
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.label}>Reference</Text>
-                <Text style={styles.value}>MC-{transaction.id.slice(0, 8).toUpperCase()}</Text>
+                <Text selectable style={styles.value}>MC-{transaction.id.slice(0, 8).toUpperCase()}</Text>
               </View>
               {transaction.notes ? <Text style={styles.notes}>{transaction.notes}</Text> : null}
               {transaction.voided_at ? (
                 <Text style={styles.voidText}>Voided {formatManilaDate(transaction.voided_at)}{transaction.void_reason ? `: ${transaction.void_reason}` : ''}</Text>
               ) : null}
-            </View>
+            </Card>
           ))}
         </ScrollView>
       </View>
@@ -184,9 +168,9 @@ const styles = StyleSheet.create({
   serviceName: { color: Colors.text, flex: 1, fontSize: typography.body.fontSize, fontWeight: '800' },
   amount: { color: Colors.primaryDark, fontSize: typography.heading.fontSize, fontWeight: '800', marginTop: spacing.sm },
   divider: { backgroundColor: Colors.border, height: 1, marginVertical: spacing.lg },
-  detailRow: { alignItems: 'flex-start', flexDirection: 'row', justifyContent: 'space-between', gap: spacing.md, marginBottom: spacing.sm },
+  detailRow: { alignItems: 'flex-start', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: spacing.md, marginBottom: spacing.sm },
   label: { color: Colors.textSecondary, flex: 1, fontSize: typography.caption.fontSize },
-  value: { color: Colors.text, flex: 1.2, fontSize: typography.caption.fontSize, fontWeight: '600', textAlign: 'right' },
+  value: { color: Colors.text, flex: 1.2, minWidth: 0, fontSize: typography.caption.fontSize, fontWeight: '600', textAlign: 'right' },
   notes: { color: Colors.textSecondary, fontSize: typography.caption.fontSize, lineHeight: typography.caption.lineHeight, marginTop: spacing.xs },
   voidBadge: { backgroundColor: Colors.errorBackground, borderRadius: radius.xl, color: Colors.error, fontSize: typography.caption.fontSize, fontWeight: '800', overflow: 'hidden', paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
   voidText: { color: Colors.error, fontSize: typography.caption.fontSize, lineHeight: typography.caption.lineHeight, marginTop: spacing.sm },

@@ -69,3 +69,8 @@
 
 - Replaced the appointment list cards and status chips with shared cards and badges. Added shared loading, retryable error, empty state, and button components; made the upcoming/history tabs accessible and responsive. Preserved the appointment query, ordering/filter rules, realtime refresh, cancellation confirmation, and cancel RPC.
 - `cd mobile && npx tsc --noEmit` passed. Group complete.
+
+### Step 3 — Transaction history
+
+- Replaced the transaction history states, cards, void indicator, and actions with shared loading/error/empty, card, badge, and button components. Important amounts and references are selectable. Preserved the transaction query, ordering, realtime subscription, formatting, and appointment link.
+- `cd mobile && npx tsc --noEmit` passed. Group complete.
