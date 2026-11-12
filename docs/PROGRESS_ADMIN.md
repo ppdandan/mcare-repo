@@ -67,7 +67,7 @@ This is the baseline audit; implementation must not change existing RLS, booking
 - Step 3: complete; status workflows and notification dispatch pass the dev suites. Physical push delivery cannot be confirmed without a registered test device.
 - Step 4: complete.
 - Step 5: complete; dashboard shell, table controls, error states, and theme contrast check done. Rendered viewport checks remain unverified without screenshots.
-- Step 6: not started.
+- Step 6: verification complete except doctor server-side route restriction; stopped because the required fix would touch protected middleware/data access.
 
 ## Step 2 — Remove patient website side (complete)
 
@@ -165,3 +165,33 @@ Clinic decision to confirm: the implemented role mapping follows existing permis
 - The mcare theme text contrast script passed: primary/white 8.82:1, secondary/white 11.09:1, accent/white 5.90:1, neutral/white 15.81:1, info/white 7.51:1, success/white 6.48:1, warning/white 6.53:1, error/white 7.14:1, and base-content on base-100/200/300 15.81:1 / 14.98:1 / 13.36:1. These exceed WCAG AA for normal text.
 - Static responsive-class review: 768px uses the mobile drawer; 1280px uses the fixed 16rem sidebar; table wrappers use horizontal overflow rather than widening the document. Actual rendering, touch behavior, and 768/1280 viewport checks were not observed because screenshots are prohibited.
 - Step 5 complete. No dependencies or protected configuration were changed.
+
+## Step 6 — Proof and remaining boundary
+
+### Proven
+
+- Verified project list before remote checks. The dev project ref is `luccnwicirfnmyzgemzj`; the production ref `pojgizdueifvhgpbvqay` was not targeted. The local web build's `NEXT_PUBLIC_SUPABASE_URL` host also resolved to the dev ref.
+- Web TypeScript: `npm --workspace=web exec -- tsc --noEmit` — passed. Mobile TypeScript: `npm --workspace=mobile exec -- tsc --noEmit` — passed. Web production build: `npm --workspace=web run build` — passed; all 19 static pages generated.
+- Dev end-to-end output: `PASS patient books a future weekday slot through book_appointment`; `PASS pending mobile booking appears in receptionist approval queue`; `PASS staff approval is visible to patient with an appointment notification row`; `PASS reschedule onto the other booking fails`; `PASS weekend reschedule fails`; `PASS valid reschedule and patient notification are visible across clients`; `PASS staff cancellation reason and patient notification are visible`; `Dev admin workflow end-to-end checks passed; all temporary data cleaned up.`
+- Dev appointment attack output: unauthenticated/patient/nurse calls denied; doctor cannot approve; receptionist cannot complete; direct status update blocked; duplicate/cancelled approvals rejected; taken/weekend/past/off-grid/outside-hours reschedules rejected; valid weekday reschedule passed; cancellation/decline reasons required; appointment notifications were found for pending, approved, rescheduled, declined, cancelled, and completed. `All appointment workflow security checks passed.` Fixtures were cleaned.
+- Dev weekend suite: Saturday/Sunday RPC and direct database inserts rejected; `All weekend booking protections passed.`
+- Dev sync suite: mobile and website shared profile reads, bookings, Manila date/time/status, reschedule, cancellation, and transaction history matched; `All cross-platform sync checks passed.` Fixtures were cleaned.
+- Dev medical-history suite: patient could read own field and could not read another patient's field; `All medical history access checks passed.`
+- Dev transactions suite: invalid state/patient/direct writes/cross-doctor writes rejected, permitted doctor/admin transaction actions and audit records passed; `All transaction security checks passed.` Fixtures were cleaned.
+- Local dashboard route suite output: privacy and delete-account returned HTTP 200 without a session; anonymous `/dashboard` redirected to `/login`; a patient was redirected to `/patient-app`; admin received HTTP 200 for all ten dashboard routes; doctor `/dashboard/staff` returned HTTP 200 with access control left to the client page guard. Temporary accounts were cleaned.
+- Theme contrast script passed all tested pairs: primary/white 8.82:1, secondary/white 11.09:1, accent/white 5.90:1, neutral/white 15.81:1, info/white 7.51:1, success/white 6.48:1, warning/white 6.53:1, error/white 7.14:1, and base-content on base-100/200/300 15.81:1 / 14.98:1 / 13.36:1.
+
+### Not proven / stopped
+
+- The local route check returned HTTP 200 for a doctor requesting `/dashboard/staff`. The staff page has a client-side admin guard and role-filtered navigation, but that is not server-side route denial. The existing session/middleware code redirects patients and allows every nonpatient role into `/dashboard`; tightening doctor route access would require changing protected Supabase middleware/session behavior or how the app reads profile roles. The instructions say to stop and report if a step needs a protected change, so I did not change it. The doctor-only route restriction is therefore not proven at the server boundary.
+- Real Expo push delivery remains unverified because the throwaway patient had no registered device token; tests confirmed notification rows and dispatcher behavior only.
+- Real browser rendering, screenshots, device layout, and 768/1280 viewport behavior were not checked. Static class review indicates the 768px drawer and 1280px fixed sidebar, with table-local horizontal scrolling.
+- The clinic's `RETENTION_PERIOD` remains unresolved in `docs/FINAL_REPORT.md`; no retention value was invented.
+- Other earlier clinic decisions that remain: final provider/subprocessor list and agreements, retention after account deletion/backups, and approval of role responsibilities. Appointment role mapping implemented here is admin/receptionist approve/reschedule/cancel/decline; assigned doctor complete and record transactions; nurse access follows existing policies; admin creates staff; schedule writes follow existing admin/doctor RLS.
+
+### Changed files
+
+- Dashboard groups: `web/src/app/dashboard/layout.tsx`, `page.tsx`, `appointments/page.tsx`, `patients/page.tsx`, `records/page.tsx`, `schedules/page.tsx`, `analytics/page.tsx`, `reports/page.tsx`, `staff/page.tsx`, `inquiries/page.tsx`, and `web/src/components/ui/TableControls.tsx` plus `web/src/components/Icon.tsx` and `web/src/app/globals.css`.
+- Data scope completion: `shared/types/database.ts`, `supabase/migrations/00030_medical_history.sql`, `web/src/app/dashboard/records/page.tsx`.
+- Tests: `supabase/tests/medical-history.test.mjs`, `supabase/tests/admin-workflow-e2e.test.mjs`, and `supabase/tests/dashboard-role-access.test.mjs`. Existing protected attack tests were not modified.
+- `00030_medical_history.sql` was applied only to dev ref `luccnwicirfnmyzgemzj`.
