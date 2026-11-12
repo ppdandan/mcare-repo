@@ -66,7 +66,7 @@ This is the baseline audit; implementation must not change existing RLS, booking
 - Step 2: complete.
 - Step 3: complete; status workflows and notification dispatch pass the dev suites. Physical push delivery cannot be confirmed without a registered test device.
 - Step 4: complete.
-- Step 5: in progress; dashboard shell and shared table/button states complete.
+- Step 5: complete; dashboard shell, table controls, error states, and theme contrast check done. Rendered viewport checks remain unverified without screenshots.
 - Step 6: not started.
 
 ## Step 2 — Remove patient website side (complete)
@@ -161,3 +161,7 @@ Clinic decision to confirm: the implemented role mapping follows existing permis
 ### Dashboard overview states (complete)
 
 - The overview now shows a retryable error message if its appointment or patient summary fetch fails.
+
+- The mcare theme text contrast script passed: primary/white 8.82:1, secondary/white 11.09:1, accent/white 5.90:1, neutral/white 15.81:1, info/white 7.51:1, success/white 6.48:1, warning/white 6.53:1, error/white 7.14:1, and base-content on base-100/200/300 15.81:1 / 14.98:1 / 13.36:1. These exceed WCAG AA for normal text.
+- Static responsive-class review: 768px uses the mobile drawer; 1280px uses the fixed 16rem sidebar; table wrappers use horizontal overflow rather than widening the document. Actual rendering, touch behavior, and 768/1280 viewport checks were not observed because screenshots are prohibited.
+- Step 5 complete. No dependencies or protected configuration were changed.
