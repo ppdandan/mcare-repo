@@ -98,3 +98,8 @@ This is the baseline audit; implementation must not change existing RLS, booking
 - Added the distinct `medical_history` field in idempotent migration `00030_medical_history.sql`; the existing medical-record RLS policies continue to govern the added field, including patient-own-row reads. Applied only to verified dev ref `luccnwicirfnmyzgemzj`.
 - The records form now creates and updates medical history alongside visit-specific HPI, diagnosis, and prescription, and chart details display the new field. Shared database types include it. Mobile remains untouched per the Step 4 protected-area rule, so the mobile record screen does not display this new general-history field.
 - Added `supabase/tests/medical-history.test.mjs`. Against dev it passed: patient can read own field; another patient cannot read it. `npm --workspace=web exec -- tsc --noEmit` and `git diff --check` passed.
+
+### Doctor schedules group (complete)
+
+- The schedules page can now add and remove recurring weekday shifts and continues to manage dated full-day/partial-day blocks. The write controls are shown to the selected doctor or an admin, matching the existing RLS policy; database access remains the authority.
+- The existing booking slot function and calendar already read `doctor_schedules` and `schedule_exceptions`; neither was changed. `npm --workspace=web exec -- tsc --noEmit` and `git diff --check` passed.

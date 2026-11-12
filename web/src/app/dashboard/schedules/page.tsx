@@ -13,7 +13,13 @@ export default function SchedulesPage() {
   const [selectedDoctorId, setSelectedDoctorId] = useState<string>("");
   const [schedules, setSchedules] = useState<DoctorSchedule[]>([]);
   const [exceptions, setExceptions] = useState<ScheduleException[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentRole, setCurrentRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [weeklyDay, setWeeklyDay] = useState("1");
+  const [weeklyStart, setWeeklyStart] = useState("09:00");
+  const [weeklyEnd, setWeeklyEnd] = useState("17:00");
+  const [weeklySaving, setWeeklySaving] = useState(false);
 
   // Add Exception Form Modal
   const [showExceptionModal, setShowExceptionModal] = useState(false);
@@ -73,6 +79,16 @@ export default function SchedulesPage() {
   }, [fetchDoctors]);
 
   useEffect(() => {
+    void supabase.auth.getUser().then(async ({ data }) => {
+      const id = data.user?.id ?? null;
+      setCurrentUserId(id);
+      if (!id) return;
+      const { data: profile } = await supabase.from("profiles").select("role").eq("id", id).single();
+      setCurrentRole(profile?.role ?? null);
+    });
+  }, [supabase]);
+
+  useEffect(() => {
     fetchDoctorSchedule();
   }, [fetchDoctorSchedule]);
 
@@ -120,6 +136,41 @@ export default function SchedulesPage() {
   };
 
   const selectedDoctor = doctors.find((d) => d.id === selectedDoctorId);
+  const canManageSelectedSchedule = Boolean(selectedDoctor && currentUserId && (
+    selectedDoctor.profile_id === currentUserId
+    || currentRole === "admin"
+  ));
+
+  const handleAddWeeklyHours = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!selectedDoctorId || weeklyStart >= weeklyEnd) return;
+    setWeeklySaving(true);
+    try {
+      const { error } = await supabase.from("doctor_schedules").insert({
+        doctor_id: selectedDoctorId,
+        weekday: Number(weeklyDay),
+        start_time: weeklyStart,
+        end_time: weeklyEnd,
+      });
+      if (error) throw error;
+      await fetchDoctorSchedule();
+    } catch (err) {
+      alert(userFacingErrorMessage(err, "We couldn’t save these weekly hours. Check for an existing shift and try again."));
+    } finally {
+      setWeeklySaving(false);
+    }
+  };
+
+  const handleDeleteWeeklyHours = async (id: string) => {
+    if (!confirm("Remove this recurring clinic shift?")) return;
+    try {
+      const { error } = await supabase.from("doctor_schedules").delete().eq("id", id);
+      if (error) throw error;
+      await fetchDoctorSchedule();
+    } catch (err) {
+      alert(userFacingErrorMessage(err, "We couldn’t remove these weekly hours. Refresh and try again."));
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -133,6 +184,7 @@ export default function SchedulesPage() {
         </div>
 
         <button
+          disabled={!canManageSelectedSchedule}
           onClick={() => setShowExceptionModal(true)}
           className="px-4 py-2 bg-primary hover:bg-primary-focus text-white font-semibold rounded-xl text-xs shadow-sm transition flex items-center space-x-2"
         >
@@ -154,6 +206,23 @@ export default function SchedulesPage() {
               {selectedDoctor?.room ?? "Consultation Room"}
             </span>
           </div>
+
+          {canManageSelectedSchedule && (
+            <form onSubmit={handleAddWeeklyHours} className="grid grid-cols-2 md:grid-cols-[1fr_1fr_1fr_auto] gap-2 mb-4 p-3 rounded-xl bg-base-200">
+              <label className="text-xs font-semibold">Day
+                <select value={weeklyDay} onChange={(event) => setWeeklyDay(event.target.value)} className="select select-bordered select-sm w-full mt-1" aria-label="Weekly schedule day">
+                  {WEEKDAYS.map((day, index) => <option key={day} value={index}>{day}</option>)}
+                </select>
+              </label>
+              <label className="text-xs font-semibold">Starts
+                <input required type="time" value={weeklyStart} onChange={(event) => setWeeklyStart(event.target.value)} className="input input-bordered input-sm w-full mt-1" aria-label="Weekly hours start time" />
+              </label>
+              <label className="text-xs font-semibold">Ends
+                <input required type="time" value={weeklyEnd} onChange={(event) => setWeeklyEnd(event.target.value)} className="input input-bordered input-sm w-full mt-1" aria-label="Weekly hours end time" />
+              </label>
+              <button disabled={weeklySaving || weeklyStart >= weeklyEnd} className="btn btn-primary btn-sm self-end" type="submit">{weeklySaving ? "Saving…" : "Add hours"}</button>
+            </form>
+          )}
 
           {loading ? (
             <div className="py-12 text-center text-xs text-base-content/60">Loading hours...</div>
@@ -187,9 +256,10 @@ export default function SchedulesPage() {
                           {daySchedules.map((s) => (
                             <span
                               key={s.id}
-                              className="font-mono bg-base-100 px-2.5 py-1 rounded-md border border-emerald-200 text-emerald-800 font-bold"
+                              className="font-mono bg-base-100 px-2.5 py-1 rounded-md border border-emerald-200 text-emerald-800 font-bold inline-flex items-center gap-2"
                             >
                               {s.start_time.slice(0, 5)} - {s.end_time.slice(0, 5)}
+                              {canManageSelectedSchedule && <button type="button" onClick={() => void handleDeleteWeeklyHours(s.id)} className="btn btn-ghost btn-xs text-error" aria-label={`Remove ${dayName} ${s.start_time.slice(0, 5)} to ${s.end_time.slice(0, 5)} shift`}>×</button>}
                             </span>
                           ))}
                         </div>
