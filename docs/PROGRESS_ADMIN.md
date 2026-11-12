@@ -65,8 +65,8 @@ This is the baseline audit; implementation must not change existing RLS, booking
 
 - Step 2: complete.
 - Step 3: complete; status workflows and notification dispatch pass the dev suites. Physical push delivery cannot be confirmed without a registered test device.
-- Step 4: in progress; patient management group complete.
-- Step 5: not started.
+- Step 4: complete.
+- Step 5: in progress; dashboard shell and shared table/button states complete.
 - Step 6: not started.
 
 ## Step 2 — Remove patient website side (complete)
@@ -87,6 +87,8 @@ This is the baseline audit; implementation must not change existing RLS, booking
 - `npm --workspace=web exec -- tsc --noEmit`, `npm --workspace=mobile exec -- tsc --noEmit`, JavaScript syntax checks, and `git diff --check` passed. All four dev suites passed: `cross-platform-sync.test.mjs`, `transactions.test.mjs`, `booking-weekend.test.mjs`, and `appointment-workflow.test.mjs`. The workflow suite rejected unauthenticated/patient/nurse actions, duplicate/cancelled approvals, taken/weekend/past/off-grid/out-of-hours reschedules, missing reasons, direct staff status changes, and unauthorized push dispatch; it accepted valid role actions and cleaned up fixtures.
 
 ## Step 4 — Dashboard scope completion (in progress)
+
+Clinic decision to confirm: the implemented role mapping follows existing permissions. Admin and receptionist manage appointment approval/reschedule/cancel/decline; the assigned doctor completes appointments and records transactions; nurses retain the access already granted by existing RLS. Admin manages staff through the existing create-staff function. Doctor schedule changes follow existing schedule RLS (admin or the selected doctor). No new roles or permissions were introduced.
 
 ### Patients group (complete)
 
@@ -113,3 +115,13 @@ This is the baseline audit; implementation must not change existing RLS, booking
 
 - Added a date-range clinic summary for appointment totals and status counts, new patient registrations, and transaction totals/counts/voided count. It has a matching summary CSV export and appears in the existing print-friendly report sheet. Existing detailed appointment, patient, and clinical CSVs remain.
 - Transaction summary visibility follows the existing transaction RLS rules; when the current role cannot read transactions, the summary says it is unavailable. No transaction write behavior changed. `npm --workspace=web exec -- tsc --noEmit` and `git diff --check` passed.
+
+- Step 4 complete. Transaction recording and staff provisioning continue to use the existing transaction RPC and `create-staff` function; their write behavior was not changed.
+
+## Step 5 — Admin look and feel (in progress)
+
+### Dashboard shell (complete)
+
+- Reworked the dashboard shell into a fixed left sidebar with grouped role-filtered navigation, M-Care logo, signed-in name/role at the bottom, and a sticky top bar with the current page title and sign-out. Small screens use a slide-in drawer.
+- Added consistent global hover, active, disabled, focus, and sticky table-header treatment. Existing Tailwind/daisyUI `mcare` theme config and color tokens are in use; no package changes.
+- `npm --workspace=web exec -- tsc --noEmit` passed. Responsive viewport and contrast checks remain for Step 6.

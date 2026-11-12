@@ -2,7 +2,7 @@ export type IconName =
   | "layout-dashboard" | "calendar" | "receipt" | "clock" | "users"
   | "clipboard" | "message" | "chart" | "file" | "settings" | "logout"
   | "check-circle" | "stethoscope" | "download" | "printer" | "list"
-  | "shield-check" | "alert" | "info";
+  | "shield-check" | "alert" | "info" | "menu" | "search" | "lock" | "close";
 
 const paths: Record<IconName, string[]> = {
   "layout-dashboard": ["M3 3h7v7H3z", "M14 3h7v5h-7z", "M14 12h7v9h-7z", "M3 14h7v7H3z"],
@@ -24,6 +24,10 @@ const paths: Record<IconName, string[]> = {
   "shield-check": ["M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z", "m9 12 2 2 4-4"],
   alert: ["M10.3 3.9 1.8 18.2A2 2 0 0 0 3.5 21h17a2 2 0 0 0 1.7-2.8L13.7 3.9a2 2 0 0 0-3.4 0z", "M12 9v4", "M12 17h.01"],
   info: ["M12 16v-4", "M12 8h.01", "M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0z"],
+  menu: ["M4 6h16", "M4 12h16", "M4 18h16"],
+  search: ["M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16z", "m21 21-4.35-4.35"],
+  lock: ["M5 11h14v10H5z", "M8 11V7a4 4 0 1 1 8 0v4"],
+  close: ["m18 6-12 12", "m6 6 12 12"],
 };
 
 export default function Icon({ name, size = 18, className, ...props }: {

@@ -12,20 +12,21 @@ interface NavItem {
   label: string;
   href: string;
   icon: IconName;
+  section: string;
   roles?: string[];
 }
 
 const navItems: NavItem[] = [
-  { label: "Overview", href: "/dashboard", icon: "layout-dashboard" },
-  { label: "Appointments", href: "/dashboard/appointments", icon: "calendar" },
-  { label: "Transactions", href: "/dashboard/transactions", icon: "receipt", roles: ["doctor", "admin"] },
-  { label: "Doctor Schedules", href: "/dashboard/schedules", icon: "clock" },
-  { label: "Patients", href: "/dashboard/patients", icon: "users" },
-  { label: "Medical Records", href: "/dashboard/records", icon: "clipboard", roles: ["doctor", "nurse", "admin"] },
-  { label: "Patient Inquiries", href: "/dashboard/inquiries", icon: "message" },
-  { label: "Analytics", href: "/dashboard/analytics", icon: "chart", roles: ["admin"] },
-  { label: "Reports & Export", href: "/dashboard/reports", icon: "file" },
-  { label: "Staff Management", href: "/dashboard/staff", icon: "settings", roles: ["admin"] },
+  { label: "Overview", href: "/dashboard", icon: "layout-dashboard", section: "Workspace" },
+  { label: "Appointments", href: "/dashboard/appointments", icon: "calendar", section: "Workspace" },
+  { label: "Doctor Schedules", href: "/dashboard/schedules", icon: "clock", section: "Workspace" },
+  { label: "Patients", href: "/dashboard/patients", icon: "users", section: "Care" },
+  { label: "Medical Records", href: "/dashboard/records", icon: "clipboard", section: "Care", roles: ["doctor", "nurse", "admin"] },
+  { label: "Patient Inquiries", href: "/dashboard/inquiries", icon: "message", section: "Care" },
+  { label: "Transactions", href: "/dashboard/transactions", icon: "receipt", section: "Operations", roles: ["doctor", "admin"] },
+  { label: "Analytics", href: "/dashboard/analytics", icon: "chart", section: "Operations", roles: ["admin"] },
+  { label: "Reports & Export", href: "/dashboard/reports", icon: "file", section: "Operations" },
+  { label: "Staff Management", href: "/dashboard/staff", icon: "settings", section: "Administration", roles: ["admin"] },
 ];
 
 export default function DashboardLayout({
@@ -37,6 +38,7 @@ export default function DashboardLayout({
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -74,6 +76,23 @@ export default function DashboardLayout({
     router.replace("/login");
   };
 
+  const pageTitle = navItems.find((item) => item.href === pathname)?.label ?? "M-Care Dashboard";
+  const visibleItems = navItems.filter((item) => !item.roles || (profile?.role && item.roles.includes(profile.role)));
+  const renderNavigation = () => {
+    let previousSection = "";
+    return visibleItems.map((item) => {
+      const showSection = item.section !== previousSection;
+      previousSection = item.section;
+      const isActive = pathname === item.href;
+      return <React.Fragment key={item.href}>
+        {showSection && <p className="px-3 pt-5 pb-2 text-xs font-bold uppercase tracking-wider text-base-content/60">{item.section}</p>}
+        <Link href={item.href} onClick={() => setDrawerOpen(false)} aria-current={isActive ? "page" : undefined} className={`flex min-h-11 items-center gap-3 rounded-btn px-3 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${isActive ? "bg-primary text-primary-content" : "text-base-content hover:bg-base-200"}`}>
+          <Icon name={item.icon} size={18} /><span>{item.label}</span>
+        </Link>
+      </React.Fragment>;
+    });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
@@ -90,98 +109,34 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-base-200 lg:flex-row">
-      <header className="border-b border-base-300 bg-base-100 px-4 py-3 lg:hidden">
-        <div className="flex items-center justify-between gap-3">
-          <Link href="/dashboard" className="flex min-h-11 min-w-0 items-center gap-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-            <img src="/logo.png" alt="" width={30} height={35} className="h-9 w-8 object-contain" />
-            <span className="min-w-0"><strong className="block truncate text-sm text-base-content">M-Care Clinic</strong><span className="block truncate text-xs text-base-content/80">{profile?.full_name} · {profile?.role}</span></span>
-          </Link>
-          <button type="button" onClick={handleSignOut} aria-label="Sign out" className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-btn border border-base-300 px-3 text-sm text-base-content hover:bg-base-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">
-            <Icon name="logout" size={16} /><span className="hidden min-[380px]:inline">Sign out</span>
-          </button>
+    <div className="min-h-screen bg-base-200">
+      <header className="sticky top-0 z-30 flex min-h-16 items-center justify-between gap-3 border-b border-base-300 bg-base-100 px-4 sm:px-6 lg:pl-[17rem]">
+        <div className="flex min-w-0 items-center gap-3">
+          <button type="button" onClick={() => setDrawerOpen(true)} aria-label="Open navigation" className="btn btn-ghost btn-square lg:hidden"><Icon name="menu" size={20} /></button>
+          <h1 className="truncate text-lg font-bold text-base-content">{pageTitle}</h1>
         </div>
-        <nav className="mt-3 flex gap-1 overflow-x-auto pb-1" aria-label="Clinic navigation">
-          {navItems.map((item) => {
-            if (item.roles && profile?.role && !item.roles.includes(profile.role)) return null;
-            const isActive = pathname === item.href;
-            return <Link key={item.href} href={item.href} aria-current={isActive ? "page" : undefined} className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-btn px-3 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${isActive ? "bg-primary text-primary-content" : "text-base-content hover:bg-base-200"}`}><Icon name={item.icon} size={16} /><span>{item.label}</span></Link>;
-          })}
-        </nav>
+        <button type="button" onClick={handleSignOut} className="btn btn-outline btn-sm min-h-11 shrink-0"><Icon name="logout" size={16} /><span className="hidden sm:inline">Sign out</span></button>
       </header>
-      {/* Sidebar */}
-      <aside className="hidden w-64 shrink-0 flex-col justify-between border-r border-base-300 bg-base-100 lg:flex">
-        <div>
-          {/* Brand */}
-          <div className="h-16 flex items-center px-6 border-b border-base-300">
-            <img src="/logo.png" alt="M-Care" width={36} height={42} className="mr-3 h-10 w-9 object-contain" />
-            <div>
-              <span className="font-extrabold text-base-content tracking-tight text-base">M-CARE</span>
-              <span className="text-xs block font-semibold text-primary uppercase tracking-wider">
-                OB-GYN Clinic
-              </span>
-            </div>
-          </div>
 
-          {/* User Profile Capsule */}
-          <div className="p-4 mx-3 my-3 bg-primary/5 rounded-xl border border-primary/20/60 flex items-center justify-between">
-            <div className="truncate pr-2">
-              <p className="text-xs font-bold text-base-content truncate">{profile?.full_name}</p>
-              <span
-                className={`inline-block px-1.5 py-0.5 text-xs font-bold uppercase tracking-wider rounded mt-0.5 ${
-                  profile?.role ? roleColors[profile.role] : ""
-                }`}
-              >
-                {profile?.role}
-              </span>
-            </div>
-            <span className="text-xs text-emerald-500" title="DPA 2012 Active">●</span>
-          </div>
+      {drawerOpen && <button type="button" aria-label="Close navigation" onClick={() => setDrawerOpen(false)} className="fixed inset-0 z-40 bg-neutral/50 lg:hidden" />}
 
-          {/* Navigation Links */}
-          <nav className="px-3 space-y-1">
-            {navItems.map((item) => {
-              if (item.roles && profile?.role && !item.roles.includes(profile.role)) {
-                return null;
-              }
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex min-h-11 items-center space-x-3 px-3 rounded-lg text-xs font-semibold transition ${
-                    isActive
-                      ? "bg-primary text-white shadow-sm"
-                      : "text-base-content/80 hover:bg-base-200 hover:text-base-content"
-                  }`}
-                >
-                  <Icon name={item.icon} size={18} />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
+      <aside className={`${drawerOpen ? "translate-x-0" : "-translate-x-full"} fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col border-r border-base-300 bg-base-100 shadow-xl transition-transform duration-200 lg:translate-x-0 lg:shadow-none`}>
+        <div className="flex h-16 shrink-0 items-center gap-3 border-b border-base-300 px-5">
+          <img src="/logo.png" alt="M-Care" width={36} height={42} className="h-10 w-9 object-contain" />
+          <div><span className="block text-base font-extrabold tracking-tight text-base-content">M-CARE</span><span className="block text-xs font-semibold uppercase tracking-wider text-primary">OB-GYN Clinic</span></div>
+          <button type="button" onClick={() => setDrawerOpen(false)} aria-label="Close navigation" className="btn btn-ghost btn-square btn-sm ml-auto lg:hidden"><Icon name="close" size={18} /></button>
         </div>
-
-        {/* Sidebar Footer */}
-        <div className="p-4 border-t border-base-300">
-          <button
-            onClick={handleSignOut}
-            className="w-full flex items-center justify-center space-x-2 py-2 px-3 border border-base-300 hover:bg-red-50 hover:border-red-200 hover:text-red-600 text-xs font-semibold rounded-lg text-base-content/80 transition"
-          >
-            <Icon name="logout" size={16} />
-            <span>Sign Out</span>
-          </button>
-          <p className="text-xs text-base-content/60 text-center mt-3">
-            RA 10173 • DPA 2012 Protected
-          </p>
+        <nav className="min-h-0 flex-1 overflow-y-auto px-3 pb-4" aria-label="Clinic navigation">{renderNavigation()}</nav>
+        <div className="shrink-0 border-t border-base-300 p-4">
+          <div className="mb-3 flex min-w-0 items-center justify-between gap-2 rounded-box border border-base-300 bg-base-200 p-3">
+            <div className="min-w-0"><p className="truncate text-sm font-bold text-base-content">{profile?.full_name}</p><span className={`badge mt-1 ${profile?.role ? roleColors[profile.role] : "badge-ghost"}`}>{profile?.role}</span></div>
+            <Icon name="shield-check" size={18} className="shrink-0 text-success" aria-label="Clinic staff account" />
+          </div>
+          <p className="text-center text-xs text-base-content/70">RA 10173 · DPA 2012 Protected</p>
         </div>
       </aside>
 
-      {/* Main Body */}
-      <div className="flex min-w-0 flex-1 flex-col overflow-auto">
-        <main className="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
-      </div>
+      <main className="min-w-0 p-4 sm:p-6 lg:ml-64 lg:p-8">{children}</main>
     </div>
   );
 }

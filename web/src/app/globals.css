@@ -101,6 +101,35 @@
     transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
   }
 
+  button:not([data-unstyled]):hover:not(:disabled) {
+    filter: brightness(0.96);
+  }
+
+  button:not([data-unstyled]):active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.56;
+  }
+
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--fallback-b2, oklch(var(--b2)));
+  }
+
+  tbody tr:nth-child(even) {
+    background-color: color-mix(in srgb, oklch(var(--b2)) 42%, transparent);
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       scroll-behavior: auto !important;
