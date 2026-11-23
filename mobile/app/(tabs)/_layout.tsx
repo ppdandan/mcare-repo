@@ -72,10 +72,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="notifications"
         options={{
-          title: 'Alerts',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="notifications-outline" size={size} color={color} />
-          ),
+          href: null, // Accessible from Home header bell icon
         }}
       />
       <Tabs.Screen

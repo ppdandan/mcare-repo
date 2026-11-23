@@ -189,3 +189,11 @@
 - `npm audit --omit=dev` in `web/`: 2 findings (1 moderate, 1 high); high PostCSS is nested build/CSS tooling and the listed remediation requires Next 16. In `mobile/`: 19 findings (1 low, 13 moderate, 5 high); high paths include bundled `query-string`/`decode-uri-component`, Expo build tooling `deepmerge`, `image-size`, and PostCSS. `image-size` has an npm non-major fix; query-string requires v10 and Expo remediation requires SDK 58. No upgrades were applied.
 - Added `docs/FINAL_REPORT.md` with evidence, unproven items, placeholders, clinic decisions, owner steps including Play Console, and known risks. No screenshots or device checks were taken; no production operation was performed.
 - `git diff --check` passed before staging. Only the three named documentation files are staged and committed for this handoff.
+
+## Design pass — 5-tab navigation and planned-feature layouts
+
+- Committed `docs/DESIGN.md` (a191451): full design-system document from `shared/theme.ts` tokens — brand ramp, contrast table, type scale, spacing, radii, shadows, component inventories, screen layouts, accessibility rules, and a "Planned features (NOT BUILT YET)" section covering website inventory management, mobile walk-in visit dialog, clinic info screens, and analytics views.
+- Mobile tab bar reduced from 6 to 5 tabs in `mobile/app/(tabs)/_layout.tsx`: Notifications (Alerts) now registered with `href: null` like Profile — the route stays reachable via the Home header bell icon (`home.tsx` bell → `/(tabs)/notifications`) but no longer renders in the tab bar. Profile remains off the bar behind the Home top-bar icon.
+- Verified `home.tsx:149` bell navigation and the delete-account copy reference are the only other notifications dependencies; the notifications screen file itself is untouched.
+- `npx tsc --noEmit` in mobile passed (exit 0).
+- Planned features (inventory, walk-in visit dialog, clinic info screens, analytics demographics/payment views) remain documented-only; no scaffolding was built.
