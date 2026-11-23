@@ -58,3 +58,7 @@ coverage/
 # ─── Misc ─────────────────────────────────────────────────────────────────────
 *.log
 .turbo/
+
+web/.open-next/
+web/.wrangler/
+web/.wrangler-dry-run/
