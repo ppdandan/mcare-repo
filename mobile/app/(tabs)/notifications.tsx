@@ -8,6 +8,7 @@ import {
   ScrollView,
   RefreshControl,
   ActivityIndicator,
+  AccessibilityInfo,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -123,7 +124,12 @@ export default function NotificationsScreen() {
           </Text>
 
           {unreadCount > 0 && (
-            <TouchableOpacity onPress={markAllAsRead} style={styles.markAllBtn}>
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel={`Mark all ${unreadCount} notifications as read`}
+              onPress={markAllAsRead}
+              style={[styles.markAllBtn, { minHeight: 44, minWidth: 120, justifyContent: 'center', alignItems: 'center' }]}
+            >
               <Text style={styles.markAllText}>Mark all as read</Text>
             </TouchableOpacity>
           )}
@@ -157,6 +163,9 @@ export default function NotificationsScreen() {
             notifications.map((n) => (
               <TouchableOpacity
                 key={n.id}
+                accessibilityRole="button"
+                accessibilityLabel={`Notification: ${n.title}. ${n.body}. ${!n.is_read ? 'Unread' : 'Read'}`}
+                accessibilityState={{ selected: !n.is_read }}
                 style={[styles.card, !n.is_read && styles.unreadCard]}
                 onPress={() => markAsRead(n.id)}
                 activeOpacity={0.8}
@@ -227,6 +236,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     borderWidth: 1,
     borderColor: Colors.surfaceAlt,
+    minHeight: 72,
   },
   unreadCard: {
     backgroundColor: Colors.brandWash,

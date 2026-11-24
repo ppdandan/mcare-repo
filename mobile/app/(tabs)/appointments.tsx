@@ -36,6 +36,7 @@ const [walkInModalVisible, setWalkInModalVisible] = useState(false);
 const [walkInDate, setWalkInDate] = useState<Date>(new Date());
 const [walkInDatePickerVisible, setWalkInDatePickerVisible] = useState(false);
 const [walkInServiceId, setWalkInServiceId] = useState<string>('');
+const [walkInServicePickerVisible, setWalkInServicePickerVisible] = useState(false);
 const [walkInNotes, setWalkInNotes] = useState<string>('');
 const [walkInConsent, setWalkInConsent] = useState(false);
 const [walkInSubmitting, setWalkInSubmitting] = useState(false);
@@ -382,23 +383,56 @@ const [servicesLoading, setServicesLoading] = useState(false);
                 ) : (
                   <View style={modalStyles.formGroup}>
                     <Text style={modalStyles.label}>Service</Text>
-                    <select
-                      style={modalStyles.formSelect}
-                      onChange={(e) => setWalkInServiceId(e.target.value)}
+                    <TouchableOpacity
+                      accessibilityRole="button"
+                      accessibilityLabel={walkInServiceId ? `Selected service: ${services.find(s => s.id === walkInServiceId)?.name}` : 'Select service for walk-in visit'}
+                      accessibilityState={{ expanded: walkInServicePickerVisible }}
+                      style={[
+                        modalStyles.formSelect,
+                        walkInServicePickerVisible && modalStyles.formSelectFocused,
+                      ]}
+                      onPress={() => setWalkInServicePickerVisible(!walkInServicePickerVisible)}
                     >
-                      {services.map((service) => (
-                        <option key={service.id} value={service.id}>
-                          {service.name}
-                        </option>
-                      ))}
-                    </select>
-                </View>
-              )}
+                      <Text style={modalStyles.selectText}>
+                        {walkInServiceId
+                          ? services.find(s => s.id === walkInServiceId)?.name
+                          : 'Select a service'}
+                      </Text>
+                      {walkInServicePickerVisible && (
+                        <View style={modalStyles.pickerOverlay}>
+                          {services.map((service) => (
+                            <TouchableOpacity
+                              key={service.id}
+                              accessibilityRole="button"
+                              accessibilityLabel={service.name}
+                              accessibilityState={{ selected: walkInServiceId === service.id }}
+                              style={modalStyles.pickerItem}
+                              onPress={() => {
+                                setWalkInServiceId(service.id);
+                                setWalkInServicePickerVisible(false);
+                              }}
+                            >
+                              <Text style={[
+                                modalStyles.pickerItemText,
+                                walkInServiceId === service.id && modalStyles.pickerItemTextSelected,
+                              ]}>
+                                {service.name}
+                              </Text>
+                            </TouchableOpacity>
+                          ))}
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                )}
 
                 {/* Visit Date */}
                 <View style={modalStyles.formGroup}>
                   <Text style={modalStyles.label}>Visit Date</Text>
                   <TouchableOpacity
+                    accessibilityRole="button"
+                    accessibilityLabel="Select visit date"
+                    accessibilityValue={{ text: formatManilaDate(walkInDate) }}
                     style={[
                       modalStyles.dateInput,
                       walkInDatePickerVisible && modalStyles.dateInputFocused,
@@ -444,6 +478,9 @@ const [servicesLoading, setServicesLoading] = useState(false);
                     </Text>
                   </Text>
                   <TouchableOpacity
+                    accessibilityRole="checkbox"
+                    accessibilityLabel="Confirm walk-in visit without prior booking"
+                    accessibilityState={{ checked: walkInConsent }}
                     style={[
                       modalStyles.checkboxContainer,
                       walkInConsent && modalStyles.checkboxChecked,
@@ -858,6 +895,47 @@ const modalStyles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     color: Colors.text,
+    minHeight: 48,
+  },
+  formSelectFocused: {
+    borderColor: Colors.primary,
+  },
+  selectText: {
+    fontSize: typography.caption.fontSize,
+    color: Colors.text,
+  },
+  pickerOverlay: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    marginTop: spacing.xs,
+    backgroundColor: Colors.background,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: radius.md,
+    maxHeight: 200,
+    elevation: 4,
+    shadowColor: Colors.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    zIndex: 10,
+  },
+  pickerItem: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.borderLight,
+    minHeight: 48,
+  },
+  pickerItemText: {
+    fontSize: typography.caption.fontSize,
+    color: Colors.text,
+  },
+  pickerItemTextSelected: {
+    color: Colors.primary,
+    fontWeight: '700',
   },
   loadingText: {
     fontSize: typography.caption.fontSize,
@@ -881,7 +959,7 @@ const modalStyles = StyleSheet.create({
     color: Colors.text,
   },
   textField: {
-    height: 100,
+    minHeight: 56,
     paddingVertical: spacing.sm,
   },
   checkboxLabel: {
@@ -896,8 +974,8 @@ const modalStyles = StyleSheet.create({
     color: Colors.text,
   },
   checkboxContainer: {
-    width: 20,
-    height: 20,
+    width: 44,
+    height: 44,
     borderWidth: 1,
     borderColor: Colors.border,
     borderRadius: radius.sm,

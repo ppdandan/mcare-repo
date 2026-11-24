@@ -10,6 +10,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  AccessibilityInfo,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -179,6 +180,27 @@ export default function ProfileScreen() {
 
             <TextField label="Known Drug or Food Allergies" containerStyle={styles.inputGroup} value={allergies} onChangeText={setAllergies} />
 
+      {/* Accessibility-improved blood type chips with min 44x44 touch targets */}
+      <View style={styles.bloodTypeSection}>
+        <Text style={styles.label}>Blood Type</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow}>
+          {BLOOD_TYPES.map((bt) => (
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel={`Blood Type ${bt}`}
+              accessibilityState={{ selected: bloodType === bt }}
+              key={bt}
+              style={[styles.chip, bloodType === bt && styles.chipActive, { minWidth: 72, minHeight: 40 }]}
+              onPress={() => setBloodType(bt)}
+            >
+              <Text style={[styles.chipText, bloodType === bt && styles.chipTextActive]}>
+                {bt}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
             <TextField label="Obstetric / Gynecologic History" containerStyle={styles.inputGroup} value={obstetricHistory} onChangeText={setObstetricHistory} multiline numberOfLines={3} />
           </Card>
 
@@ -232,7 +254,7 @@ const styles = StyleSheet.create({
   inputGroup: { marginBottom: spacing.md },
   label: { fontSize: typography.caption.fontSize, fontWeight: '600', color: Colors.textSecondary, marginBottom: spacing.xs },
   input: {
-    height: 46,
+    height: 52,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: Colors.border,
@@ -240,6 +262,7 @@ const styles = StyleSheet.create({
     fontSize: typography.small.fontSize,
     color: Colors.text,
     backgroundColor: Colors.surface,
+    minHeight: 52,
   },
   multilineInput: {
     height: 70,
@@ -247,6 +270,10 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   chipRow: { flexDirection: 'row', paddingVertical: spacing.xs },
+  bloodTypeSection: {
+    marginTop: spacing.xs,
+    marginBottom: spacing.md,
+  },
   chip: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -255,6 +282,8 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
     marginRight: spacing.sm,
     backgroundColor: Colors.surface,
+    minWidth: 72,
+    minHeight: 40,
   },
   chipActive: { borderColor: Colors.primary, backgroundColor: Colors.brandSoft },
   chipText: { fontSize: typography.caption.fontSize, color: Colors.textSecondary, fontWeight: '600' },

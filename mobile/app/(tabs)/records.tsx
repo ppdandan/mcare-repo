@@ -127,6 +127,8 @@ export default function RecordsScreen() {
             records.map((rec) => (
               <TouchableOpacity
                 key={rec.id}
+                accessibilityRole="button"
+                accessibilityLabel={`Medical record from ${formatManilaDate(rec.visit_date, { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' })}. Attending: ${rec.doctor?.profile?.full_name ?? 'Physician'}. Chief complaint: ${rec.chief_complaint || 'Routine consultation'}. Diagnosis: ${rec.diagnosis || 'Clinical evaluation ongoing'}`}
                 style={styles.card}
                 onPress={() => handleOpenDetail(rec)}
                 activeOpacity={0.8}
@@ -187,8 +189,10 @@ export default function RecordsScreen() {
                     </Text>
                   </View>
                   <TouchableOpacity
+                    accessibilityRole="button"
+                    accessibilityLabel="Close medical record details"
                     onPress={() => setSelectedRecord(null)}
-                    style={styles.closeBtn}
+                    style={[styles.closeBtn, { minWidth: 44, minHeight: 44 }]}
                   >
                     <Text style={styles.closeBtnText}>✕</Text>
                   </TouchableOpacity>
@@ -478,8 +482,8 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   closeBtn: {
-    width: 32,
-    height: 32,
+    width: 44,
+    height: 44,
     borderRadius: radius.lg,
     backgroundColor: Colors.surfaceAlt,
     alignItems: 'center',

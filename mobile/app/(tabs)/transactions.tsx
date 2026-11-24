@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   View,
+  TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -110,7 +111,13 @@ export default function TransactionsScreen() {
               <Button variant="outline" onPress={() => router.push('/(tabs)/appointments')}>View appointments</Button>
             </EmptyState>
           ) : transactions.map((transaction) => (
-            <Card key={transaction.id} style={styles.card}>
+            <TouchableOpacity
+              key={transaction.id}
+              accessibilityRole="button"
+              accessibilityLabel={`Transaction for ${transaction.appointment?.service?.name ?? 'Clinic service'}. Amount: ${formatAmount(transaction.amount, transaction.currency)}. ${transaction.voided_at ? 'Voided' : 'Active'}`}
+              style={styles.card}
+              activeOpacity={0.8}
+            >
               <View style={styles.cardTop}>
                 <Text style={styles.serviceName}>{transaction.appointment?.service?.name ?? 'Clinic service'}</Text>
                 {transaction.voided_at ? <Badge tone="error">Voided</Badge> : null}
@@ -141,7 +148,7 @@ export default function TransactionsScreen() {
               {transaction.voided_at ? (
                 <Text style={styles.voidText}>Voided {formatManilaDate(transaction.voided_at)}{transaction.void_reason ? `: ${transaction.void_reason}` : ''}</Text>
               ) : null}
-            </Card>
+            </TouchableOpacity>
           ))}
         </ScrollView>
       </View>
