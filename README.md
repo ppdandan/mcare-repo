@@ -64,17 +64,3 @@ A thesis project preparing for Google Play release. The system consists of two c
 | Demographics analytics | Medium | Add `sex` column to patients DB + age/sex charts in Analytics |
 | Payment analytics charts | Small | Revenue-per-day AreaChart + payment-method PieChart in Analytics |
 
-## Commands (from CLAUDE.md)
-1. Type check mobile: `cd mobile && npx tsc --noEmit`
-2. Type check + build web: `cd web && npx tsc --noEmit && npm run build`
-3. Security/flow tests: run against dev Supabase ref; confirm dev ref before every remote command
-4. Cloudflare deploy: `npm --workspace=web exec -- opennextjs-cloudflare deploy --config=wrangler.jsonc`
-
-## Hard Rules (from CLAUDE.md)
-1. Never edit an applied migration — add new migrations only, safe to run twice
-2. Never run db reset, config push, seed.sql, db push to production, EAS production build, or Play submission. Never deploy.
-3. Keep Row Level Security on for every table — never weaken a policy to make a test pass
-4. Supabase connection is protected — do not change `web/src/lib/supabase`, session refresh logic, env var names, wrangler.jsonc, or open-next.config.ts unless the task says so
-5. Stage files by name — never use `git add -A`; never commit env files or dev-backup.sql; one small commit per task
-6. Never claim something works until you ran the check and saw the result — report what you could not verify
-7. When a step needs a decision from the clinic or owner, stop and write the question in `docs/FINAL_REPORT.md`
