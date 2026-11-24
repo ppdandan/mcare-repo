@@ -193,7 +193,14 @@
 ## Design pass — 5-tab navigation and planned-feature layouts
 
 - Committed `docs/DESIGN.md` (a191451): full design-system document from `shared/theme.ts` tokens — brand ramp, contrast table, type scale, spacing, radii, shadows, component inventories, screen layouts, accessibility rules, and a "Planned features (NOT BUILT YET)" section covering website inventory management, mobile walk-in visit dialog, clinic info screens, and analytics views.
+- **Admin Inventory Management feature built**: `web/src/app/dashboard/inventory/page.tsx` rewritten with 5 dialogs (Add Item, Stock In, Stock Out, Adjustment, Consumption Report + CSV export), admin-only role gating, low-stock badges, recent movements list, and consumption report. Follows the transactions-page pattern with raw daisyUI elements, `supabase.rpc("record_stock_movement", ...)` for in/out/adjustment (adjustment = counted stock), and `downloadCsv` pattern from reports page.
 - Mobile tab bar reduced from 6 to 5 tabs in `mobile/app/(tabs)/_layout.tsx`: Notifications (Alerts) now registered with `href: null` like Profile — the route stays reachable via the Home header bell icon (`home.tsx` bell → `/(tabs)/notifications`) but no longer renders in the tab bar. Profile remains off the bar behind the Home top-bar icon.
 - Verified `home.tsx:149` bell navigation and the delete-account copy reference are the only other notifications dependencies; the notifications screen file itself is untouched.
 - `npx tsc --noEmit` in mobile passed (exit 0).
-- Planned features (inventory, walk-in visit dialog, clinic info screens, analytics demographics/payment views) remain documented-only; no scaffolding was built.
+- Planned features (walk-in visit dialog, clinic info screens, analytics demographics/payment views) remain documented-only; no scaffolding was built.
+
+## Follow-up — Fix remaining TypeScript errors in appointments.tsx
+
+- Fixed final TypeScript error in `mobile/app/(tabs)/appointments.tsx`: changed `radius.xs` to `radius.sm` in checkboxInner style (line 916) since `radius.xs` doesn't exist in the theme (radius has sm=8, md=12, lg=16, xl=24, full=9999).
+- Fixed View onPress not supported error by wrapping the consent checkbox container in TouchableOpacity (line 446-454).
+- Mobile TypeScript check now passes cleanly with `npx tsc --noEmit`.

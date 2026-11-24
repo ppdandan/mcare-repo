@@ -1,5 +1,5 @@
-import { spacing, typography, radius } from '@/theme';
-import React, { useState, useEffect, useCallback } from 'react';
+import { spacing, typography, radius, colors as Colors } from '@/theme';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,15 +8,17 @@ import {
   ScrollView,
   RefreshControl,
   Alert,
+  Keyboard,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
-import { colors as Colors } from '@/theme';
 import { formatManilaDate, formatManilaDateTime } from '@m-care/shared';
 import type { AppointmentWithDetails, AppointmentStatus } from '@m-care/shared';
-import { Badge, Button, Card, EmptyState, ErrorState, LoadingState, ScreenHeader } from '@/components/ui';
+import { Badge, Button, Card, EmptyState, ErrorState, LoadingState, ScreenHeader, Modal, TextField } from '@/components/ui';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function AppointmentsScreen() {
   const router = useRouter();
@@ -28,6 +30,19 @@ export default function AppointmentsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
+
+// Walk-in visit modal state
+const [walkInModalVisible, setWalkInModalVisible] = useState(false);
+const [walkInDate, setWalkInDate] = useState<Date>(new Date());
+const [walkInDatePickerVisible, setWalkInDatePickerVisible] = useState(false);
+const [walkInServiceId, setWalkInServiceId] = useState<string>('');
+const [walkInNotes, setWalkInNotes] = useState<string>('');
+const [walkInConsent, setWalkInConsent] = useState(false);
+const [walkInSubmitting, setWalkInSubmitting] = useState(false);
+const [walkInError, setWalkInError] = useState<string | null>(null);
+const [walkInSuccess, setWalkInSuccess] = useState(false);
+const [services, setServices] = useState<Array<{ id: string; name: string }>>([]);
+const [servicesLoading, setServicesLoading] = useState(false);
 
   const fetchAppointments = useCallback(async () => {
     if (!patient?.id) {
@@ -54,15 +69,34 @@ export default function AppointmentsScreen() {
       setAppointments((data ?? []) as unknown as AppointmentWithDetails[]);
     } catch (err) {
       console.error('Fetch appointments error:', err);
-      setLoadError('We couldn’t load your appointments. Check your connection and retry.');
+      setLoadError("We can't load your appointments. Check your connection and retry.");
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   }, [patient?.id, activeTab]);
 
+  const fetchServices = useCallback(async () => {
+    setServicesLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('services')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('name');
+
+      if (error) throw error;
+      setServices((data ?? []) as Array<{ id: string; name: string }>);
+    } catch (err) {
+      console.error('Fetch services error:', err);
+    } finally {
+      setServicesLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchAppointments();
+    fetchServices();
 
     // Supabase Realtime Subscription: Update immediately when staff approves/reschedules
     if (!patient?.id) return;
@@ -121,7 +155,7 @@ export default function AppointmentsScreen() {
               await fetchAppointments();
             } catch (err: unknown) {
               console.error('Appointment cancellation failed:', err);
-              Alert.alert('Cancellation failed', 'We couldn’t cancel this appointment. Refresh your visits and try again.');
+              Alert.alert("Cancellation failed", "We can't cancel this appointment. Refresh your visits and try again.");
             } finally {
               setCancellingId(null);
             }
@@ -129,6 +163,157 @@ export default function AppointmentsScreen() {
         },
       ]
     );
+  };
+
+  // Walk-in visit handlers
+  const handleWalkInDateChange = (event: any, selectedDate?: Date) => {
+    setWalkInDatePickerVisible(false);
+    if (selectedDate) {
+      setWalkInDate(selectedDate);
+    }
+  };
+
+  const handleWalkInShowDatePicker = () => {
+    setWalkInDatePickerVisible(true);
+    Keyboard.dismiss();
+  };
+
+  const handleWalkInSubmit = async () => {
+    if (!patient?.id) {
+      setWalkInError('Please log in to report a walk-in visit.');
+      return;
+    }
+
+    if (!walkInServiceId) {
+      setWalkInError('Please select a service.');
+      return;
+    }
+
+    if (!walkInConsent) {
+      setWalkInError('You must confirm you were seen without a prior booking.');
+      return;
+    }
+
+    setWalkInSubmitting(true);
+    setWalkInError(null);
+
+    try {
+      // Get Dr. Bernice Paule's doctor record
+      const { data: doctorData, error: doctorError } = await supabase
+        .from('doctors')
+        .select('id')
+        .eq('profile_id', '550e8400-e29b-41d4-a716-446655440000') // Dr. Bernice Paule's known profile_id from seed
+        .single();
+
+      if (doctorError || !doctorData) {
+        // Fallback: get any active doctor
+        const { data: fallbackDoctor, error: fallbackError } = await supabase
+          .from('doctors')
+          .select('id')
+          .eq('is_active', true)
+          .limit(1)
+          .single();
+
+        if (fallbackError || !fallbackDoctor) {
+          throw new Error('No available doctor found. Please contact the clinic.');
+        }
+
+        // Use fallback doctor
+        const startTime = new Date(walkInDate);
+        startTime.setMinutes(startTime.getMinutes() - startTime.getTimezoneOffset());
+        const endTime = new Date(startTime.getTime() + 30 * 60000); // 30 min duration
+
+        const { data: appointmentData, error: insertError } = await supabase
+          .from('appointments')
+          .insert({
+            patient_id: patient.id,
+            doctor_id: fallbackDoctor.id,
+            service_id: walkInServiceId,
+            start_time: startTime.toISOString(),
+            end_time: endTime.toISOString(),
+            status: 'pending',
+            notes: walkInNotes || null,
+            is_walk_in: true,
+          })
+          .select()
+          .single();
+
+        if (insertError) throw insertError;
+
+        // Dispatch notification
+        try {
+          await supabase.functions.invoke('dispatch-appointment-notification', {
+            body: { appointment_id: appointmentData.id },
+          });
+        } catch {
+          console.warn('Appointment notification push dispatch was unavailable.');
+        }
+
+        setWalkInSuccess(true);
+        setWalkInModalVisible(false);
+        resetWalkInForm();
+        await fetchAppointments();
+        return;
+      }
+
+      // Use found doctor
+      const startTime = new Date(walkInDate);
+      startTime.setMinutes(startTime.getMinutes() - startTime.getTimezoneOffset());
+      const endTime = new Date(startTime.getTime() + 30 * 60000); // 30 min duration
+
+      const { data: appointmentData, error: insertError } = await supabase
+        .from('appointments')
+        .insert({
+          patient_id: patient.id,
+          doctor_id: doctorData.id,
+          service_id: walkInServiceId,
+          start_time: startTime.toISOString(),
+          end_time: endTime.toISOString(),
+          status: 'pending',
+          notes: walkInNotes || null,
+          is_walk_in: true,
+        })
+        .select()
+        .single();
+
+      if (insertError) throw insertError;
+
+      // Dispatch notification
+      try {
+        await supabase.functions.invoke('dispatch-appointment-notification', {
+          body: { appointment_id: appointmentData.id },
+        });
+      } catch {
+        console.warn('Appointment notification push dispatch was unavailable.');
+      }
+
+      setWalkInSuccess(true);
+      setWalkInModalVisible(false);
+      resetWalkInForm();
+      await fetchAppointments();
+    } catch (err: unknown) {
+      console.error('Walk-in submission failed:', err);
+      const message = err instanceof Error ? err.message : 'We couldn\'t submit your walk-in visit. Please try again.';
+      setWalkInError(message);
+    } finally {
+      setWalkInSubmitting(false);
+    }
+  };
+
+  const resetWalkInForm = () => {
+    setWalkInDate(new Date());
+    setWalkInServiceId('');
+    setWalkInNotes('');
+    setWalkInConsent(false);
+    setWalkInError(null);
+    setWalkInSuccess(false);
+  };
+
+  const handleWalkInModalClose = () => {
+    if (!walkInSubmitting) {
+      setWalkInModalVisible(false);
+      resetWalkInForm();
+    }
   };
 
   // Filter based on active tab
@@ -163,7 +348,159 @@ export default function AppointmentsScreen() {
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <ScreenHeader title="My Clinic Visits" subtitle="Live appointment tracking & consultation history" />
+          <ScreenHeader
+  title="My Clinic Visits"
+  subtitle="Live appointment tracking & consultation history"
+  action={
+    <Button
+      variant="outline"
+      onPress={() => setWalkInModalVisible(true)}
+      disabled={walkInSubmitting}
+      loading={walkInSubmitting}
+    >
+      <Ionicons name="person-add" size={18} />
+      Report Walk-in
+    </Button>
+  }
+ />
+
+          {/* Walk-in Modal */}
+          {walkInModalVisible && (
+            <Modal
+              visible={walkInModalVisible}
+              onClose={handleWalkInModalClose}
+              title="Report a Walk-in Visit"
+              transparent={true}
+              animationType="slide"
+            >
+              <View style={modalStyles.modalContainer}>
+                {/* Service selection */}
+                {servicesLoading ? (
+                  <Text style={modalStyles.loadingText}>Loading services...</Text>
+                ) : services.length === 0 ? (
+                  <Text style={modalStyles.loadingText}>No services available</Text>
+                ) : (
+                  <View style={modalStyles.formGroup}>
+                    <Text style={modalStyles.label}>Service</Text>
+                    <select
+                      style={modalStyles.formSelect}
+                      onChange={(e) => setWalkInServiceId(e.target.value)}
+                    >
+                      {services.map((service) => (
+                        <option key={service.id} value={service.id}>
+                          {service.name}
+                        </option>
+                      ))}
+                    </select>
+                </View>
+              )}
+
+                {/* Visit Date */}
+                <View style={modalStyles.formGroup}>
+                  <Text style={modalStyles.label}>Visit Date</Text>
+                  <TouchableOpacity
+                    style={[
+                      modalStyles.dateInput,
+                      walkInDatePickerVisible && modalStyles.dateInputFocused,
+                    ]}
+                    onPress={handleWalkInShowDatePicker}
+                  >
+                    <Text style={modalStyles.dateText}>
+                      {formatManilaDate(walkInDate)}
+                    </Text>
+                    {walkInDatePickerVisible && (
+                      <DateTimePicker
+                        testID="walkInDateTimePicker"
+                        value={walkInDate}
+                        mode="date"
+                        is24Hour={true}
+                        display="default"
+                        onChange={(event, selectedDate) => {
+                          handleWalkInDateChange(event, selectedDate);
+                        }}
+                      />
+                    )}
+                  </TouchableOpacity>
+                </View>
+
+                {/* Notes field */}
+                <View style={modalStyles.formGroup}>
+                  <Text style={modalStyles.label}>Notes</Text>
+                  <TextField
+                    placeholder="Enter any notes about your visit..."
+                    value={walkInNotes}
+                    onChangeText={(text) => setWalkInNotes(text)}
+                    multiline
+                    style={modalStyles.textField}
+                    error={walkInError?.includes('Notes') ? walkInError : undefined}
+                  />
+                </View>
+
+                {/* Consent checkbox */}
+                <View style={modalStyles.formGroup}>
+                  <Text style={modalStyles.checkboxLabel}>
+                    <Text style={modalStyles.checkboxText}>
+                      I was seen without prior booking
+                    </Text>
+                  </Text>
+                  <TouchableOpacity
+                    style={[
+                      modalStyles.checkboxContainer,
+                      walkInConsent && modalStyles.checkboxChecked,
+                    ]}
+                    onPress={() => setWalkInConsent(!walkInConsent)}
+                  >
+                    <View style={modalStyles.checkboxInner} />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Error message */}
+                {walkInError && (
+                  <Text style={modalStyles.errorText}>{walkInError}</Text>
+                )}
+
+                {/* Success state */}
+                {walkInSuccess && (
+                  <View style={modalStyles.successState}>
+                    <Text style={modalStyles.successText}>
+                      Walk-in visit reported successfully!
+                    </Text>
+                    <Text style={modalStyles.successSubtext}>
+                      A pending appointment has been created. The clinic will review and approve it.
+                    </Text>
+                  </View>
+                )}
+
+                {/* Submit button */}
+                {(!walkInSuccess && !walkInError) || walkInSuccess && !walkInModalVisible && !walkInError && !walkInSubmitting && (
+                  <TouchableOpacity
+                    style={[
+                      modalStyles.submitButton,
+                      walkInSubmitting && modalStyles.submitButtonDisabled,
+                    ]}
+                    onPress={walkInSubmitting ? undefined : handleWalkInSubmit}
+                    disabled={walkInSubmitting}
+                  >
+                    {walkInSubmitting ? (
+                      <Text style={modalStyles.submitButtonText}>Submitting...</Text>
+                    ) : (
+                      <Text style={modalStyles.submitButtonText}>Submit Walk-in Visit</Text>
+                    )}
+                  </TouchableOpacity>
+                )}
+
+                {/* Close button */}
+                {(!walkInSuccess || walkInError) && (
+                  <TouchableOpacity
+                    style={modalStyles.closeButton}
+                    onPress={handleWalkInModalClose}
+                  >
+                    <Text style={modalStyles.closeButtonText}>Close</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            </Modal>
+          )}
 
           {/* Segmented Tabs */}
           <View style={styles.tabContainer}>
@@ -240,7 +577,7 @@ export default function AppointmentsScreen() {
                     {appt.doctor?.profile?.full_name ?? 'Dr. Bernice Paule'}
                   </Text>
                   <Text style={styles.roomText}>
-                    📍 {appt.doctor?.room ?? 'Room 201'}
+                      {appt.doctor?.room ?? 'Room 201'}
                   </Text>
 
                   <View style={styles.divider} />
@@ -494,6 +831,138 @@ const styles = StyleSheet.create({
     fontSize: typography.caption.fontSize,
     fontWeight: '600',
     color: Colors.error,
+  },
+});
+
+// Walk-in modal styles
+const modalStyles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    padding: spacing.lg,
+  },
+  formGroup: {
+    marginBottom: spacing.md,
+  },
+  label: {
+    fontSize: typography.caption.fontSize,
+    fontWeight: '600',
+    color: Colors.textSecondary,
+    marginBottom: spacing.xs,
+  },
+  formSelect: {
+    backgroundColor: Colors.background,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    color: Colors.text,
+  },
+  loadingText: {
+    fontSize: typography.caption.fontSize,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    marginVertical: spacing.lg,
+  },
+  dateInput: {
+    backgroundColor: Colors.background,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  dateInputFocused: {
+    borderColor: Colors.primary,
+  },
+  dateText: {
+    fontSize: typography.caption.fontSize,
+    color: Colors.text,
+  },
+  textField: {
+    height: 100,
+    paddingVertical: spacing.sm,
+  },
+  checkboxLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.xs,
+    marginTop: spacing.xs,
+  },
+  checkboxText: {
+    marginLeft: spacing.sm,
+    fontSize: typography.caption.fontSize,
+    color: Colors.text,
+  },
+  checkboxContainer: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: radius.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: spacing.xs,
+  },
+  checkboxChecked: {
+    borderColor: Colors.primary,
+    backgroundColor: Colors.primary,
+  },
+  checkboxInner: {
+    width: 12,
+    height: 12,
+    backgroundColor: Colors.background,
+    borderRadius: radius.sm,
+  },
+  errorText: {
+    fontSize: typography.caption.fontSize,
+    color: Colors.error,
+    marginBottom: spacing.md,
+  },
+  successState: {
+    padding: spacing.lg,
+    textAlign: 'center',
+  },
+  successText: {
+    fontSize: typography.heading.fontSize,
+    fontWeight: '700',
+    color: Colors.success,
+    marginBottom: spacing.sm,
+  },
+  successSubtext: {
+    fontSize: typography.caption.fontSize,
+    color: Colors.textSecondary,
+  },
+  submitButton: {
+    backgroundColor: Colors.primary,
+    borderRadius: radius.md,
+    paddingVertical: spacing.md,
+    alignItems: 'center',
+    marginTop: spacing.md,
+  },
+  submitButtonDisabled: {
+    backgroundColor: Colors.primaryDark,
+  },
+  submitButtonText: {
+    color: Colors.background,
+    fontSize: typography.small.fontSize,
+    fontWeight: '700',
+  },
+  closeButton: {
+    marginTop: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    backgroundColor: Colors.background,
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  closeButtonText: {
+    color: Colors.textSecondary,
+    fontSize: typography.caption.fontSize,
+    fontWeight: '600',
   },
 });
 
