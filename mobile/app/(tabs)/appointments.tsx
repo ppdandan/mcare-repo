@@ -884,7 +884,7 @@ const modalStyles = StyleSheet.create({
   label: {
     fontSize: typography.caption.fontSize,
     fontWeight: '600',
-    color: Colors.textSecondary,
+    color: Colors.text,
     marginBottom: spacing.xs,
   },
   formSelect: {
@@ -961,6 +961,12 @@ const modalStyles = StyleSheet.create({
   textField: {
     minHeight: 56,
     paddingVertical: spacing.sm,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    backgroundColor: Colors.background,
+    color: Colors.text,
+    fontSize: typography.body.fontSize,
   },
   checkboxLabel: {
     flexDirection: 'row',
