@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile>
+  <diagram id="1" name="2. Entity Relationship Diagram (ERD)">
+
+    <mxGraphModel dx="0" dy="0" grid="1" gridSize="10" guides="1" toolTip="1" earlierVersionEnabled="1" undoLimit="100" directed="1">
+      <root>
+<mxCell id="e0" value="" vertex="false" edge="false"/>
+<mxCell id="cell_1" value="appointments" style="shape=ellipse;" vertex="true" geometry="40;40;100;50;"/>
+<mxCell id="cell_2" value="doctor_schedules" style="shape=ellipse;" vertex="true" geometry="160;40;100;50;"/>
+<mxCell id="cell_3" value="doctors" style="shape=ellipse;" vertex="true" geometry="280;40;100;50;"/>
+<mxCell id="cell_4" value="inventory_items" style="shape=ellipse;" vertex="true" geometry="400;40;100;50;"/>
+<mxCell id="cell_5" value="medical_records" style="shape=ellipse;" vertex="true" geometry="520;40;100;50;"/>
+<mxCell id="cell_6" value="notifications" style="shape=ellipse;" vertex="true" geometry="640;40;100;50;"/>
+<mxCell id="cell_7" value="o" style="shape=ellipse;" vertex="true" geometry="40;110;100;50;"/>
+<mxCell id="cell_8" value="patients" style="shape=ellipse;" vertex="true" geometry="160;110;100;50;"/>
+<mxCell id="cell_9" value="profiles" style="shape=ellipse;" vertex="true" geometry="280;110;100;50;"/>
+<mxCell id="cell_10" value="services" style="shape=ellipse;" vertex="true" geometry="400;110;100;50;"/>
+<mxCell id="cell_11" value="stock_movements" style="shape=ellipse;" vertex="true" geometry="520;110;100;50;"/>
+<mxCell id="cell_12" value="transactions" style="shape=ellipse;" vertex="true" geometry="640;110;100;50;"/>
+<mxCell id="cell_13" value="has" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_9" target="cell_8" edge="true"/>
+<mxCell id="cell_14" value="has" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_9" target="cell_3" edge="true"/>
+<mxCell id="cell_15" value="records" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_9" target="cell_12" edge="true"/>
+<mxCell id="cell_16" value="patient" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_9" target="cell_1" edge="true"/>
+<mxCell id="cell_17" value="doctor" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_9" target="cell_1" edge="true"/>
+<mxCell id="cell_18" value="patient" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_9" target="cell_5" edge="true"/>
+<mxCell id="cell_19" value="doctor" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_9" target="cell_5" edge="true"/>
+<mxCell id="cell_20" value="receives" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_9" target="cell_6" edge="true"/>
+<mxCell id="cell_21" value="creates" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_9" target="cell_4" edge="true"/>
+<mxCell id="cell_22" value="records" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_9" target="cell_11" edge="true"/>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

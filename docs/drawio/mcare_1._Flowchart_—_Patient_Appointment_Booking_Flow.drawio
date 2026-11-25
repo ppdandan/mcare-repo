@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile>
+  <diagram id="1" name="1. Flowchart — Patient Appointment Booking Flow">
+
+    <mxGraphModel dx="0" dy="0" grid="1" gridSize="10" guides="1" toolTip="1" earlierVersionEnabled="1" undoLimit="100" directed="1">
+      <root>
+<mxCell id="e0" value="" vertex="false" edge="false"/>
+<mxCell id="cell_1" value="Patient Opens Mobile App" style="shape=ellipse;" vertex="true" geometry="40;40;100;50;"/>
+<mxCell id="cell_2" value="Select Service" style="shape=ellipse;" vertex="true" geometry="160;40;100;50;"/>
+<mxCell id="cell_3" value="Select Date\n(Weekdays Only, Asia/Manila)" style="shape=ellipse;" vertex="true" geometry="280;40;100;50;"/>
+<mxCell id="cell_4" value="Select Available Slot\nvia get_available_slots RPC" style="shape=ellipse;" vertex="true" geometry="400;40;100;50;"/>
+<mxCell id="cell_5" value="Review Details" style="shape=ellipse;" vertex="true" geometry="520;40;100;50;"/>
+<mxCell id="cell_6" value="Confirm Booking" style="shape=diamond;" vertex="true" geometry="640;40;100;50;"/>
+<mxCell id="cell_7" value="Reject: Weekends not allowed" style="shape=ellipse;" vertex="true" geometry="40;110;100;50;"/>
+<mxCell id="cell_8" value="Reject: Slot already taken\nGiST constraint" style="shape=ellipse;" vertex="true" geometry="160;110;100;50;"/>
+<mxCell id="cell_9" value="Create appointment\nstatus = 'pending'" style="shape=ellipse;" vertex="true" geometry="280;110;100;50;"/>
+<mxCell id="cell_10" value="Realtime: Push to Staff Dashboard" style="shape=ellipse;" vertex="true" geometry="400;110;100;50;"/>
+<mxCell id="cell_11" value="Staff: Approve / Decline / Reschedule" style="shape=ellipse;" vertex="true" geometry="520;110;100;50;"/>
+<mxCell id="cell_12" value="status = 'approved'" style="shape=ellipse;" vertex="true" geometry="640;110;100;50;"/>
+<mxCell id="cell_13" value="status = 'cancelled'" style="shape=ellipse;" vertex="true" geometry="40;180;100;50;"/>
+<mxCell id="cell_14" value="status = 'rescheduled'\nnew start_time" style="shape=ellipse;" vertex="true" geometry="160;180;100;50;"/>
+<mxCell id="cell_15" value="Realtime: Push to Patient App" style="shape=ellipse;" vertex="true" geometry="280;180;100;50;"/>
+<mxCell id="cell_16" value="Patient sees updated status" style="shape=ellipse;" vertex="true" geometry="400;180;100;50;"/>
+<mxCell id="cell_17" value="Visit Day: Staff marks completed" style="shape=ellipse;" vertex="true" geometry="520;180;100;50;"/>
+<mxCell id="cell_18" value="status = 'completed'" style="shape=ellipse;" vertex="true" geometry="640;180;100;50;"/>
+<mxCell id="cell_19" value="Staff may record transaction\nfor completed visit" style="shape=ellipse;" vertex="true" geometry="40;250;100;50;"/>
+<mxCell id="cell_20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_2" target="cell_3" edge="true"/>
+<mxCell id="cell_21" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_3" target="cell_4" edge="true"/>
+<mxCell id="cell_22" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_4" target="cell_5" edge="true"/>
+<mxCell id="cell_23" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_5" target="cell_6" edge="true"/>
+<mxCell id="cell_24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_9" target="cell_10" edge="true"/>
+<mxCell id="cell_25" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_10" target="cell_11" edge="true"/>
+<mxCell id="cell_26" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_12" target="cell_15" edge="true"/>
+<mxCell id="cell_27" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_13" target="cell_15" edge="true"/>
+<mxCell id="cell_28" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_14" target="cell_15" edge="true"/>
+<mxCell id="cell_29" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_15" target="cell_16" edge="true"/>
+<mxCell id="cell_30" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_16" target="cell_17" edge="true"/>
+<mxCell id="cell_31" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_17" target="cell_18" edge="true"/>
+<mxCell id="cell_32" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_18" target="cell_19" edge="true"/>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -2,8 +2,6 @@
 
 **M-Care OB-GYN and Ultrasound Clinic** — Balibago, Angeles City
 
-A thesis project preparing for Google Play release. The system consists of two components:
-
 ## Mobile App (Patient-Facing)
 - **Framework**: React Native + Expo SDK 54
 - **Package**: `com.dandan03.mcare` (Android)

@@ -101,3 +101,42 @@ All 7 patient-facing screens verified and fixed for ui-ux-pro-max Priority 1 (Ac
 - All ui-ux-pro-max Priority 1 & 2 criteria satisfied on mobile patient app
 - RLS enforced on all tables; no policies weakened
 - Supabase connection protected (no changes to web auth files)
+---
+
+## UI/UX: Impeccable polish — presentation-only mobile screens (2026-11-25 → 2026-11-26)
+
+Presentation-only improvements across the four patient app screens requested by the owner. No logic, API calls, Supabase queries, auth, navigation routes, state handling or data models changed.
+
+### Commits in this pass
+| Commit | Screen |
+|---|---|
+| `bc17189` | Web dashboard icon type fix (missing chevrons) — prerequisite for web admin side |
+| `df539d9` | My Clinic Visits walk-in modal label + input styles |
+| `24a1f6a` | Book Clinic Visit calendar date distinction |
+| `b9c29ae` | Find Our Clinic screen + tab bar safe-area compliance |
+
+### What changed per screen
+
+**My Clinic Visits (`appointments.tsx`)** — Report-a-Walkin modal
+- Label color moved from `textSecondary` to `text` so headings are legible
+- Input fields gained proper border, radius, background and font size; the faded ghost-input look is gone and text no longer visually overlaps labels
+
+**Book Clinic Visit (`book.tsx`)** — Calendar dates
+- Disabled days now use `brandWash` background / `borderLight` stroke instead of the flat `border` shade
+- Disabled text shifted from `textLight` to `textSecondary` for clearer disabled hierarchy alongside confirmed/selected states
+
+**Find Our Clinic (`clinic-finder.tsx` + `_layout.tsx`)**
+- Added `<Tabs.Screen name="clinic-finder" options={{ href: null }} />` to `_layout.tsx`: removes the empty glyph box that expo-router auto-created while keeping the route pushable from Home action grid
+- Tab bar height now uses `useSafeAreaInsets().bottom` instead of hardcoded `height: 64`, so labels clear the gesture bar on Android
+- Clinic finder switched from `react-native`'s `SafeAreaView` to `react-native-safe-area-context`'s version so the title respects the status bar instead of colliding with it
+- Map shows by default (toggled via button) so the screen no longer has a large empty area
+- All hardcoded spacing/radius/font values replaced with shared tokens from `@/theme`
+- Touch targets raised to ≥ 44px minimum; close button got an explicit `hitSlop`
+- Flow preserved: `openDirections` still builds the Google Maps URL and either opens it via `window.open` on web or pushes to `/(tabs)/home` with the URL on native — exactly as before
+
+### Verification
+- Mobile tsc: `cd mobile && npx tsc --noEmit` → **PASS**
+- Web tsc: `cd web && npx tsc --noEmit` → **PASS**
+- Flows confirmed by reading handlers: walk-in submit, calendar selection/tap, directions open
+- Existing git status outside these files (PRODUCTION_RUNBOOK.md, README.md, home.tsx, profile.tsx, components/ui/index.ts, package-lock.json, skills-lock.json, web/.env.example, web/src/middleware.ts, web/src/app/dashboard/layout.tsx, untracked infra/docs files) left untouched
+

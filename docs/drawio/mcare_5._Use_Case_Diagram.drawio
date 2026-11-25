@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile>
+  <diagram id="1" name="5. Use Case Diagram">
+
+    <mxGraphModel dx="0" dy="0" grid="1" gridSize="10" guides="1" toolTip="1" earlierVersionEnabled="1" undoLimit="100" directed="1">
+      <root>
+<mxCell id="e0" value="" vertex="false" edge="false"/>
+<mxCell id="cell_1" value="Patient
+    actor "Staff / Receptionist" as Staff
+    actor "Doctor / Sonologist" as Doctor
+    actor Admin
+
+    package "M-Care Patient Mobile App" {
+        UC1[Register / Login]
+        UC2[Book Appointment]
+        UC3[View Upcoming Appointments]
+        UC4[Cancel Appointment]
+        UC5[View Medical Records]
+        UC6[View Transaction History]
+        UC7[Update Profile &\nEmergency Info]
+        UC8[Receive Push Notifications]
+        UC9[Send Inquiry to Clinic]
+    }
+
+    package "M-Care Staff Web Dashboard" {
+        UC10[Login / Auth]
+        UC11[Manage Patients\n(Search, Register Walk-in)]
+        UC12[Approve / Decline Appointments]
+        UC13[Reschedule / Cancel Appointments]
+        UC14[Calendar Views\n(Day/Week/Month)]
+        UC15[View / Edit Medical Records\n(Role-separated fields)]
+        UC16[Record Payment Transaction]
+        UC17[Void Transaction with Reason]
+        UC18[Manage Doctor Schedules]
+        UC19[Manage Inventory Items]
+        UC20[View Analytics Charts]
+        UC21[Export Reports CSV]
+    }
+
+    Patient --> UC1
+    Patient --> UC2
+    Patient --> UC3
+    Patient --> UC4
+    Patient --> UC5
+    Patient --> UC6
+    Patient --> UC7
+    Patient --> UC8
+    Patient --> UC9
+
+    Staff --> UC10
+    Staff --> UC11
+    Staff --> UC12
+    Staff --> UC13
+    Staff --> UC14
+    Staff --> UC15
+    Staff --> UC16
+    Staff --> UC17
+    Staff --> UC18
+    Staff --> UC19
+    Staff --> UC20
+    Staff --> UC21
+
+    Doctor --> UC10
+    Doctor --> UC14
+    Doctor --> UC15
+
+    Admin --> UC10
+    Admin --> UC11
+    Admin --> UC12
+    Admin --> UC13
+    Admin --> UC14
+    Admin --> UC15
+    Admin --> UC16
+    Admin --> UC17
+    Admin --> UC18
+    Admin --> UC19
+    Admin --> UC20
+    Admin --> UC21
+
+    UC2 ..> UC1 : <<include>>
+    UC3 ..> UC1 : <<include>>
+    UC4 ..> UC1 : <<include>>
+    UC5 ..> UC1 : <<include>>
+    UC6 ..> UC1 : <<include>>
+    UC7 ..> UC1 : <<include>>
+    UC9 ..> UC1 : <<include>>
+
+    UC12 ..> UC10 : <<include>>
+    UC13 ..> UC10 : <<include>>
+    UC14 ..> UC10 : <<include>>
+    UC15 ..> UC10 : <<include>>
+    UC16 ..> UC10 : <<include>>
+    UC17 ..> UC10 : <<include>>
+    UC18 ..> UC10 : <<include>>
+    UC19 ..> UC10 : <<include>>
+    UC20 ..> UC10 : <<include>>
+    UC21 ..> UC10 : <<include>>
+
+    UC15 ..> UC12 : <<extend>>\n(doctor writes diagnosis/Rx)
+    UC15 ..> UC13 : <<extend>>\n(nurse writes vitals)" style="shape=ellipse;" vertex="true" geometry="40;40;100;50;"/>
+<mxCell id="cell_2" value="Register / Login" style="shape=ellipse;" vertex="true" geometry="160;40;100;50;"/>
+<mxCell id="cell_3" value="Login / Auth" style="shape=ellipse;" vertex="true" geometry="280;40;100;50;"/>
+<mxCell id="cell_4" value="Manage Patients\n(Search, Register Walk-in)" style="shape=ellipse;" vertex="true" geometry="400;40;100;50;"/>
+<mxCell id="cell_5" value="Approve / Decline Appointments" style="shape=ellipse;" vertex="true" geometry="520;40;100;50;"/>
+<mxCell id="cell_6" value="Reschedule / Cancel Appointments" style="shape=ellipse;" vertex="true" geometry="640;40;100;50;"/>
+<mxCell id="cell_7" value="Calendar Views\n(Day/Week/Month)" style="shape=ellipse;" vertex="true" geometry="40;110;100;50;"/>
+<mxCell id="cell_8" value="View / Edit Medical Records\n(Role-separated fields)" style="shape=ellipse;" vertex="true" geometry="160;110;100;50;"/>
+<mxCell id="cell_9" value="Record Payment Transaction" style="shape=ellipse;" vertex="true" geometry="280;110;100;50;"/>
+<mxCell id="cell_10" value="Void Transaction with Reason" style="shape=ellipse;" vertex="true" geometry="400;110;100;50;"/>
+<mxCell id="cell_11" value="Manage Doctor Schedules" style="shape=ellipse;" vertex="true" geometry="520;110;100;50;"/>
+<mxCell id="cell_12" value="Manage Inventory Items" style="shape=ellipse;" vertex="true" geometry="640;110;100;50;"/>
+<mxCell id="cell_13" value="Book Appointment" style="shape=ellipse;" vertex="true" geometry="40;180;100;50;"/>
+<mxCell id="cell_14" value="View Analytics Charts" style="shape=ellipse;" vertex="true" geometry="160;180;100;50;"/>
+<mxCell id="cell_15" value="Export Reports CSV" style="shape=ellipse;" vertex="true" geometry="280;180;100;50;"/>
+<mxCell id="cell_16" value="View Upcoming Appointments" style="shape=ellipse;" vertex="true" geometry="400;180;100;50;"/>
+<mxCell id="cell_17" value="Cancel Appointment" style="shape=ellipse;" vertex="true" geometry="520;180;100;50;"/>
+<mxCell id="cell_18" value="View Medical Records" style="shape=ellipse;" vertex="true" geometry="640;180;100;50;"/>
+<mxCell id="cell_19" value="View Transaction History" style="shape=ellipse;" vertex="true" geometry="40;250;100;50;"/>
+<mxCell id="cell_20" value="Update Profile &\nEmergency Info" style="shape=ellipse;" vertex="true" geometry="160;250;100;50;"/>
+<mxCell id="cell_21" value="Receive Push Notifications" style="shape=ellipse;" vertex="true" geometry="280;250;100;50;"/>
+<mxCell id="cell_22" value="Send Inquiry to Clinic" style="shape=ellipse;" vertex="true" geometry="400;250;100;50;"/>
+<mxCell id="cell_23" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_13" target="cell_2" edge="true"/>
+<mxCell id="cell_24" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_16" target="cell_2" edge="true"/>
+<mxCell id="cell_25" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_17" target="cell_2" edge="true"/>
+<mxCell id="cell_26" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_18" target="cell_2" edge="true"/>
+<mxCell id="cell_27" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_19" target="cell_2" edge="true"/>
+<mxCell id="cell_28" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_20" target="cell_2" edge="true"/>
+<mxCell id="cell_29" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_22" target="cell_2" edge="true"/>
+<mxCell id="cell_30" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_5" target="cell_3" edge="true"/>
+<mxCell id="cell_31" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_6" target="cell_3" edge="true"/>
+<mxCell id="cell_32" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_7" target="cell_3" edge="true"/>
+<mxCell id="cell_33" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_8" target="cell_3" edge="true"/>
+<mxCell id="cell_34" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_9" target="cell_3" edge="true"/>
+<mxCell id="cell_35" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_10" target="cell_3" edge="true"/>
+<mxCell id="cell_36" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_11" target="cell_3" edge="true"/>
+<mxCell id="cell_37" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_12" target="cell_3" edge="true"/>
+<mxCell id="cell_38" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_14" target="cell_3" edge="true"/>
+<mxCell id="cell_39" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_15" target="cell_3" edge="true"/>
+<mxCell id="cell_40" value="extend" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_8" target="cell_5" edge="true"/>
+<mxCell id="cell_41" value="extend" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_8" target="cell_6" edge="true"/>
+<mxCell id="cell_43" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_42" target="cell_2" edge="true"/>
+<mxCell id="cell_45" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_44" target="cell_13" edge="true"/>
+<mxCell id="cell_47" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_46" target="cell_16" edge="true"/>
+<mxCell id="cell_49" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_48" target="cell_17" edge="true"/>
+<mxCell id="cell_51" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_50" target="cell_18" edge="true"/>
+<mxCell id="cell_53" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_52" target="cell_19" edge="true"/>
+<mxCell id="cell_55" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_54" target="cell_20" edge="true"/>
+<mxCell id="cell_57" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_56" target="cell_21" edge="true"/>
+<mxCell id="cell_59" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_58" target="cell_22" edge="true"/>
+<mxCell id="cell_61" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_60" target="cell_3" edge="true"/>
+<mxCell id="cell_63" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_62" target="cell_4" edge="true"/>
+<mxCell id="cell_65" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_64" target="cell_5" edge="true"/>
+<mxCell id="cell_67" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_66" target="cell_6" edge="true"/>
+<mxCell id="cell_69" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_68" target="cell_7" edge="true"/>
+<mxCell id="cell_71" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_70" target="cell_8" edge="true"/>
+<mxCell id="cell_73" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_72" target="cell_9" edge="true"/>
+<mxCell id="cell_75" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_74" target="cell_10" edge="true"/>
+<mxCell id="cell_77" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_76" target="cell_11" edge="true"/>
+<mxCell id="cell_79" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_78" target="cell_12" edge="true"/>
+<mxCell id="cell_81" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_80" target="cell_14" edge="true"/>
+<mxCell id="cell_83" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_82" target="cell_15" edge="true"/>
+<mxCell id="cell_85" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_84" target="cell_3" edge="true"/>
+<mxCell id="cell_87" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_86" target="cell_7" edge="true"/>
+<mxCell id="cell_89" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_88" target="cell_8" edge="true"/>
+<mxCell id="cell_91" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_90" target="cell_3" edge="true"/>
+<mxCell id="cell_93" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_92" target="cell_4" edge="true"/>
+<mxCell id="cell_95" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_94" target="cell_5" edge="true"/>
+<mxCell id="cell_97" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_96" target="cell_6" edge="true"/>
+<mxCell id="cell_99" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_98" target="cell_7" edge="true"/>
+<mxCell id="cell_101" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_100" target="cell_8" edge="true"/>
+<mxCell id="cell_103" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_102" target="cell_9" edge="true"/>
+<mxCell id="cell_105" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_104" target="cell_10" edge="true"/>
+<mxCell id="cell_107" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_106" target="cell_11" edge="true"/>
+<mxCell id="cell_109" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_108" target="cell_12" edge="true"/>
+<mxCell id="cell_111" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_110" target="cell_14" edge="true"/>
+<mxCell id="cell_113" value="include" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=block;" source="cell_112" target="cell_15" edge="true"/>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
