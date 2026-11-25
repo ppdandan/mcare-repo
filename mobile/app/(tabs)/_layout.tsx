@@ -3,8 +3,10 @@ import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors as Colors } from '@/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TabsLayout() {
+  const insets = useSafeAreaInsets();
   return (
     <Tabs
       screenOptions={{
@@ -14,8 +16,8 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: Colors.background,
           borderTopColor: Colors.brandSoft,
-          height: 64,
-          paddingBottom: spacing.sm,
+          height: 56 + spacing.sm + Math.max(insets.bottom, spacing.xs),
+          paddingBottom: Math.max(insets.bottom, spacing.xs),
           paddingTop: spacing.sm,
         },
         tabBarLabelStyle: {
@@ -67,6 +69,12 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="document-text-outline" size={size} color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="clinic-finder"
+        options={{
+          href: null, // Reached from Home action grid, not a tab
         }}
       />
       <Tabs.Screen
