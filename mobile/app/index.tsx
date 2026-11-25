@@ -80,143 +80,14 @@ export default function IndexScreen() {
       isMounted = false;
       if (timer) clearTimeout(timer);
     };
+  }, [session, profile, loading, router]);
+}
 
 // Clinic information constants
 export const CLINIC_INFO = {
   name: "M-CARE OB-GYNE CLINIC",
-  address: "Balibago, Angeles City",
-  coordinates: { lat: 15.1500, lng: 120.5000 },
+  address: "5H9Q+3XG, Aniceto Gueco Street, Balibago, Angeles City, Pampanga",
+  coordinates: { lat: 15.1475, lng: 120.5070 }, // Approximate Balibago, Angeles City
   phone: "(045) 123-4567",
   email: "clinic@m-care.com"
 };
-  }, [session, profile, loading, router]);
-
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-      {/* Background Soft Glow Circles */}
-      <View style={styles.bgGlowTop} />
-      <View style={styles.bgGlowBottom} />
-
-      {/* Animated Maternal Silhouette Badge */}
-      <Animated.View
-        style={[
-          styles.logoContainer,
-          {
-            opacity: logoOpacity,
-            transform: [{ scale: Animated.multiply(logoScale, pulseAnim) }],
-          },
-        ]}
-      >
-        <Image
-          source={require('../assets/logo.png')}
-          accessibilityLabel="M-Care logo"
-          resizeMode="contain"
-          style={{ width: 140, height: 164 }}
-        />
-      </Animated.View>
-
-      {/* Brand Title and Subtitle Animation */}
-      <Animated.View style={[styles.textContainer, { opacity: textOpacity }]}>
-        <Text style={styles.clinicName}>M-CARE</Text>
-        <Text style={styles.clinicSpecialty}>OB-GYNE CLINIC & ULTRASOUND</Text>
-        <Text style={styles.clinicLocation}>Balibago, Angeles City</Text>
-
-        <View style={styles.loadingPill}>
-          <View style={styles.dot} />
-          <Text style={styles.loadingText}>Connecting to care…</Text>
-        </View>
-      </Animated.View>
-      </View>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Colors.brandWash,
-  },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.brandWash,
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  bgGlowTop: {
-    position: 'absolute',
-    top: -100,
-    right: -100,
-    width: 280,
-    height: 280,
-    borderRadius: radius.full,
-    backgroundColor: Colors.brandSoft,
-    opacity: 0.6,
-  },
-  bgGlowBottom: {
-    position: 'absolute',
-    bottom: -120,
-    left: -100,
-    width: 320,
-    height: 320,
-    borderRadius: radius.full,
-    backgroundColor: Colors.brandSoft,
-    opacity: 0.4,
-  },
-  logoContainer: {
-    marginBottom: 0,
-  },
-  textContainer: {
-    alignItems: 'center',
-  },
-  clinicName: {
-    fontSize: typography.largeTitle.fontSize,
-    fontWeight: '900',
-    color: Colors.primaryDark,
-    letterSpacing: 2.5,
-  },
-  clinicSpecialty: {
-    fontSize: typography.caption.fontSize,
-    fontWeight: '700',
-    color: Colors.textSecondary,
-    letterSpacing: 1.5,
-    marginTop: spacing.xs,
-    textTransform: 'uppercase',
-  },
-  clinicLocation: {
-    fontSize: typography.caption.fontSize,
-    fontWeight: '500',
-    color: Colors.textLight,
-    marginTop: spacing.xs,
-  },
-  loadingPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 0,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.xl,
-    backgroundColor: Colors.background,
-    borderWidth: 1,
-    borderColor: Colors.brandSoft,
-    shadowColor: Colors.primaryDark,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: radius.sm,
-    backgroundColor: Colors.primary,
-    marginRight: spacing.sm,
-  },
-  loadingText: {
-    fontSize: typography.caption.fontSize,
-    fontWeight: '600',
-    color: Colors.primaryDark,
-  },
-});
