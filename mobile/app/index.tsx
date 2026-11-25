@@ -80,6 +80,15 @@ export default function IndexScreen() {
       isMounted = false;
       if (timer) clearTimeout(timer);
     };
+
+// Clinic information constants
+export const CLINIC_INFO = {
+  name: "M-CARE OB-GYNE CLINIC",
+  address: "Balibago, Angeles City",
+  coordinates: { lat: 15.1500, lng: 120.5000 },
+  phone: "(045) 123-4567",
+  email: "clinic@m-care.com"
+};
   }, [session, profile, loading, router]);
 
   return (

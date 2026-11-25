@@ -148,6 +148,17 @@ export default function ProfileScreen() {
             <TextField label="Mobile Phone" containerStyle={styles.inputGroup} value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
 
             <TextField label="Home Address" containerStyle={styles.inputGroup} value={address} onChangeText={setAddress} />
+
+{/* Add clinic finder button */}
+<View style={styles.inputGroup}>
+  <TouchableOpacity
+    style={styles.clinicButton}
+    onPress={() => router.push('/(tabs)/clinic-finder')}
+  >
+    <Ionicons name="location-outline" size={20} color={Colors.primary} />
+    <Text style={styles.clinicText}>Find Clinic</Text>
+  </TouchableOpacity>
+</View>
           </Card>
 
           {/* Section 2: Clinical & Emergency Information */}
@@ -312,7 +323,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.errorBackground,
     backgroundColor: Colors.errorBackground,
   },
-  signOutText: { color: Colors.error, fontSize: typography.small.fontSize, fontWeight: '700' },
+  signOutText: { color: Colors.error, fontSize: spacing.small.fontSize, fontWeight: '700' },
   deleteCard: {
     marginTop: spacing.xs,
     marginBottom: spacing.lg,
@@ -327,4 +338,26 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.error,
   },
   deleteBtnText: { color: Colors.background, fontSize: typography.small.fontSize, fontWeight: '700' },
+  // Clinic Finder Button Styles
+  clinicButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.md,
+    backgroundColor: Colors.brandSoft,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: Colors.brandSoft,
+    marginTop: spacing.md,
+    shadowColor: Colors.primaryDark,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 1,
+  },
+  clinicText: {
+    marginLeft: spacing.sm,
+    fontSize: typography.small.fontSize,
+    fontWeight: '600',
+    color: Colors.primaryDark,
+  },
 });
