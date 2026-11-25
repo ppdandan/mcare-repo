@@ -15,6 +15,7 @@ const RESTRICTED_ROUTES: Record<string, string[]> = {
   "/dashboard/analytics": ["admin"],
   "/dashboard/transactions": ["doctor", "admin"],
   "/dashboard/records": ["doctor", "nurse", "admin"],
+  "/dashboard/inventory": ["admin"],
 };
 
 /**
