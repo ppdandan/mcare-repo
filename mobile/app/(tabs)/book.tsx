@@ -706,8 +706,8 @@ const styles = StyleSheet.create({
     borderColor: Colors.surfaceAlt,
   },
   calendarDayDisabled: {
-    backgroundColor: Colors.border,
-    borderColor: Colors.border,
+    backgroundColor: Colors.brandWash,
+    borderColor: Colors.borderLight,
   },
   calendarDayActive: {
     backgroundColor: Colors.primary,
@@ -719,7 +719,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   calendarDayTextDisabled: {
-    color: Colors.textLight,
+    color: Colors.textSecondary,
   },
   calendarDayTextActive: {
     color: Colors.background,
