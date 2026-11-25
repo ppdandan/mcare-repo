@@ -217,6 +217,24 @@ export default function HomeScreen() {
               </Text>
             </View>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Find Clinic"
+            style={styles.primaryActionCard}
+            onPress={() => router.push('/(tabs)/clinic-finder' as never)}
+            activeOpacity={0.85}
+          >
+            <View style={styles.actionIconBox}>
+              <Ionicons name="location-outline" size={28} color={Colors.primaryDark} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.actionTitle}>Find Clinic</Text>
+              <Text style={styles.actionDesc}>
+                View location, address, and get directions
+              </Text>
+            </View>
+          </TouchableOpacity>
         </View>
 
         {/* Next Appointment Section */}
@@ -582,5 +600,22 @@ const styles = StyleSheet.create({
     fontSize: typography.caption.fontSize,
     fontWeight: '700',
     color: Colors.background,
+  },
+
+  // Clinic Finder Button in Action Grid
+  clinicButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.md,
+    backgroundColor: Colors.brandSoft,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: Colors.brandSoft,
+    marginTop: spacing.md,
+    shadowColor: Colors.primaryDark,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 1,
   },
 });

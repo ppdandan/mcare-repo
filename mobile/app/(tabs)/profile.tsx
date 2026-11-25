@@ -12,6 +12,7 @@ import {
   Platform,
   AccessibilityInfo,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
@@ -153,7 +154,7 @@ export default function ProfileScreen() {
 <View style={styles.inputGroup}>
   <TouchableOpacity
     style={styles.clinicButton}
-    onPress={() => router.push('/(tabs)/clinic-finder')}
+    onPress={() => router.push('/(tabs)/clinic-finder' as never)}
   >
     <Ionicons name="location-outline" size={20} color={Colors.primary} />
     <Text style={styles.clinicText}>Find Clinic</Text>
@@ -323,7 +324,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.errorBackground,
     backgroundColor: Colors.errorBackground,
   },
-  signOutText: { color: Colors.error, fontSize: spacing.small.fontSize, fontWeight: '700' },
+  signOutText: { color: Colors.error, fontSize: typography.small.fontSize, fontWeight: '700' },
   deleteCard: {
     marginTop: spacing.xs,
     marginBottom: spacing.lg,
