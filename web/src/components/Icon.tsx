@@ -2,7 +2,8 @@ export type IconName =
   | "layout-dashboard" | "calendar" | "receipt" | "clock" | "users"
   | "clipboard" | "message" | "chart" | "file" | "settings" | "logout"
   | "check-circle" | "stethoscope" | "download" | "printer" | "list"
-  | "shield-check" | "alert" | "info" | "menu" | "search" | "lock" | "close";
+  | "shield-check" | "alert" | "info" | "menu" | "search" | "lock" | "close"
+  | "chevron-left" | "chevron-right";
 
 const paths: Record<IconName, string[]> = {
   "layout-dashboard": ["M3 3h7v7H3z", "M14 3h7v5h-7z", "M14 12h7v9h-7z", "M3 14h7v7H3z"],
@@ -28,6 +29,8 @@ const paths: Record<IconName, string[]> = {
   search: ["M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16z", "m21 21-4.35-4.35"],
   lock: ["M5 11h14v10H5z", "M8 11V7a4 4 0 1 1 8 0v4"],
   close: ["m18 6-12 12", "m6 6 12 12"],
+  "chevron-left": ["m15 18-6-6 6-6"],
+  "chevron-right": ["m9 18 6-6-6-6"],
 };
 
 export default function Icon({ name, size = 18, className, ...props }: {
