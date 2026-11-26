@@ -44,6 +44,12 @@ export default function AnalyticsPage() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<"7d" | "30d" | "90d" | "all">("30d");
   const [isMounted, setIsMounted] = useState(false);
+  const [ageGroupData, setAgeGroupData] = useState<Array<{ age_group: string; count: number }>>([]);
+  const [paymentData, setPaymentData] = useState<{
+    revenueByService: Array<{ service_name: string; revenue: number }>;
+    voidRateOverTime: Array<{ month_key: string; total: number; voided: number; void_rate: number }>;
+    monthlyTotals: Array<{ month_key: string; month_label: string; total_revenue: number }>;
+  } | null>(null);
 
   const supabase = createClient();
 
@@ -112,6 +118,60 @@ export default function AnalyticsPage() {
         const profile = Array.isArray(row.profile) ? row.profile[0] : row.profile;
         return profile?.created_at;
       }).filter((date): date is string => Boolean(date)));
+
+      // Fetch demographics age group distribution from the SQL view
+      const { data: ageData, error: ageError } = await supabase
+        .from("patients_by_age_group")
+        .select("age_group, patient_count");
+      if (ageError) throw ageError;
+      if (ageData) {
+        const grouped: Record<string, number> = {};
+        ageData.forEach((row) => {
+          grouped[row.age_group] = (grouped[row.age_group] ?? 0) + row.patient_count;
+        });
+        const ordered: Array<{ age_group: string; count: number }> = [
+          "Under 18",
+          "18 to 24",
+          "25 to 34",
+          "35 to 44",
+          "45 or older",
+        ].map((g) => ({ age_group: g, count: grouped[g] ?? 0 }));
+        setAgeGroupData(ordered);
+      }
+
+      // Fetch payment analytics from the new SQL functions
+      const { data: paymentData, error: paymentError } = await supabase
+        .rpc('get_transaction_revenue_by_service', {});
+      if (paymentError) throw paymentError;
+      const revenueByService: Array<{ service_name: string; revenue: number }> = (paymentData ?? []).map((row: any) => ({
+        service_name: row.service_name || 'General',
+        revenue: Number(row.revenue),
+      }));
+
+      const { data: voidRateData, error: voidRateError } = await supabase
+        .rpc('get_transaction_void_rate_over_time', {});
+      if (voidRateError) throw voidRateError;
+      const voidRateOverTime: Array<{ month_key: string; total: number; voided: number; void_rate: number }> = (voidRateData ?? []).map((row: any) => ({
+        month_key: row.month_key,
+        total: row.total_transactions,
+        voided: row.voided_transactions,
+        void_rate: Number(row.void_rate),
+      }));
+
+      const { data: monthlyTotalsData, error: monthlyTotalsError } = await supabase
+        .rpc('get_transaction_monthly_totals', {});
+      if (monthlyTotalsError) throw monthlyTotalsError;
+      const monthlyTotals: Array<{ month_key: string; month_label: string; total_revenue: number }> = (monthlyTotalsData ?? []).map((row: any) => ({
+        month_key: row.month_key,
+        month_label: row.month_label,
+        total_revenue: Number(row.total_revenue),
+      }));
+
+      setPaymentData({
+        revenueByService,
+        voidRateOverTime,
+        monthlyTotals,
+      });
     } catch (err) {
       console.error("Error fetching analytics data:", err);
       setLoadError(userFacingErrorMessage(err, "We couldn’t load analytics."));
@@ -348,6 +408,25 @@ export default function AnalyticsPage() {
               </BarChart>
             </ResponsiveContainer>
           ) : <div className="h-full flex items-center justify-center text-xs text-base-content/60">No patient registrations in this period.</div>}
+        </div>
+      </section>
+
+      {/* Demographics: Age Group Distribution */}
+      <section className="bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm" aria-labelledby="demographics-age-chart-title">
+        <h2 id="demographics-age-chart-title" className="text-base font-bold text-base-content mb-1">Patient Age Groups</h2>
+        <p className="text-xs text-base-content/60 mb-4">Distribution of registered patients by age bracket</p>
+        <div className="h-64 w-full">
+          {isMounted && ageGroupData.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={ageGroupData}>
+                <CartesianGrid strokeDasharray="3 3" stroke={designTokens.color.divider} />
+                <XAxis dataKey="age_group" stroke={designTokens.color.textMuted} fontSize={typography.caption.fontSize} />
+                <YAxis stroke={designTokens.color.textMuted} fontSize={typography.caption.fontSize} allowDecimals={false} />
+                <Tooltip />
+                <Bar dataKey="count" name="Patients" fill={designTokens.color.brandStrong} radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : <div className="h-full flex items-center justify-center text-xs text-base-content/60">No age data available for this period.</div>}
         </div>
       </section>
 
