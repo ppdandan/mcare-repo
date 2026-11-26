@@ -142,3 +142,26 @@ Presentation-only improvements across the four patient app screens requested by 
 - Flows confirmed by reading handlers: walk-in submit, calendar selection/tap, directions open
 - Existing git status outside these files (PRODUCTION_RUNBOOK.md, README.md, home.tsx, profile.tsx, components/ui/index.ts, package-lock.json, skills-lock.json, web/.env.example, web/src/middleware.ts, web/src/app/dashboard/layout.tsx, untracked infra/docs files) left untouched
 
+---
+
+## Bug fix: Walk-in bottom sheet washed out and clipped (mobile, 2026-11-26)
+
+Owner reported the "Report a Walk-in" sheet on the My Clinic Visits screen rendered with washed-out title, collapsed/overlapping form, and missing lower fields (screenshot provided).
+
+### Root cause
+The custom `Modal` component at `mobile/components/ui/Modal.tsx` (introduced in commit `4690587`) layered a custom `Animated` opacity + `translateY` on top of RN's native `RNModal` `animationType="slide"`. A broken `Animation` fallback object (no-op `timing`/`parallel`) left the fade stuck near 0 and the transform offset fighting the native slide, so the sheet's content rendered semi-transparent and clipped (`maxHeight: '85%'` + `overflow: hidden` + no scroll). `records.tsx` uses RN's own `Modal`, so only the walk-in sheet was affected.
+
+### Fix
+Rewrote `mobile/components/ui/Modal.tsx` (API unchanged, so `appointments.tsx` is untouched):
+- Removed the custom `Animated` layer; RN's native `slide` animation drives the sheet in/out.
+- Backdrop dim is now a plain absolute-fill `View` behind the sheet (tap outside still closes, tap inside does not).
+- Sheet body wrapped in `ScrollView` (`keyboardShouldPersistTaps="handled"`) so tall forms are never clipped on small screens; header stays pinned above it.
+
+### Verification
+- Mobile tsc: `cd mobile && npx tsc --noEmit` → **PASS** (exit 0)
+- Visual verification on a device/emulator still required: open the walk-in sheet on My Clinic Visits and confirm the title is legible, all fields render, and the sheet scrolls.
+
+## Walk-in submission redirected to report_walk_in_visit RPC (mobile)
+
+`mobile/app/(tabs)/appointments.tsx` `handleWalkInSubmit` replaced the direct `appointments` insert with `supabase.rpc('report_walk_in_visit', …)`. The direct insert was broken by design: RLS policy `appointments_insert_policy` has `WITH CHECK (is_staff())`, so patients can never insert into `appointments`. The SECURITY DEFINER RPC (migration 00032) inserts as `status='pending'` and keeps the GiST double-booking guard. Layout, error/success handling, and the visits-list refresh are unchanged. Mobile tsc passes. Owner still needs to confirm on phone that a submitted walk-in appears as pending on the web dashboard.
+

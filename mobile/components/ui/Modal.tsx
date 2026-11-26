@@ -1,15 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Modal as RNModal,
   TouchableWithoutFeedback,
-  Keyboard,
-  Animated,
-  Platform,
+  ScrollView,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { spacing, typography, radius, colors as Colors } from '@/theme';
 
@@ -32,34 +29,6 @@ export function Modal({
   animationType = 'slide',
   style,
 }: ModalProps) {
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(Platform.OS === 'ios' ? 300 : 300)).current;
-
-  useEffect(() => {
-    if (visible) {
-      Animated.parallel([
-        Animated.timing(fadeAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
-        Animated.timing(slideAnim, { toValue: 0, duration: 250, useNativeDriver: true, easing: Animation.easing.out(Animation.easing.quad) }),
-      ]).start();
-    } else {
-      Animated.parallel([
-        Animated.timing(fadeAnim, { toValue: 0, duration: 150, useNativeDriver: true }),
-        Animated.timing(slideAnim, { toValue: Platform.OS === 'ios' ? 300 : 300, duration: 200, useNativeDriver: true, easing: Animation.easing.in(Animation.easing.quad) }),
-      ]).start(() => {});
-    }
-  }, [visible, fadeAnim, slideAnim]);
-
-  if (!visible && !transparent) return null;
-
-  const containerStyle = [
-    styles.container,
-    style,
-    {
-      opacity: fadeAnim,
-      transform: [{ translateY: slideAnim }],
-    },
-  ];
-
   return (
     <RNModal
       visible={visible}
@@ -68,22 +37,38 @@ export function Modal({
       onRequestClose={onClose}
       statusBarTranslucent
     >
+      {/* Tapping the dimmed backdrop closes; tapping the sheet does not. */}
       <TouchableWithoutFeedback onPress={onClose} accessible={false}>
-        <View style={styles.overlay} pointerEvents="box-none">
+        <View style={styles.overlay}>
+          <View style={styles.backdrop} pointerEvents="none" />
           <TouchableWithoutFeedback onPress={() => {}} accessible={false}>
-            <Animated.View style={containerStyle} pointerEvents="box-only">
-              {title && (
+            <View style={[styles.container, style]}>
+              {title ? (
                 <View style={styles.header}>
                   <Text style={styles.title}>{title}</Text>
-                  <TouchableWithoutFeedback onPress={onClose} accessibilityLabel="Close">
-                    <View style={styles.closeButton} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                  <TouchableWithoutFeedback
+                    onPress={onClose}
+                    accessibilityLabel="Close"
+                  >
+                    <View
+                      style={styles.closeButton}
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    >
                       <Ionicons name="close" size={24} color={Colors.textSecondary} />
                     </View>
                   </TouchableWithoutFeedback>
                 </View>
-              )}
-              <View style={styles.content}>{children}</View>
-            </Animated.View>
+              ) : null}
+              {/* Body scrolls so tall forms are never clipped on small screens. */}
+              <ScrollView
+                style={styles.content}
+                contentContainerStyle={styles.contentInner}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator
+              >
+                {children}
+              </ScrollView>
+            </View>
           </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
@@ -91,28 +76,15 @@ export function Modal({
   );
 }
 
-const Animation = {
-  timing: (config: { toValue: number; duration: number; useNativeDriver: boolean; easing?: any }) => config,
-  parallel: (animations: any[]) => ({
-    start: (callback?: () => void) => {
-      setTimeout(() => callback?.(), 0);
-    },
-  }),
-  easing: {
-    out: (fn: any) => fn,
-    in: (fn: any) => fn,
-    quad: (t: number) => t * t,
-  },
-} as any;
-
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
+    justifyContent: 'flex-end',
+  },
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: Colors.shadow,
     opacity: 0.5,
-    justifyContent: 'flex-end',
-    padding: spacing.lg,
-    paddingBottom: spacing['3xl'],
   },
   container: {
     backgroundColor: Colors.background,
@@ -125,7 +97,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 20,
     elevation: 10,
-    overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',
@@ -146,7 +117,9 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+    paddingTop: spacing.md,
+  },
+  contentInner: {
     paddingBottom: spacing['3xl'],
   },
 });
