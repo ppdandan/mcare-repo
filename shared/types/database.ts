@@ -71,6 +71,7 @@ export interface Appointment {
   end_time: string;   // ISO timestamptz
   status: AppointmentStatus;
   notes: string | null;
+  is_walk_in: boolean;     // true if self-reported as walk-in by patient
   created_at: string;
   updated_at: string;
 }

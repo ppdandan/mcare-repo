@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Icon from "@/components/Icon";
 import TableControls from "@/components/ui/TableControls";
@@ -34,6 +34,20 @@ export default function PatientsPage() {
   const [allergies, setAllergies] = useState("");
   const [obstetricHistory, setObstetricHistory] = useState("");
   const [saving, setSaving] = useState(false);
+  const [services, setServices] = useState<Array<{ id: string; name: string }>>([]);
+  const [doctors, setDoctors] = useState<Array<{ id: string; profile: { full_name: string } }>>([]);
+
+  // Walk-in appointment state
+  const [walkInSubmitting, setWalkInSubmitting] = useState(false);
+  const [walkInServiceId, setWalkInServiceId] = useState<string>('');
+  const [walkInDoctorId, setWalkInDoctorId] = useState<string>('');
+  const [walkInStartTime, setWalkInStartTime] = useState<string>('');
+  const [walkInNotes, setWalkInNotes] = useState<string>('');
+
+  const serviceSelect = useRef<HTMLSelectElement>(null);
+  const doctorSelect = useRef<HTMLSelectElement>(null);
+  const startTimeInput = useRef<HTMLInputElement>(null);
+  const notesTextarea = useRef<HTMLTextAreaElement>(null);
 
   const supabase = createClient();
 
@@ -65,6 +79,34 @@ export default function PatientsPage() {
   useEffect(() => {
     fetchPatients();
   }, [fetchPatients]);
+
+  // Fetch services and doctors for walk-in appointment creation
+  const fetchWalkInData = useCallback(async () => {
+    try {
+      const { data: servicesData, error: servicesError } = await supabase
+        .from('services')
+        .select('id, name')
+        .eq('is_active', true);
+
+      if (servicesError) throw servicesError;
+
+      const { data: doctorsData, error: doctorsError } = await supabase
+        .from('doctors')
+        .select('id, profile:profiles (full_name)')
+        .eq('is_active', true);
+
+      if (doctorsError) throw doctorsError;
+
+      setServices(servicesData as unknown as { id: string; name: string }[]);
+      setDoctors(doctorsData as unknown as { id: string; profile: { full_name: string } }[]);
+    } catch (err) {
+      console.error('Error fetching walk-in data:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchWalkInData();
+  }, [fetchWalkInData]);
 
   const handleCreatePatient = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,6 +189,45 @@ export default function PatientsPage() {
       alert(message);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleCreateWalkInAppointment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedPatient || walkInSubmitting || !walkInServiceId || !walkInDoctorId || !walkInStartTime) {
+      alert('Please fill in all required fields (service, doctor, date/time).');
+      return;
+    }
+    setWalkInSubmitting(true);
+    try {
+      const startMs = new Date(walkInStartTime).getTime();
+      const startTimeISO = new Date(startMs - startMs % 60000).toISOString(); // round to minute
+
+      const { data: apptData, error: apptError } = await supabase.rpc('book_appointment', {
+        p_doctor_id: walkInDoctorId,
+        p_service_id: walkInServiceId,
+        p_start_time: startTimeISO,
+        p_notes: walkInNotes.trim() || null,
+        p_is_walk_in: true,
+      });
+
+      if (apptError) throw apptError;
+
+      // Fetch the newly created appointment to confirm status
+      const { data: fetchData, error: fetchError } = await supabase
+        .from('appointments')
+        .select('id, patient_id, doctor_id, service_id, status, is_walk_in, notes, created_at')
+        .eq('id', apptData)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      alert(`Walk-in appointment created!\nAppointment ID: ${apptData}\nStatus: ${fetchData.status}\nPatient: ${fetchData.patient_id ? 'Registered' : 'Pending'}\nStaff should verify and confirm/reschedule.`);
+    } catch (err: unknown) {
+      const message = userFacingErrorMessage(err, 'Could not create walk-in appointment. Check the time slot and try again.');
+      alert(message);
+    } finally {
+      setWalkInSubmitting(false);
     }
   };
 
@@ -426,11 +507,97 @@ export default function PatientsPage() {
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setSelectedPatient(null)}
-                className="px-4 py-2 bg-base-200 hover:bg-gray-200 text-base-content rounded-lg text-xs font-semibold"
-              >
+                className="px-4 py-2 bg-base-200 hover:bg-gray-200 text-base-content rounded-lg text-xs font-semibold">
                 Close
               </button>
             </div>
+
+            {/* Create Walk-in Appointment for selected patient */}
+            {selectedPatient && !editingPatient && (
+              <div className="mt-4 p-3 bg-base-200 rounded-xl border border-base-300">
+                <h4 className="font-bold text-base-content mb-2">Create Walk-in Appointment</h4>
+                <p className="text-xs text-base-content/70 mb-3">
+                  Book an appointment for this registered walk-in patient. The double-booking
+                  guard applies; the appointment will be saved as pending for staff verification.
+                </p>
+                <form
+                  onSubmit={handleCreateWalkInAppointment}
+                  className="space-y-2"
+                >
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <label className="font-bold text-base-content block mb-1">Service *</label>
+                      <select
+                        ref={serviceSelect}
+                        value={walkInServiceId}
+                        aria-label="Service for walk-in appointment"
+                        onChange={(e) => setWalkInServiceId((e.target as HTMLSelectElement).value)}
+                        className="w-full border border-base-300 rounded-lg p-1"
+                      >
+                        <option value="">Select a service</option>
+                        {services.map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="font-bold text-base-content block mb-1">Doctor *</label>
+                      <select
+                        ref={doctorSelect}
+                        value={walkInDoctorId}
+                        aria-label="Doctor for walk-in appointment"
+                        onChange={(e) => setWalkInDoctorId((e.target as HTMLSelectElement).value)}
+                        className="w-full border border-base-300 rounded-lg p-1"
+                      >
+                        <option value="">Select a doctor</option>
+                        {doctors.map((d) => (
+                          <option key={d.id} value={d.id}>
+                            {d.profile?.full_name ?? d.profile?.full_name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="font-bold text-base-content block mb-1">Date & Time *</label>
+                    <input
+                      type="datetime-local"
+                      ref={startTimeInput}
+                      value={walkInStartTime}
+                      aria-label="Start time for walk-in appointment"
+                      onChange={(e) => setWalkInStartTime((e.target as HTMLInputElement).value)}
+                      className="w-full border border-base-300 rounded-lg p-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold text-base-content block mb-1">Notes</label>
+                    <textarea
+                      ref={notesTextarea}
+                      value={walkInNotes}
+                      aria-label="Notes for walk-in appointment"
+                      onChange={(e) => setWalkInNotes((e.target as HTMLTextAreaElement).value)}
+                      className="w-full border border-base-300 rounded-lg p-1 h-24 resize-y"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={walkInSubmitting}
+                    className="w-full py-2 bg-primary text-primary-content rounded-lg text-sm font-semibold flex items-center justify-center gap-2"
+                  >
+                    {walkInSubmitting ? (
+                      <span>Booking…</span>
+                    ) : (
+                      <>
+                        <Icon name="calendar" size={16} />
+                        <span>Create Walk-in Appointment</span>
+                      </>
+                    )}
+                  </button>
+                </form>
+              </div>
+            )}
           </div>
         </div>
       )}
