@@ -203,3 +203,18 @@ Owner asked where the "Find Clinic" button goes: it pushed to `(tabs)/clinic-fin
 - Mobile tsc: `cd mobile && npx tsc --noEmit` → **PASS** (exit 0)
 - `react-native-maps` is no longer imported anywhere in mobile; the npm dependency itself was left in `package.json` (out of scope to remove without a clean-up task).
 
+## Web console error: "Error fetching walk-in data" on Patients page (web, 2026-11-26)
+
+Owner screenshot showed `console.error('Error fetching walk-in data:', err)` at `web/src/app/dashboard/patients/page.tsx:103` with an empty error object.
+
+### Root cause
+`fetchWalkInData` queried `doctors` with `.eq('is_active', true)` — but the `doctors` table has no `is_active` column (only `id`, `profile_id`, `specialty`, `room`), so the PostgREST request failed with an invalid-column error. The exception was thrown before `setServices`/`setDoctors` ran, leaving the walk-in form's service and doctor dropdowns empty.
+
+### Fix
+Removed the `.eq('is_active', true)` filter from the `doctors` query in `fetchWalkInData` (`web/src/app/dashboard/patients/page.tsx`). The `services` query keeps its `is_active` filter — that column exists on `services`. No other dashboard page uses `is_active` on `doctors`.
+
+### Verification
+- Web tsc: `cd web && npx tsc --noEmit` → **PASS** (exit 0)
+- Web build: `cd web && npm run build` → **PASS**
+- Owner should reload the Patients page and confirm the console error is gone and the walk-in dropdowns populate.
+
