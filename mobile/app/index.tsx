@@ -88,6 +88,6 @@ export const CLINIC_INFO = {
   name: "M-CARE OB-GYNE CLINIC",
   address: "5H9Q+3XG, Aniceto Gueco Street, Balibago, Angeles City, Pampanga",
   coordinates: { lat: 15.1475, lng: 120.5070 }, // Approximate Balibago, Angeles City
-  phone: "(045) 123-4567",
+  phone: "09319286980",
   email: "clinic@m-care.com"
 };

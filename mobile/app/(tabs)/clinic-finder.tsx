@@ -1,14 +1,6 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  Platform,
-} from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MapView, { Marker } from 'react-native-maps';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors as Colors, spacing, typography, radius } from '@/theme';
@@ -16,23 +8,15 @@ import { CLINIC_INFO } from '../index';
 
 export default function ClinicFinderScreen() {
   const router = useRouter();
-  const [showMap, setShowMap] = useState(true);
-
-  const openDirections = () => {
-    const url = `https://maps.google.com/?q=${CLINIC_INFO.coordinates.lat},${CLINIC_INFO.coordinates.lng}`;
-    if (Platform.OS === 'web') {
-      window.open(url, '_blank');
-    } else {
-      router.push({ pathname: '/(tabs)/home', params: { url } });
-    }
-  };
 
   return (
     <SafeAreaView style={styles.safeAreaContainer} edges={['top']}>
       <View style={styles.header}>
-        <Text style={styles.title}>Find Our Clinic</Text>
+        <Text style={styles.title}>Our Clinic</Text>
         <TouchableOpacity
           onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel="Close"
           style={styles.closeButton}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
@@ -44,71 +28,55 @@ export default function ClinicFinderScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {showMap && (
-          <MapView
-            style={styles.map}
-            initialRegion={{
-              latitude: CLINIC_INFO.coordinates.lat,
-              longitude: CLINIC_INFO.coordinates.lng,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01
-            }}
-          >
-            <Marker
-              coordinate={{ latitude: CLINIC_INFO.coordinates.lat, longitude: CLINIC_INFO.coordinates.lng }}
-              title={CLINIC_INFO.name}
-              description={CLINIC_INFO.address}
-            />
-          </MapView>
-        )}
-
-        <TouchableOpacity
-          style={styles.mapButton}
-          onPress={() => setShowMap(!showMap)}
-        >
-          <Ionicons
-            name={showMap ? 'eye-off-outline' : 'map-outline'}
-            size={20}
-            color={Colors.primary}
-          />
-          <Text style={styles.mapText}>{showMap ? 'Hide Map' : 'Show Map'}</Text>
-        </TouchableOpacity>
+        <View style={styles.logoRow}>
+          <View style={styles.infoIconBadge}>
+            <Ionicons name="location-sharp" size={24} color={Colors.primary} />
+          </View>
+        </View>
 
         <View style={styles.infoCard}>
-          <View style={styles.infoHeader}>
-            <View style={styles.infoIconBadge}>
-              <Ionicons name="location-sharp" size={18} color={Colors.primary} />
-            </View>
-            <Text style={styles.clinicName}>{CLINIC_INFO.name}</Text>
-          </View>
-          <Text style={styles.address}>{CLINIC_INFO.address}</Text>
+          <Text style={styles.clinicName}>{CLINIC_INFO.name}</Text>
           <View style={styles.divider} />
           <View style={styles.contactRow}>
-            <Ionicons name="call-outline" size={16} color={Colors.textSecondary} />
-            <Text style={styles.contactText}>{CLINIC_INFO.phone}</Text>
+            <View style={styles.contactIconBadge}>
+              <Ionicons name="location-outline" size={18} color={Colors.primary} />
+            </View>
+            <View style={styles.contactBody}>
+              <Text style={styles.contactLabel}>Address</Text>
+              <Text style={styles.contactText}>{CLINIC_INFO.address}</Text>
+            </View>
           </View>
           <View style={styles.contactRow}>
-            <Ionicons name="mail-outline" size={16} color={Colors.textSecondary} />
-            <Text style={styles.contactText}>{CLINIC_INFO.email}</Text>
+            <View style={styles.contactIconBadge}>
+              <Ionicons name="call-outline" size={18} color={Colors.primary} />
+            </View>
+            <View style={styles.contactBody}>
+              <Text style={styles.contactLabel}>Phone</Text>
+              <Text style={styles.contactText}>{CLINIC_INFO.phone}</Text>
+            </View>
+          </View>
+          <View style={styles.contactRow}>
+            <View style={styles.contactIconBadge}>
+              <Ionicons name="mail-outline" size={18} color={Colors.primary} />
+            </View>
+            <View style={styles.contactBody}>
+              <Text style={styles.contactLabel}>Email</Text>
+              <Text style={styles.contactText}>{CLINIC_INFO.email}</Text>
+            </View>
           </View>
         </View>
 
         <View style={styles.hoursCard}>
           <View style={styles.hoursRow}>
-            <Ionicons name="time-outline" size={16} color={Colors.primary} />
+            <Ionicons name="time-outline" size={18} color={Colors.primary} />
             <Text style={styles.hoursLabel}>Consultation hours</Text>
           </View>
           <Text style={styles.hoursValue}>Monday to Friday, by appointment</Text>
         </View>
 
-        <TouchableOpacity
-          style={styles.directionsButton}
-          onPress={openDirections}
-          activeOpacity={0.85}
-        >
-          <Ionicons name="navigate-outline" size={20} color={Colors.textOnPrimary} />
-          <Text style={styles.directionsText}>Get Directions</Text>
-        </TouchableOpacity>
+        <Text style={styles.hoursNote}>
+          Book your visit from the Book Appointment screen, or report a walk-in visit under My Clinic Visits.
+        </Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -144,63 +112,34 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: spacing['2xl'],
   },
-  map: {
-    height: 250,
-    marginHorizontal: spacing.lg,
-    marginTop: spacing.md,
-    borderRadius: radius.lg,
-    overflow: 'hidden',
+  logoRow: {
+    alignItems: 'center',
+    marginTop: spacing.xl,
+    marginBottom: spacing.sm,
   },
-  mapButton: {
-    flexDirection: 'row',
+  infoIconBadge: {
+    width: 56,
+    height: 56,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 44,
-    paddingVertical: spacing.sm,
-    backgroundColor: Colors.brandSoft,
-    marginHorizontal: spacing.lg,
-    marginTop: spacing.md,
-    borderRadius: radius.md,
-  },
-  mapText: {
-    marginLeft: spacing.sm,
-    fontSize: typography.small.fontSize,
-    fontWeight: '600',
-    color: Colors.primary,
+    borderRadius: radius.full,
+    backgroundColor: Colors.brandWash,
+    borderWidth: 2,
+    borderColor: Colors.primary,
   },
   infoCard: {
     backgroundColor: Colors.background,
     padding: spacing.lg,
     marginHorizontal: spacing.lg,
-    marginTop: spacing.md,
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: Colors.brandSoft,
   },
-  infoHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  infoIconBadge: {
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: radius.sm,
-    backgroundColor: Colors.brandWash,
-    marginRight: spacing.sm,
-  },
   clinicName: {
-    flex: 1,
     fontSize: typography.subhead.fontSize,
     fontWeight: '700',
     color: Colors.text,
-  },
-  address: {
-    fontSize: typography.small.fontSize,
-    lineHeight: typography.small.fontSize * 1.45,
-    color: Colors.textSecondary,
+    textAlign: 'center',
     marginBottom: spacing.md,
   },
   divider: {
@@ -210,21 +149,41 @@ const styles = StyleSheet.create({
   },
   contactRow: {
     flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: spacing.md,
+  },
+  contactIconBadge: {
+    width: 36,
+    height: 36,
     alignItems: 'center',
-    minHeight: 24,
-    marginBottom: spacing.sm,
+    justifyContent: 'center',
+    borderRadius: radius.sm,
+    backgroundColor: Colors.brandWash,
+    marginRight: spacing.md,
+  },
+  contactBody: {
+    flex: 1,
+    paddingTop: 2,
+  },
+  contactLabel: {
+    fontSize: typography.caption.fontSize,
+    fontWeight: '700',
+    color: Colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 2,
   },
   contactText: {
-    marginLeft: spacing.sm,
     fontSize: typography.small.fontSize,
+    lineHeight: typography.small.fontSize * 1.45,
     color: Colors.text,
   },
   hoursCard: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    minHeight: 44,
-    paddingVertical: spacing.sm,
+    minHeight: 56,
+    paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
     marginHorizontal: spacing.lg,
     marginTop: spacing.md,
@@ -250,22 +209,12 @@ const styles = StyleSheet.create({
     fontSize: typography.caption.fontSize,
     color: Colors.textSecondary,
   },
-  directionsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 48,
-    backgroundColor: Colors.primary,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
+  hoursNote: {
+    marginTop: spacing.md,
     marginHorizontal: spacing.lg,
-    marginTop: spacing.lg,
-    borderRadius: radius.lg,
-  },
-  directionsText: {
-    marginLeft: spacing.sm,
-    fontSize: typography.body.fontSize,
-    fontWeight: '600',
-    color: Colors.textOnPrimary,
+    fontSize: typography.caption.fontSize,
+    lineHeight: typography.caption.fontSize * 1.5,
+    color: Colors.textSecondary,
+    textAlign: 'center',
   },
 });
