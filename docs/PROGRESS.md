@@ -218,3 +218,23 @@ Removed the `.eq('is_active', true)` filter from the `doctors` query in `fetchWa
 - Web build: `cd web && npm run build` → **PASS**
 - Owner should reload the Patients page and confirm the console error is gone and the walk-in dropdowns populate.
 
+## Sidebar layout: responsive off-canvas + collapsible rail (web, 2026-11-26)
+
+Owner reported the dashboard sidebar "looks horrible right now and not complete" in `web/src/app/dashboard/layout.tsx`.
+
+### Problems
+- Mobile: the collapsed sidebar (default state) was always visible and overlapped the page content on small screens — content was shifted/covered behind the fixed `w-16` rail.
+- Desktop: when collapsed, the aside kept `lg:w-64` so the "closed" state only looked different cosmetically while the main content still reserved 64 of margin — a mismatch that wasted space and looked broken.
+- Section separators in the collapsed rail were inconsistent (first section had no divider, later ones did).
+
+### Changes
+- Closed state on mobile now fully hides the aside (`-translate-x-full`), so it behaves as an off-canvas drawer: open state slides over content with the existing `z-40` scrim; closed state leaves content full-width.
+- Desktop (lg+) closed state is a true slim rail: aside becomes `lg:w-16` (icon-only with right-side tooltips) instead of `lg:w-64`.
+- Main content and sticky header now respond to the open/closed state: `lg:ml-64` / `lg:pl-64` when open, `lg:ml-16` / `lg:pl-16` when closed (full-width content in the rail state).
+- Collapsed rail shows a short section divider before every section group (skipping the very first item, so the top of the rail isn't cut by a stray line).
+
+### Verification
+- Web tsc: `cd web && npx tsc --noEmit` → **PASS** (exit 0)
+- Web build: `cd web && npm run build` → **PASS** (20/20 pages)
+- Owner should toggle the sidebar at mobile and desktop widths to confirm the drawer and rail states.
+

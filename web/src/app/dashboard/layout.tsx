@@ -82,12 +82,13 @@ export default function DashboardLayout({
   const renderNavigation = () => {
     let previousSection = "";
     return visibleItems.map((item) => {
-      const showSection = item.section !== previousSection;
+      const firstOfSection = item.section !== previousSection;
       previousSection = item.section;
       const isActive = pathname === item.href;
       const isActiveClass = isActive ? "bg-primary text-primary-content" : "text-base-content hover:bg-base-200";
       return <React.Fragment key={item.href}>
-        {showSection && sidebarOpen && <p className="px-3 pt-5 pb-2 text-xs font-bold uppercase tracking-wider text-base-content/60">{item.section}</p>}
+        {firstOfSection && sidebarOpen && <p className="px-3 pt-5 pb-2 text-xs font-bold uppercase tracking-wider text-base-content/60">{item.section}</p>}
+        {firstOfSection && !sidebarOpen && item !== visibleItems[0] && <div className="mx-auto my-3 h-px w-10 bg-base-300" aria-hidden />}
         <Link href={item.href} onClick={() => setSidebarOpen(false)} aria-current={isActive ? "page" : undefined} className={`flex min-h-11 items-center rounded-btn text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${sidebarOpen ? "gap-3 px-3" : "justify-center px-2"} ${isActiveClass}`}>
           {sidebarOpen ? (
             <>
@@ -117,20 +118,23 @@ export default function DashboardLayout({
     admin: "bg-primary-100 text-primary-800",
   };
 
-  // Determine sidebar classes based on state
+  // Determine sidebar classes based on state:
+  // - Mobile: off-canvas drawer, hidden when closed, slides over content when open.
+  // - Desktop (lg+): fixed rail that stays in place; toggling swaps between a
+  //   full-width (w-64) expanded state and a slim (w-16) icon-only rail.
   const sidebarAsideClass = sidebarOpen
     ? "fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col border-r border-base-300 bg-base-100 shadow-xl transition-all duration-200 lg:translate-x-0 lg:shadow-none lg:w-64"
-    : "fixed inset-y-0 left-0 z-50 flex shrink-0 w-16 flex-col items-center border-r border-base-300 bg-base-100 shadow-sm transition-all duration-200 lg:translate-x-0 lg:shadow-none lg:w-64";
+    : "fixed inset-y-0 left-0 z-50 flex w-16 -translate-x-full flex-col items-center border-r border-base-300 bg-base-100 shadow-sm transition-all duration-200 lg:translate-x-0 lg:shadow-none lg:w-16";
 
   const navClass = sidebarOpen ? "min-h-0 flex-1 overflow-y-auto px-3 pb-4" : "min-h-0 flex-1 overflow-y-auto px-2 pb-4";
 
-  const mainMainClass = `min-w-0 p-4 sm:p-6 lg:ml-64 lg:p-8 transition-all duration-200`;
+  const mainMainClass = `min-w-0 p-4 sm:p-6 lg:p-8 transition-all duration-200 ${sidebarOpen ? "lg:ml-64" : "lg:ml-16"}`;
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   return (
     <div className="min-h-screen bg-base-200">
-      <header className="sticky top-0 z-30 flex min-h-16 items-center justify-between gap-3 border-b border-base-300 bg-base-100 px-4 sm:px-6 lg:pl-64 lg:pr-8">
+      <header className={`sticky top-0 z-30 flex min-h-16 items-center justify-between gap-3 border-b border-base-300 bg-base-100 px-4 sm:px-6 lg:pr-8 transition-all duration-200 ${sidebarOpen ? "lg:pl-64" : "lg:pl-16"}`}>
         <div className="flex min-w-0 items-center gap-3">
           <button type="button" onClick={toggleSidebar} aria-label="Toggle navigation" className="btn btn-ghost btn-square lg:hidden"><Icon name="menu" size={20} /></button>
           <h1 className="truncate text-lg font-bold text-base-content">{pageTitle}</h1>
@@ -160,18 +164,24 @@ export default function DashboardLayout({
         </div>
         <nav className={navClass} aria-label="Clinic navigation">{renderNavigation()}</nav>
         <div className="shrink-0 border-t border-base-300 p-3">
-          <div className="mb-3 flex min-w-0 items-center justify-between gap-2 rounded-box border border-base-300 bg-base-200 p-3">
-            <div className="min-w-0">
-              {sidebarOpen ? (
-                <p className="truncate text-sm font-bold text-base-content">{profile?.full_name}</p>
-              ) : (
-                <p className="truncate text-xs font-medium text-base-content">{profile?.full_name}</p>
-              )}
-              <span className={`badge mt-1 ${profile?.role ? roleColors[profile.role] : "badge-ghost"}`}>{profile?.role}</span>
+          {sidebarOpen ? (
+            <>
+              <div className="mb-3 flex min-w-0 items-center justify-between gap-2 rounded-box border border-base-300 bg-base-200 p-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-bold text-base-content">{profile?.full_name}</p>
+                  <span className={`badge mt-1 ${profile?.role ? roleColors[profile.role] : "badge-ghost"}`}>{profile?.role}</span>
+                </div>
+                <Icon name="shield-check" size={18} className="shrink-0 text-success" aria-label="Clinic staff account" />
+              </div>
+              <p className="text-center text-xs text-base-content/70">RA 10173 · DPA 2012 Protected</p>
+            </>
+          ) : (
+            <div className="flex justify-center">
+              <span className={`badge tooltip tooltip-right ${profile?.role ? roleColors[profile.role] : "badge-ghost"}`} data-tip={`${profile?.full_name} · ${profile?.role}`}>
+                <Icon name="shield-check" size={14} className="text-success" />
+              </span>
             </div>
-            {sidebarOpen && <Icon name="shield-check" size={18} className="shrink-0 text-success" aria-label="Clinic staff account" />}
-          </div>
-          {sidebarOpen && <p className="text-center text-xs text-base-content/70">RA 10173 · DPA 2012 Protected</p>}
+          )}
         </div>
       </aside>
 
