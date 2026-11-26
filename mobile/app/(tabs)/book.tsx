@@ -179,6 +179,7 @@ export default function BookScreen() {
       inMonth: day.getUTCMonth() === monthIndex,
       isWeekend: weekday === 0 || weekday === 6,
       isPast: dateStr < today,
+      isToday: dateStr === today,
     };
   });
   const monthStart = `${monthYear}-${String(monthIndex + 1).padStart(2, '0')}-01`;
@@ -350,6 +351,7 @@ export default function BookScreen() {
                           style={[
                             styles.calendarDay,
                             disabled && styles.calendarDayDisabled,
+                            day.isToday && !disabled && styles.calendarDayToday,
                             active && styles.calendarDayActive,
                           ]}
                           onPress={() => {
@@ -366,6 +368,9 @@ export default function BookScreen() {
                     })}
                   </View>
                   </Card>
+                  <Text style={styles.calendarHint}>
+                    Greyed-out days are unavailable. The clinic books weekdays only; today is outlined.
+                  </Text>
                 </View>
               )}
 
@@ -702,12 +707,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: radius.md,
     backgroundColor: Colors.background,
-    borderWidth: 1,
-    borderColor: Colors.surfaceAlt,
+    borderWidth: 1.5,
+    borderColor: Colors.border,
   },
   calendarDayDisabled: {
-    backgroundColor: Colors.brandWash,
-    borderColor: Colors.borderLight,
+    backgroundColor: Colors.surface,
+    borderColor: Colors.divider,
+  },
+  calendarDayToday: {
+    borderWidth: 2,
+    borderColor: Colors.secondary,
   },
   calendarDayActive: {
     backgroundColor: Colors.primary,
@@ -719,10 +728,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   calendarDayTextDisabled: {
-    color: Colors.textSecondary,
+    color: Colors.textLight,
+    opacity: 0.55,
   },
   calendarDayTextActive: {
     color: Colors.background,
+  },
+  calendarHint: {
+    marginTop: spacing.sm,
+    fontSize: typography.small.fontSize,
+    color: Colors.textSecondary,
   },
   dateGrid: {
     flexDirection: 'row',

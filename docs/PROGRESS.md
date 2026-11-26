@@ -165,3 +165,16 @@ Rewrote `mobile/components/ui/Modal.tsx` (API unchanged, so `appointments.tsx` i
 
 `mobile/app/(tabs)/appointments.tsx` `handleWalkInSubmit` replaced the direct `appointments` insert with `supabase.rpc('report_walk_in_visit', …)`. The direct insert was broken by design: RLS policy `appointments_insert_policy` has `WITH CHECK (is_staff())`, so patients can never insert into `appointments`. The SECURITY DEFINER RPC (migration 00032) inserts as `status='pending'` and keeps the GiST double-booking guard. Layout, error/success handling, and the visits-list refresh are unchanged. Mobile tsc passes. Owner still needs to confirm on phone that a submitted walk-in appears as pending on the web dashboard.
 
+## Calendar contrast fix: Book Clinic Visit step 2 (mobile, 2026-11-26)
+
+Owner reported the booking calendar had "no contrast so it's hard to see" in `mobile/app/(tabs)/book.tsx` step 2.
+
+### Changes
+- Bookable weekday cells: border raised from `borderWidth: 1` / `surfaceAlt` (near-invisible pink) to `borderWidth: 1.5` / `Colors.border` (clear #DED5D9 outline on white).
+- Disabled days (out-of-month / past / weekend): background now `Colors.surface` (canvas #FBF8F9) with `Colors.divider` border, and day numbers dimmed to `Colors.textLight` at 55% opacity — greyed days no longer blur into bookable days.
+- New "today" state: 2px `Colors.secondary` (brandMid) ring on today's cell when it is bookable; out-of-month/past/weekend today stays greyed.
+- Selected day unchanged: `Colors.primary` fill with white text remains the most prominent state.
+- Added a one-line hint under the calendar: "Greyed-out days are unavailable. The clinic books weekdays only; today is outlined."
+
+All colors are semantic tokens from `@/theme`; no raw hex. Mobile tsc: `cd mobile && npx tsc --noEmit` → PASS (exit 0). Visual confirmation on device still pending.
+
