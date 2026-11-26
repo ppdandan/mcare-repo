@@ -219,27 +219,22 @@ const [servicesLoading, setServicesLoading] = useState(false);
           throw new Error('No available doctor found. Please contact the clinic.');
         }
 
-        // Use fallback doctor
+        // Use fallback doctor - call report_walk_in_visit RPC instead of direct insert
+        // This uses SECURITY DEFINER function to bypass RLS policy blocking patient inserts
         const startTime = new Date(walkInDate);
         startTime.setMinutes(startTime.getMinutes() - startTime.getTimezoneOffset());
         const endTime = new Date(startTime.getTime() + 30 * 60000); // 30 min duration
 
-        const { data: appointmentData, error: insertError } = await supabase
-          .from('appointments')
-          .insert({
-            patient_id: patient.id,
-            doctor_id: fallbackDoctor.id,
-            service_id: walkInServiceId,
-            start_time: startTime.toISOString(),
-            end_time: endTime.toISOString(),
-            status: 'pending',
-            notes: walkInNotes || null,
-            is_walk_in: true,
-          })
-          .select()
-          .single();
+        const { data: appointmentData, error: rpcError } = await supabase.rpc('report_walk_in_visit', {
+          p_patient_id: patient.id,
+          p_doctor_id: fallbackDoctor.id,
+          p_service_id: walkInServiceId,
+          p_start_time: startTime.toISOString(),
+          p_end_time: endTime.toISOString(),
+          p_notes: walkInNotes || null,
+        });
 
-        if (insertError) throw insertError;
+        if (rpcError) throw rpcError;
 
         // Dispatch notification
         try {
@@ -257,27 +252,22 @@ const [servicesLoading, setServicesLoading] = useState(false);
         return;
       }
 
-      // Use found doctor
+      // Use found doctor - call report_walk_in_visit RPC instead of direct insert
+      // This uses SECURITY DEFINER function to bypass RLS policy blocking patient inserts
       const startTime = new Date(walkInDate);
       startTime.setMinutes(startTime.getMinutes() - startTime.getTimezoneOffset());
       const endTime = new Date(startTime.getTime() + 30 * 60000); // 30 min duration
 
-      const { data: appointmentData, error: insertError } = await supabase
-        .from('appointments')
-        .insert({
-          patient_id: patient.id,
-          doctor_id: doctorData.id,
-          service_id: walkInServiceId,
-          start_time: startTime.toISOString(),
-          end_time: endTime.toISOString(),
-          status: 'pending',
-          notes: walkInNotes || null,
-          is_walk_in: true,
-        })
-        .select()
-        .single();
+      const { data: appointmentData, error: rpcError } = await supabase.rpc('report_walk_in_visit', {
+        p_patient_id: patient.id,
+        p_doctor_id: doctorData.id,
+        p_service_id: walkInServiceId,
+        p_start_time: startTime.toISOString(),
+        p_end_time: endTime.toISOString(),
+        p_notes: walkInNotes || null,
+      });
 
-      if (insertError) throw insertError;
+      if (rpcError) throw rpcError;
 
       // Dispatch notification
       try {
