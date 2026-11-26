@@ -62,3 +62,13 @@ coverage/
 web/.open-next/
 web/.wrangler/
 web/.wrangler-dry-run/
+
+# AI tooling
+.agents/
+.claude/
+CLAUDE.md
+SKILL.md
+.agent/
+.freebuff/
+.planning/
+GEMINI.md
