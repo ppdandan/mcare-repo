@@ -165,6 +165,18 @@ Rewrote `mobile/components/ui/Modal.tsx` (API unchanged, so `appointments.tsx` i
 
 `mobile/app/(tabs)/appointments.tsx` `handleWalkInSubmit` replaced the direct `appointments` insert with `supabase.rpc('report_walk_in_visit', …)`. The direct insert was broken by design: RLS policy `appointments_insert_policy` has `WITH CHECK (is_staff())`, so patients can never insert into `appointments`. The SECURITY DEFINER RPC (migration 00032) inserts as `status='pending'` and keeps the GiST double-booking guard. Layout, error/success handling, and the visits-list refresh are unchanged. Mobile tsc passes. Owner still needs to confirm on phone that a submitted walk-in appears as pending on the web dashboard.
 
+## Logo on home tab: themed circle with outline (mobile, 2026-11-26)
+
+Owner asked for the home-tab logo to be a circle with a themed color outline.
+
+### Change
+- `mobile/app/(tabs)/home.tsx` top bar: the raw 28×33 `logo.png` is now wrapped in a `logoCircle` View — 44×44, `borderRadius: full`, brandWash fill, 2px solid `Colors.primary` (brand) outline, soft shadow. The image itself is `logoImage` 36×36 with `resizeMode: "cover"` so it fills the circle cleanly.
+- Colors are semantic tokens from `@/theme` only; no raw hex; tsc passes.
+
+### Verification
+- Mobile tsc: `cd mobile && npx tsc --noEmit` → **PASS** (exit 0)
+- Visual confirmation on device still pending (circle crop of the logo image).
+
 ## Calendar contrast fix: Book Clinic Visit step 2 (mobile, 2026-11-26)
 
 Owner reported the booking calendar had "no contrast so it's hard to see" in `mobile/app/(tabs)/book.tsx` step 2.
