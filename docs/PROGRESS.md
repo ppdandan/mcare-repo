@@ -190,3 +190,16 @@ Owner reported the booking calendar had "no contrast so it's hard to see" in `mo
 
 All colors are semantic tokens from `@/theme`; no raw hex. Mobile tsc: `cd mobile && npx tsc --noEmit` → PASS (exit 0). Visual confirmation on device still pending.
 
+## Clinic finder page: static address & contacts, no maps (mobile, 2026-11-26)
+
+Owner asked where the "Find Clinic" button goes: it pushed to `(tabs)/clinic-finder`, which embedded `react-native-maps` and a "Get Directions" button opening Google Maps. Owner wanted no external app/map — just a page with the clinic address and contacts.
+
+### Changes
+- `mobile/app/(tabs)/clinic-finder.tsx` rewritten: removed `react-native-maps` import, MapView, map toggle, and "Get Directions" button. The page now shows a static info card (clinic name, address, phone, email) and the consultation-hours card; a small note points patients to Book Appointment / My Clinic Visits instead of external navigation.
+- `mobile/app/index.tsx` `CLINIC_INFO.phone` updated to `09319286980` (owner-provided). Note: `CLINIC_INFO.email` is still the placeholder `clinic@m-care.com` — owner to confirm.
+- Both entry points ("Find Clinic" on home tab and profile) already pointed to this route; routing unchanged.
+
+### Verification
+- Mobile tsc: `cd mobile && npx tsc --noEmit` → **PASS** (exit 0)
+- `react-native-maps` is no longer imported anywhere in mobile; the npm dependency itself was left in `package.json` (out of scope to remove without a clean-up task).
+
