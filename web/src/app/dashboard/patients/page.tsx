@@ -92,8 +92,7 @@ export default function PatientsPage() {
 
       const { data: doctorsData, error: doctorsError } = await supabase
         .from('doctors')
-        .select('id, profile:profiles (full_name)')
-        .eq('is_active', true);
+        .select('id, profile:profiles (full_name)');
 
       if (doctorsError) throw doctorsError;
 
