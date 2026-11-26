@@ -101,6 +101,8 @@ All 7 patient-facing screens verified and fixed for ui-ux-pro-max Priority 1 (Ac
 - All ui-ux-pro-max Priority 1 & 2 criteria satisfied on mobile patient app
 - RLS enforced on all tables; no policies weakened
 - Supabase connection protected (no changes to web auth files)
+- Walk-in visit reporting (Large): migrations 00032 + 00033 created, shared/types/database.ts updated, web staff feature added with double-booking guard preserved, test suite designed (cannot run outside dev project without Docker)
+- Demographics age groups (Medium): migration 00034 created, SQL function + view for age brackets, analytics page chart added, type check and build pass
 ---
 
 ## UI/UX: Impeccable polish — presentation-only mobile screens (2026-11-25 → 2026-11-26)
