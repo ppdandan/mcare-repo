@@ -131,12 +131,14 @@ export default function HomeScreen() {
         {/* Top Bar */}
         <View style={styles.topBar}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Image
-              source={require('../../assets/logo.png')}
-              accessibilityLabel="M-Care logo"
-              resizeMode="contain"
-              style={{ width: 28, height: 33, marginRight: spacing.sm }}
-            />
+            <View style={styles.logoCircle}>
+              <Image
+                source={require('../../assets/logo.png')}
+                accessibilityLabel="M-Care logo"
+                resizeMode="cover"
+                style={styles.logoImage}
+              />
+            </View>
             <View>
               <Text style={styles.greeting}>Good day,</Text>
               <Text style={styles.patientName}>{profile?.full_name ?? 'Patient'}</Text>
@@ -320,6 +322,27 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: spacing.xl,
+  },
+  logoCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.full,
+    backgroundColor: Colors.brandWash,
+    borderWidth: 2,
+    borderColor: Colors.primary,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.sm,
+    shadowColor: Colors.primaryDark,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  logoImage: {
+    width: 36,
+    height: 36,
   },
   greeting: {
     fontSize: typography.small.fontSize,
