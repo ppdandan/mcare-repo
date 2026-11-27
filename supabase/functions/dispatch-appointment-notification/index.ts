@@ -61,6 +61,7 @@ serve(async (request) => {
       .select("id, user_id, title, body")
       .eq("appointment_id", appointmentId)
       .eq("user_id", patient.profile_id)
+      .is("reminder_kind", null)
       .is("push_sent_at", null)
       .order("created_at", { ascending: false })
       .limit(1)

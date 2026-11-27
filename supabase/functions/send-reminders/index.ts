@@ -48,10 +48,14 @@ serve(async (req) => {
         body,
         created_at
       `)
+      .not("reminder_kind", "is", null)
+      .is("push_sent_at", null)
       .gte("created_at", thirtyMinsAgo)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: true })
+      .limit(100);
 
-    if (notifError || !notifications || notifications.length === 0) {
+    if (notifError) throw notifError;
+    if (!notifications || notifications.length === 0) {
       return new Response(
         JSON.stringify({
           success: true,
@@ -73,6 +77,11 @@ serve(async (req) => {
         .maybeSingle();
 
       if (tokenData?.expo_push_token) {
+        const { data: claimed, error: claimError } = await supabase.rpc("claim_reminder_push", {
+          p_notification_id: notif.id,
+        });
+        if (claimError) throw claimError;
+        if (!claimed) continue;
         pushMessages.push({
           to: tokenData.expo_push_token,
           sound: "default",
@@ -98,8 +107,18 @@ serve(async (req) => {
       });
 
       const expoData = await expoRes.json();
-      sentCount = pushMessages.length;
-      console.log("Expo Push Dispatch Response:", expoData);
+      if (!expoRes.ok || !Array.isArray(expoData.data)) {
+        throw new Error("The push service did not confirm delivery.");
+      }
+      for (const [index, ticket] of expoData.data.entries()) {
+        if (ticket.status === "ok") {
+          sentCount++;
+        } else if (ticket.status === "error") {
+          const { error } = await supabase.from("notifications")
+            .update({ push_sent_at: null }).eq("id", pushMessages[index].data?.notificationId);
+          if (error) throw error;
+        }
+      }
     }
 
     return new Response(

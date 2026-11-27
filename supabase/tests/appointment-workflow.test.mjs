@@ -155,6 +155,13 @@ try {
   const { data: pendingNotice, error: pendingNoticeError } = await admin.from('notifications').select('title, body, appointment_id').eq('user_id', patient.id).eq('appointment_id', ids.approve).eq('title', 'Appointment Pending Approval').single();
   if (pendingNoticeError) throw pendingNoticeError;
   assert.match(pendingNotice.body, /pending clinic approval/i);
+  const { data: reminder } = await admin.from('notifications').insert({
+    user_id: patient.id, appointment_id: ids.approve, reminder_kind: '24h',
+    title: 'Visit reminder', body: 'Reminder test',
+  }).select('id').single().throwOnError();
+  const claims = await Promise.all([1, 2].map(() =>
+    admin.rpc('claim_reminder_push', { p_notification_id: reminder.id }).throwOnError()));
+  assert.deepEqual(claims.map(result => result.data).sort(), [false, true]);
   report('new booking creates patient pending-approval notification');
   await expectNoDevicePush(patient.client, ids.approve, 'patient can dispatch own pending notification to push handler');
 
