@@ -135,6 +135,7 @@ export default function AnalyticsPage() {
           "25 to 34",
           "35 to 44",
           "45 or older",
+          "Unknown",
         ].map((g) => ({ age_group: g, count: grouped[g] ?? 0 }));
         setAgeGroupData(ordered);
       }

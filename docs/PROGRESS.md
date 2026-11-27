@@ -1,5 +1,17 @@
 # Progress
 
+## Phase 1 item 4
+
+| Check | Before | After |
+|---|---|---|
+| Shared TypeScript | Failed | Failed |
+| Mobile TypeScript | Passed | Passed |
+| Web TypeScript | Passed | Passed |
+| Mobile lint | Failed | Failed |
+| Web lint | Failed | Failed |
+| Web build | Passed | Passed |
+| Local tests | 9 pass, 2 fail | 10 pass, 1 fail |
+
 ## Phase 1 item 3
 
 fix: aggregate inventory consumption over the Manila date range. Local check exit codes: npm --workspace=web 1,npm run 1,npm --workspace=mobile 2,bash -c 0,web-tsc 0,build 0,tests 1, Test totals: ℹ pass 9 ℹ fail 2.
