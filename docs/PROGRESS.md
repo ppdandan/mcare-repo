@@ -1,5 +1,9 @@
 # Progress
 
+## Phase 0 thesis audit
+
+[Phase 0 audit](PHASE_0_AUDIT.md) records the current objectives, defects and local verification results. Implementation work awaits owner approval.
+
 ## UI/UX: Retractable fixed sidebar implemented (web)
 
 Modified `web/src/app/dashboard/layout.tsx` to replace the drawer-based sidebar with a fixed, retractable sidebar:
