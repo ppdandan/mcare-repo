@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
   RefreshControl,
   Alert,
 } from 'react-native';
@@ -115,15 +117,13 @@ export default function InquiryScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
             <Text style={styles.backBtnText}>← Back</Text>
           </TouchableOpacity>
-          <ScreenHeader title="Clinic Inquiry & Support" subtitle="Direct messaging with M-Care clinic reception desk" action={(
-            <Button variant="outline" onPress={() => setShowForm(!showForm)}>{showForm ? 'Cancel' : '+ New Message'}</Button>
-          )} />
+          <Text accessibilityRole="header" style={styles.title}>Clinic messages</Text>
         </View>
 
         <ScrollView
@@ -137,26 +137,31 @@ export default function InquiryScreen() {
             />
           }
         >
+          <View style={styles.composeAction}>
+            <Button variant={showForm ? 'outline' : 'primary'} onPress={() => setShowForm(!showForm)}>
+              {showForm ? 'Cancel message' : 'New message'}
+            </Button>
+          </View>
           {/* New Inquiry Compose Box */}
           {showForm && (
             <Card style={styles.formCard}>
-              <Text style={styles.formHeading}>Compose Inquiry to Clinic</Text>
+              <Text style={styles.formHeading}>New message</Text>
 
               <TextField label="Subject" containerStyle={styles.inputGroup} value={subject} onChangeText={setSubject} />
 
-              <TextField label="Your Message" containerStyle={styles.inputGroup} value={message} onChangeText={setMessage} multiline numberOfLines={4} />
+              <TextField label="Your Message" containerStyle={styles.inputGroup} value={message} onChangeText={setMessage} multiline numberOfLines={4} textAlignVertical="top" style={{ minHeight: 100 }} />
 
-              <Button onPress={handleSendInquiry} loading={submitting} disabled={submitting}>Send Message to Clinic</Button>
+              <Button onPress={handleSendInquiry} loading={submitting} disabled={submitting}>Send message</Button>
             </Card>
           )}
 
           {/* Messages List */}
           {loading ? (
             <LoadingState label="Loading inquiries..." />
-          ) : inquiries.length === 0 ? (
+          ) : inquiries.length === 0 ? (showForm ? null :
             <EmptyState
-              title="No Inquiries Sent"
-              description={'Have a question about a service, procedure preparation, or scheduling? Tap "+ New Message" to send a direct message to our staff.'}
+              title="No messages yet"
+              description={'Your messages and replies from the clinic will appear here.'}
             />
           ) : (
             inquiries.map((inq) => (
@@ -176,7 +181,7 @@ export default function InquiryScreen() {
 
                 {inq.reply ? (
                   <View style={styles.replyBox}>
-                    <Text style={styles.replyLabel}>Clinic Staff Response:</Text>
+                    <Text style={styles.replyLabel}>Clinic reply</Text>
                     <Text style={styles.replyText}>{inq.reply}</Text>
                     <Text style={styles.replyDate}>
                       Updated: {formatManilaTime(inq.updated_at)}
@@ -185,7 +190,7 @@ export default function InquiryScreen() {
                 ) : (
                   <View style={styles.pendingReplyBox}>
                     <Text style={styles.pendingReplyText}>
-                      Awaiting response from clinic staff…
+                      Waiting for a reply
                     </Text>
                   </View>
                 )}
@@ -193,12 +198,13 @@ export default function InquiryScreen() {
             ))
           )}
         </ScrollView>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  composeAction: { marginBottom: spacing.md },
   safeArea: { flex: 1, backgroundColor: Colors.brandWash },
   container: { flex: 1 },
   header: {
@@ -208,7 +214,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.brandSoft,
   },
-  backBtn: { marginBottom: spacing.sm },
+  backBtn: { minHeight: 44, alignSelf: 'flex-start', justifyContent: 'center' },
   backBtnText: { fontSize: typography.caption.fontSize, fontWeight: '600', color: Colors.primary },
   headerTitleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   title: { fontSize: typography.title.fontSize, fontWeight: '700', color: Colors.text },
@@ -293,7 +299,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.sm,
     marginBottom: spacing.sm,
   },
-  patientMsgText: { fontSize: typography.caption.fontSize, color: Colors.text, lineHeight: typography.caption.lineHeight },
+  patientMsgText: { ...typography.body, color: Colors.text },
   replyBox: {
     backgroundColor: Colors.successBackground,
     padding: spacing.md,
@@ -302,7 +308,7 @@ const styles = StyleSheet.create({
     borderLeftColor: Colors.success,
   },
   replyLabel: { fontSize: typography.caption.fontSize, fontWeight: '700', color: Colors.success, marginBottom: spacing.xs },
-  replyText: { fontSize: typography.caption.fontSize, color: Colors.success, lineHeight: typography.caption.lineHeight },
+  replyText: { ...typography.body, color: Colors.text },
   replyDate: { fontSize: typography.caption.fontSize, color: Colors.success, marginTop: spacing.xs, textAlign: 'right' },
   pendingReplyBox: {
     backgroundColor: Colors.surface,
