@@ -233,7 +233,7 @@ export default function HomeScreen() {
             <View style={{ flex: 1 }}>
               <Text style={styles.actionTitle}>Find Clinic</Text>
               <Text style={styles.actionDesc}>
-                View location, address, and get directions
+                View the clinic address and contact details
               </Text>
             </View>
           </TouchableOpacity>

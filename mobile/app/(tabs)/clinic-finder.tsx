@@ -12,7 +12,7 @@ export default function ClinicFinderScreen() {
   return (
     <SafeAreaView style={styles.safeAreaContainer} edges={['top']}>
       <View style={styles.header}>
-        <Text style={styles.title}>Our Clinic</Text>
+        <Text style={styles.title}>Find Clinic</Text>
         <TouchableOpacity
           onPress={() => router.back()}
           accessibilityRole="button"
@@ -43,7 +43,7 @@ export default function ClinicFinderScreen() {
             </View>
             <View style={styles.contactBody}>
               <Text style={styles.contactLabel}>Address</Text>
-              <Text style={styles.contactText}>{CLINIC_INFO.address}</Text>
+              <Text selectable style={styles.contactText}>{CLINIC_INFO.address}</Text>
             </View>
           </View>
           <View style={styles.contactRow}>
@@ -52,7 +52,7 @@ export default function ClinicFinderScreen() {
             </View>
             <View style={styles.contactBody}>
               <Text style={styles.contactLabel}>Phone</Text>
-              <Text style={styles.contactText}>{CLINIC_INFO.phone}</Text>
+              <Text selectable style={styles.contactText}>{CLINIC_INFO.phone}</Text>
             </View>
           </View>
           <View style={styles.contactRow}>
@@ -61,7 +61,7 @@ export default function ClinicFinderScreen() {
             </View>
             <View style={styles.contactBody}>
               <Text style={styles.contactLabel}>Email</Text>
-              <Text style={styles.contactText}>{CLINIC_INFO.email}</Text>
+              <Text selectable style={styles.contactText}>{CLINIC_INFO.email}</Text>
             </View>
           </View>
         </View>
