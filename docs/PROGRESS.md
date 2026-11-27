@@ -1,5 +1,17 @@
 # Progress
 
+## Phase 1 item 8
+
+| Check | Before | After |
+|---|---|---|
+| Shared TypeScript | Passed | Passed |
+| Mobile TypeScript | Passed | Passed |
+| Web TypeScript | Passed | Passed |
+| Mobile lint | Passed | Passed |
+| Web lint | Passed | Passed |
+| Web build | Passed | Passed |
+| Local tests | 10 pass, 1 fail | 10 pass, 1 fail |
+
 ## Phase 1 item 7
 
 | Check | Before | After |
