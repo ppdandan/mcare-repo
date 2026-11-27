@@ -42,6 +42,7 @@ export default function AnalyticsPage() {
   const [patientRegistrationDates, setPatientRegistrationDates] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [direction, setDirection] = useState<"past" | "future">("past");
   const [dateRange, setDateRange] = useState<"7d" | "30d" | "90d" | "all">("30d");
   const [isMounted, setIsMounted] = useState(false);
   const [ageGroupData, setAgeGroupData] = useState<Array<{ age_group: string; count: number }>>([]);
@@ -191,10 +192,9 @@ export default function AnalyticsPage() {
     if (dateRange === "all") return true;
     const apptDate = new Date(a.start_time);
     const diffDays = (now.getTime() - apptDate.getTime()) / (1000 * 3600 * 24);
-    if (dateRange === "7d") return diffDays <= 7 && diffDays >= -7;
-    if (dateRange === "30d") return diffDays <= 30 && diffDays >= -30;
-    if (dateRange === "90d") return diffDays <= 90 && diffDays >= -90;
-    return true;
+    const limit = parseInt(dateRange, 10);
+    const distance = direction === "past" ? diffDays : -diffDays;
+    return distance >= 0 && distance < limit;
   });
 
   // KPI Calculations
@@ -331,6 +331,14 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Date Filter Tabs */}
+        <label className="form-control">
+          Appointment period
+          <select className="select select-bordered" value={direction} disabled={dateRange === "all"}
+            onChange={(event) => setDirection(event.target.value === "future" ? "future" : "past")}>
+            <option value="past">Past appointments</option>
+            <option value="future">Upcoming appointments</option>
+          </select>
+        </label>
         <div className="flex items-center bg-base-200 p-1 rounded-xl text-xs font-bold">
           {(
             [
