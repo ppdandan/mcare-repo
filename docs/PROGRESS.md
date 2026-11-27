@@ -1,5 +1,9 @@
 # Progress
 
+## Phase 1 item 3
+
+fix: aggregate inventory consumption over the Manila date range. Local check exit codes: npm --workspace=web 1,npm run 1,npm --workspace=mobile 2,bash -c 0,web-tsc 0,build 0,tests 1, Test totals: ℹ pass 9 ℹ fail 2.
+
 ## Phase 1 item 2
 
 The walk-in ownership tests passed. Nine checks passed overall. Weekend booking failed on its error message and admin workflow timed out. Mobile and web TypeScript and the web build passed. Shared TypeScript and both linters failed.

@@ -201,7 +201,7 @@ export default function AdminInventoryPage() {
     }
   };
 
-  const buildConsumptionReport = () => {
+  const buildConsumptionReport = async () => {
     setActionError(null);
     if (!reportStart || !reportEnd) {
       setActionError("Choose a start and end date for the report.");
@@ -211,43 +211,25 @@ export default function AdminInventoryPage() {
       setActionError("The start date must be on or before the end date.");
       return;
     }
-    const startMs = new Date(`${reportStart}T00:00:00+08:00`).getTime();
-    const endMs = new Date(`${reportEnd}T00:00:00+08:00`).getTime();
-    const days = Math.max(1, Math.round((endMs - startMs) / 86_400_000) + 1);
-
-    // Only "out" movements count as consumption.
-    const inRange = movements.filter((movement) => {
-      const movedDay = movement.created_at.slice(0, 10);
-      return movement.movement_type === "out"
-        && movement.created_at >= `${reportStart}T00:00:00+08:00`
-        && movement.created_at <= `${reportEnd}T23:59:59+08:00`;
+    setReportRows([]);
+    setNotice(null);
+    const { data, error } = await supabase.rpc("inventory_consumption", {
+      p_start: reportStart, p_end: reportEnd,
     });
-
-    const byItem = new Map<string, { name: string; category: string; unit: string; totalUsed: number }>();
-    for (const movement of inRange) {
-      const key = movement.item_id;
-      const existing = byItem.get(key) ?? {
-        name: movement.item?.name ?? "Unknown item",
-        category: items.find((item) => item.id === movement.item_id)?.category ?? "General",
-        unit: movement.item?.unit ?? "piece",
-        totalUsed: 0,
-      };
-      existing.totalUsed += movement.quantity;
-      byItem.set(key, existing);
+    if (error) {
+      setActionError("Could not load the consumption report. Try again.");
+      return;
     }
-
-    const rows = [...byItem.values()]
-      .map((row) => {
-        const avgDaily = row.totalUsed / days;
-        return {
-          ...row,
-          days,
-          avgDaily: avgDaily.toFixed(1),
-          trend: avgDaily > 1 ? "High use" : avgDaily >= 0.2 ? "Steady" : "Light",
-        };
-      })
-      .sort((a, b) => b.totalUsed - a.totalUsed);
-
+    const rows = (data ?? []).map((row: {
+      name: string; category: string; unit: string; total_used: number; days: number;
+    }) => {
+      const avgDaily = row.total_used / row.days;
+      return {
+        name: row.name, category: row.category, unit: row.unit,
+        totalUsed: row.total_used, days: row.days, avgDaily: avgDaily.toFixed(1),
+        trend: avgDaily > 1 ? "High use" : avgDaily >= 0.2 ? "Steady" : "Light",
+      };
+    });
     setReportRows(rows);
     if (rows.length === 0) {
       setNotice("No stock usage recorded in this date range.");

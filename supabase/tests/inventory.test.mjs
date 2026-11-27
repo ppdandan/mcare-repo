@@ -306,6 +306,17 @@ try {
     'Ledger rows do not match the recorded movements',
   );
   report('ledger rows record every accepted movement in order with stock_after');
+  const boundaries = ['2001-01-01T15:59:59Z', '2001-01-01T16:00:00Z',
+    '2001-01-02T15:59:59.999Z', '2001-01-02T16:00:00Z'];
+  await admin.from('stock_movements').insert(boundaries.map((created_at, index) => ({
+    item_id: itemAId, created_by: clinicAdmin.id, movement_type: 'out',
+    quantity: 2 ** index, stock_after: 0, reason: 'Boundary fixture', created_at,
+  }))).throwOnError();
+  const { data: consumption } = await clinicAdmin.client.rpc('inventory_consumption', {
+    p_start: '2001-01-02', p_end: '2001-01-02',
+  }).throwOnError();
+  assert.equal(consumption.find(row => row.item_id === itemAId)?.total_used, 6);
+
 } catch (error) {
   testFailure = error;
 } finally {
