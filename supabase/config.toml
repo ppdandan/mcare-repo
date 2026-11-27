@@ -1,0 +1,4 @@
+project_id = "mcare-local-test"
+
+[db.seed]
+enabled = false

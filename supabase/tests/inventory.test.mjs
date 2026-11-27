@@ -4,12 +4,11 @@ import assert from 'node:assert/strict';
 import { randomBytes, randomUUID } from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 
-const DEV_REF = 'luccnwicirfnmyzgemzj';
-const supabaseUrl = process.env.SUPABASE_URL;
+import { localOrigin } from './local-origin.mjs';
+const supabaseUrl = localOrigin(process.env.SUPABASE_URL);
 const anonKey = process.env.SUPABASE_ANON_KEY;
 const serviceRoleKey = process.env.SERVICE_ROLE_KEY;
 
-assert.ok(supabaseUrl && new URL(supabaseUrl).hostname.split('.')[0] === DEV_REF, 'Refusing to run tests outside the dev project');
 assert.ok(anonKey && serviceRoleKey, 'SUPABASE_ANON_KEY and SERVICE_ROLE_KEY are required');
 
 const admin = createClient(supabaseUrl, serviceRoleKey, {
