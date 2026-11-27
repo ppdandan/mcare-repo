@@ -1,5 +1,19 @@
 # Progress
 
+## Phase 1 item 7
+
+| Check | Before | After |
+|---|---|---|
+| Shared TypeScript | Failed | Passed |
+| Mobile TypeScript | Passed | Passed |
+| Web TypeScript | Passed | Passed |
+| Mobile lint | Failed | Passed |
+| Web lint | Failed | Passed |
+| Web build | Passed | Passed |
+| Local tests | 10 pass, 1 fail | 10 pass, 1 fail |
+
+ESLint checks unreachable code, duplicate keys, debugger statements and hook order. Hook dependency findings are warnings so existing screens can be reviewed separately. No rule was explicitly disabled. Generated build folders and generated native projects are excluded.
+
 ## Phase 1 item 6
 
 | Check | Before | After |

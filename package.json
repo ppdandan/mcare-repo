@@ -13,5 +13,9 @@
     "start:web": "npm --workspace=web run start",
     "dev:mobile": "npm --workspace=mobile run start",
     "typecheck": "tsc -b shared"
+  },
+  "devDependencies": {
+    "@typescript-eslint/parser": "8.72.2",
+    "eslint-plugin-react-hooks": "5.2.0"
   }
 }
