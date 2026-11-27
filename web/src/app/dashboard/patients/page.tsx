@@ -202,12 +202,12 @@ export default function PatientsPage() {
       const startMs = new Date(walkInStartTime).getTime();
       const startTimeISO = new Date(startMs - startMs % 60000).toISOString(); // round to minute
 
-      const { data: apptData, error: apptError } = await supabase.rpc('book_appointment', {
+      const { data: apptData, error: apptError } = await supabase.rpc('staff_book_walk_in', {
+        p_patient_id: selectedPatient.id,
         p_doctor_id: walkInDoctorId,
         p_service_id: walkInServiceId,
         p_start_time: startTimeISO,
         p_notes: walkInNotes.trim() || null,
-        p_is_walk_in: true,
       });
 
       if (apptError) throw apptError;

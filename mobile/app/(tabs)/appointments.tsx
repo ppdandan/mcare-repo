@@ -199,67 +199,18 @@ const [servicesLoading, setServicesLoading] = useState(false);
     setWalkInError(null);
 
     try {
-      // Get Dr. Bernice Paule's doctor record
+      // The clinic schedule has one doctor. Read its database ID at submission.
       const { data: doctorData, error: doctorError } = await supabase
         .from('doctors')
         .select('id')
-        .eq('profile_id', '550e8400-e29b-41d4-a716-446655440000') // Dr. Bernice Paule's known profile_id from seed
         .single();
+      if (doctorError || !doctorData) throw new Error('The clinic doctor is unavailable.');
 
-      if (doctorError || !doctorData) {
-        // Fallback: get any active doctor
-        const { data: fallbackDoctor, error: fallbackError } = await supabase
-          .from('doctors')
-          .select('id')
-          .eq('is_active', true)
-          .limit(1)
-          .single();
-
-        if (fallbackError || !fallbackDoctor) {
-          throw new Error('No available doctor found. Please contact the clinic.');
-        }
-
-        // Use fallback doctor - call report_walk_in_visit RPC instead of direct insert
-        // This uses SECURITY DEFINER function to bypass RLS policy blocking patient inserts
-        const startTime = new Date(walkInDate);
-        startTime.setMinutes(startTime.getMinutes() - startTime.getTimezoneOffset());
-        const endTime = new Date(startTime.getTime() + 30 * 60000); // 30 min duration
-
-        const { data: appointmentData, error: rpcError } = await supabase.rpc('report_walk_in_visit', {
-          p_patient_id: patient.id,
-          p_doctor_id: fallbackDoctor.id,
-          p_service_id: walkInServiceId,
-          p_start_time: startTime.toISOString(),
-          p_end_time: endTime.toISOString(),
-          p_notes: walkInNotes || null,
-        });
-
-        if (rpcError) throw rpcError;
-
-        // Dispatch notification
-        try {
-          await supabase.functions.invoke('dispatch-appointment-notification', {
-            body: { appointment_id: appointmentData.id },
-          });
-        } catch {
-          console.warn('Appointment notification push dispatch was unavailable.');
-        }
-
-        setWalkInSuccess(true);
-        setWalkInModalVisible(false);
-        resetWalkInForm();
-        await fetchAppointments();
-        return;
-      }
-
-      // Use found doctor - call report_walk_in_visit RPC instead of direct insert
-      // This uses SECURITY DEFINER function to bypass RLS policy blocking patient inserts
       const startTime = new Date(walkInDate);
       startTime.setMinutes(startTime.getMinutes() - startTime.getTimezoneOffset());
       const endTime = new Date(startTime.getTime() + 30 * 60000); // 30 min duration
 
       const { data: appointmentData, error: rpcError } = await supabase.rpc('report_walk_in_visit', {
-        p_patient_id: patient.id,
         p_doctor_id: doctorData.id,
         p_service_id: walkInServiceId,
         p_start_time: startTime.toISOString(),
@@ -272,7 +223,7 @@ const [servicesLoading, setServicesLoading] = useState(false);
       // Dispatch notification
       try {
         await supabase.functions.invoke('dispatch-appointment-notification', {
-          body: { appointment_id: appointmentData.id },
+          body: { appointment_id: appointmentData },
         });
       } catch {
         console.warn('Appointment notification push dispatch was unavailable.');

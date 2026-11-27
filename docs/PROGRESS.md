@@ -1,5 +1,9 @@
 # Progress
 
+## Phase 1 item 2
+
+The walk-in ownership tests passed. Nine checks passed overall. Weekend booking failed on its error message and admin workflow timed out. Mobile and web TypeScript and the web build passed. Shared TypeScript and both linters failed.
+
 ## Local test environment
 
 All 35 migrations applied on fresh local Docker. Mobile and web TypeScript and the web build passed before and after. Shared TypeScript and both linters failed. Before setup all ten suites rejected loopback. After setup nine checks passed and weekend booking and walk-in reporting failed. See [local commands](LOCAL_TESTS.md).

@@ -16,15 +16,6 @@ const admin = createClient(supabaseUrl, serviceRoleKey, {
 });
 const createdUserIds = [];
 
-function report(name) {
-  console.log(`PASS ${name}`);
-}
-
-function expectDenied(result, label) {
-  assert.ok(result.error || !result.data?.length, `${label} unexpectedly succeeded`);
-  report(label);
-}
-
 async function createAccount(role, label) {
   const email = `mcare-wi-${randomUUID()}@example.test`;
   const password = `${randomBytes(24).toString('base64url')}Aa1!`;
@@ -51,81 +42,50 @@ async function createAccount(role, label) {
   return { id: userId, client };
 }
 
+const appointmentIds = [];
 try {
-  const adminUser = await createAccount('admin', 'Admin');
-  const patientUser = await createAccount('patient', 'Patient');
-
-  // --- Test 1: Anonymous (anon) cannot call report_walk_in_visit ---
-  console.log('\\n=== Test 1: Anonymous access blocked ===');
-  const anonymous = createClient(supabaseUrl, anonKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-  const { data: anonData, error: anonError } = await anonymous.rpc('report_walk_in_visit', {
-    p_patient_id: patientUser.id,
-    p_doctor_id: adminUser.id,
-    p_service_id: adminUser.id,
-    p_start_time: new Date(Date.now() + 86400000).toISOString(),
-    p_end_time: new Date(Date.now() + 90000000).toISOString(),
-    p_notes: 'Test walk-in',
-  });
-  // Anon should get an error (RLS or permission issue)
-  assert.ok(anonError || (anonData === null), 'Anonymous should NOT be able to call report_walk_in_visit');
-  report('Anonymous access blocked');
-
-  // --- Test 2: Patient can call report_walk_in_visit (SECURITY DEFINER bypasses RLS) ---
-  console.log('\\n=== Test 2: Patient walk-in report succeeds ===');
-  const { data: walkInData, error: walkInError } = await admin.rpc('report_walk_in_visit', {
-    p_patient_id: patientUser.id,
-    p_doctor_id: adminUser.id,
-    p_service_id: adminUser.id,
-    p_start_time: new Date(Date.now() + 86400000).toISOString(),
-    p_end_time: new Date(Date.now() + 90000000).toISOString(),
-    p_notes: 'Test walk-in patient visit',
-  });
-  assert.ok(!walkInError, `Walk-in report should succeed; error: ${walkInError?.message}`);
-  assert.ok(walkInData, 'Walk-in report should return an appointment ID');
-  const walkInApptId = walkInData;
-  report('Patient walk-in report succeeds');
-
-  // --- Test 3: Walk-in appointment is created as pending ---
-  console.log('\\n=== Test 3: Walk-in appointment is pending ===');
-  const { data: apptData, error: apptError } = await admin
-    .from('appointments')
-    .select('id, patient_id, doctor_id, service_id, status, is_walk_in, notes')
-    .eq('id', walkInApptId)
-    .single();
-  assert.ok(!apptError, `Failed to fetch appointment: ${apptError?.message}`);
-  assert.strictEqual(apptData.status, 'pending', 'Walk-in appointment should be pending');
-  assert.strictEqual(apptData.is_walk_in, true, 'Walk-in flag should be true');
-  assert.strictEqual(apptData.notes, 'Test walk-in patient visit', 'Notes should be preserved');
-  report('Walk-in appointment is pending with is_walk_in=true');
-
-  // --- Test 4: Staff cannot directly insert into appointments (policy still blocks) ---
-  console.log('\\n=== Test 4: Direct patient insert still blocked ===');
-  const { error: directInsertError } = await admin.rpc('book_appointment', {
-    p_doctor_id: adminUser.id,
-    p_service_id: adminUser.id,
-    p_start_time: new Date(Date.now() + 172800000).toISOString(),
-    p_notes: 'Should fail - direct insert',
-  });
-  // The book_appointment RPC goes through the insert policy; patient direct insert should be rejected
-  // Actually book_appointment is SECURITY DEFINER so it bypasses policy; test the raw insert via anon instead
-  report('Direct insert policy check (see note)');
-
-  // --- Test 5: Walk-in can be queried with is_walk_in filter ---
-  console.log('\\n=== Test 5: Walk-in filter query works ===');
-  const { data: walkInAppts, error: walkInQueryError } = await admin
-    .from('appointments')
-    .select('id, patient_id, is_walk_in')
-    .eq('is_walk_in', true)
-    .eq('status', 'pending');
-  assert.ok(!walkInQueryError, `Walk-in query failed: ${walkInQueryError?.message}`);
-  assert.ok(walkInAppts && walkInAppts.length > 0, 'Should find the walk-in appointment just created');
-  report('Walk-in filter query returns results');
-
-  console.log('\\nAll walk-in visit tests passed!');
-
-} catch (err) {
-  console.error('Test suite failed:', err);
-  process.exit(1);
+  const staff = await createAccount('receptionist', 'Staff');
+  const first = await createAccount('patient', 'First');
+  const second = await createAccount('patient', 'Second');
+  const patientId = async (user) => (await admin.from('patients').select('id')
+    .eq('profile_id', user.id).single().throwOnError()).data.id;
+  const firstId = await patientId(first);
+  const secondId = await patientId(second);
+  const { data: doctor } = await admin.from('doctors').select('id').limit(1).single().throwOnError();
+  const { data: service } = await admin.from('services').select('id,duration_minutes')
+    .eq('is_active', true).order('name').limit(1).single().throwOnError();
+  const day = new Date(Date.now() + 30 * 86400000);
+  while (day.getUTCDay() !== 1) day.setUTCDate(day.getUTCDate() + 1);
+  const { data: slots } = await staff.client.rpc('get_available_slots', {
+    p_doctor_id: doctor.id, p_target_date: day.toISOString().slice(0, 10),
+    p_slot_duration_minutes: service.duration_minutes,
+  }).throwOnError();
+  assert.ok(slots.length >= 2, 'Two open weekday slots are required');
+  const args = {
+    p_doctor_id: doctor.id, p_service_id: service.id, p_start_time: slots[0].slot_start,
+    p_end_time: slots[0].slot_end, p_notes: 'Patient walk-in test',
+  };
+  assert.ok((await createClient(supabaseUrl, anonKey).rpc('report_walk_in_visit', args)).error);
+  assert.ok((await first.client.rpc('report_walk_in_visit', { ...args, p_patient_id: secondId })).error);
+  const { data: own } = await first.client.rpc('report_walk_in_visit', args).throwOnError();
+  appointmentIds.push(own);
+  const staffArgs = { p_patient_id: secondId, p_doctor_id: doctor.id, p_service_id: service.id,
+    p_start_time: slots[1].slot_start, p_notes: 'Staff walk-in test' };
+  const forbidden = await first.client.rpc('staff_book_walk_in', staffArgs);
+  assert.equal(forbidden.error?.code, '42501');
+  const { data: booked } = await staff.client.rpc('staff_book_walk_in', staffArgs).throwOnError();
+  appointmentIds.push(booked);
+  assert.ok((await staff.client.rpc('staff_book_walk_in', staffArgs)).error);
+  for (const [id, expectedPatient] of [[own, firstId], [booked, secondId]]) {
+    const { data: visit } = await admin.from('appointments').select('patient_id,is_walk_in,status')
+      .eq('id', id).single().throwOnError();
+    assert.deepEqual(visit, { patient_id: expectedPatient, is_walk_in: true, status: 'pending' });
+  }
+} finally {
+  if (appointmentIds.length) await admin.from('appointments').delete().in('id', appointmentIds).throwOnError();
+  for (const id of createdUserIds) {
+    await admin.from('profiles').delete().eq('id', id).throwOnError();
+    const { error } = await admin.auth.admin.deleteUser(id);
+    if (error) throw error;
+  }
 }
