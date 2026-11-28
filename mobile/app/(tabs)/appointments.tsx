@@ -1,4 +1,4 @@
-import { spacing, typography, radius, colors as Colors } from '@/theme';
+import { spacing, typography, radius, size, colors as Colors } from '@/theme';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
@@ -318,168 +318,167 @@ const [servicesLoading, setServicesLoading] = useState(false);
               transparent={true}
               animationType="slide"
             >
-              <View style={modalStyles.modalContainer}>
-                {/* Service selection */}
-                {servicesLoading ? (
-                  <Text style={modalStyles.loadingText}>Loading services...</Text>
-                ) : services.length === 0 ? (
-                  <Text style={modalStyles.loadingText}>No services available</Text>
-                ) : (
-                  <View style={modalStyles.formGroup}>
-                    <Text style={modalStyles.label}>Service</Text>
-                    <TouchableOpacity
-                      accessibilityRole="button"
-                      accessibilityLabel={walkInServiceId ? `Selected service: ${services.find(s => s.id === walkInServiceId)?.name}` : 'Select service for walk-in visit'}
-                      accessibilityState={{ expanded: walkInServicePickerVisible }}
-                      style={[
-                        modalStyles.formSelect,
-                        walkInServicePickerVisible && modalStyles.formSelectFocused,
-                      ]}
-                      onPress={() => setWalkInServicePickerVisible(!walkInServicePickerVisible)}
-                    >
-                      <Text style={modalStyles.selectText}>
-                        {walkInServiceId
-                          ? services.find(s => s.id === walkInServiceId)?.name
-                          : 'Select a service'}
-                      </Text>
-                      {walkInServicePickerVisible && (
-                        <View style={modalStyles.pickerOverlay}>
-                          {services.map((service) => (
-                            <TouchableOpacity
-                              key={service.id}
-                              accessibilityRole="button"
-                              accessibilityLabel={service.name}
-                              accessibilityState={{ selected: walkInServiceId === service.id }}
-                              style={modalStyles.pickerItem}
-                              onPress={() => {
-                                setWalkInServiceId(service.id);
-                                setWalkInServicePickerVisible(false);
-                              }}
-                            >
-                              <Text style={[
-                                modalStyles.pickerItemText,
-                                walkInServiceId === service.id && modalStyles.pickerItemTextSelected,
-                              ]}>
-                                {service.name}
-                              </Text>
-                            </TouchableOpacity>
-                          ))}
-                        </View>
-                      )}
-                    </TouchableOpacity>
-                  </View>
-                )}
-
-                {/* Visit Date */}
+              {/* Service selection */}
+              {servicesLoading ? (
+                <Text style={modalStyles.loadingText}>Loading services...</Text>
+              ) : services.length === 0 ? (
+                <Text style={modalStyles.loadingText}>No services available</Text>
+              ) : (
                 <View style={modalStyles.formGroup}>
-                  <Text style={modalStyles.label}>Visit Date</Text>
+                  <Text style={modalStyles.label}>Service</Text>
                   <TouchableOpacity
                     accessibilityRole="button"
-                    accessibilityLabel="Select visit date"
-                    accessibilityValue={{ text: formatManilaDate(walkInDate) }}
+                    accessibilityLabel={walkInServiceId ? `Selected service: ${services.find(s => s.id === walkInServiceId)?.name}` : 'Select service for walk-in visit'}
+                    accessibilityState={{ expanded: walkInServicePickerVisible }}
                     style={[
-                      modalStyles.dateInput,
-                      walkInDatePickerVisible && modalStyles.dateInputFocused,
+                      modalStyles.formSelect,
+                      walkInServicePickerVisible && modalStyles.formSelectFocused,
                     ]}
-                    onPress={handleWalkInShowDatePicker}
+                    onPress={() => setWalkInServicePickerVisible(!walkInServicePickerVisible)}
                   >
-                    <Text style={modalStyles.dateText}>
-                      {formatManilaDate(walkInDate)}
+                    <Text style={modalStyles.selectText}>
+                      {walkInServiceId
+                        ? services.find(s => s.id === walkInServiceId)?.name
+                        : 'Select a service'}
                     </Text>
-                    {walkInDatePickerVisible && (
-                      <DateTimePicker
-                        testID="walkInDateTimePicker"
-                        value={walkInDate}
-                        mode="date"
-                        is24Hour={true}
-                        display="default"
-                        onChange={(event, selectedDate) => {
-                          handleWalkInDateChange(event, selectedDate);
-                        }}
-                      />
-                    )}
                   </TouchableOpacity>
+                  {walkInServicePickerVisible && (
+                    <View style={modalStyles.serviceOptions}>
+                      {services.map((service) => (
+                        <TouchableOpacity
+                          key={service.id}
+                          accessibilityRole="button"
+                          accessibilityLabel={service.name}
+                          accessibilityState={{ selected: walkInServiceId === service.id }}
+                          style={modalStyles.pickerItem}
+                          onPress={() => {
+                            setWalkInServiceId(service.id);
+                            setWalkInServicePickerVisible(false);
+                          }}
+                        >
+                          <Text style={[
+                            modalStyles.pickerItemText,
+                            walkInServiceId === service.id && modalStyles.pickerItemTextSelected,
+                          ]}>
+                            {service.name}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
                 </View>
+              )}
 
-                {/* Notes field */}
-                <View style={modalStyles.formGroup}>
-                  <Text style={modalStyles.label}>Notes</Text>
-                  <TextField
-                    placeholder="Enter any notes about your visit..."
-                    value={walkInNotes}
-                    onChangeText={(text) => setWalkInNotes(text)}
-                    multiline
-                    style={modalStyles.textField}
-                    error={walkInError?.includes('Notes') ? walkInError : undefined}
-                  />
-                </View>
-
-                {/* Consent checkbox */}
-                <View style={modalStyles.formGroup}>
-                  <Text style={modalStyles.checkboxLabel}>
-                    <Text style={modalStyles.checkboxText}>
-                      I was seen without prior booking
-                    </Text>
+              {/* Visit Date */}
+              <View style={modalStyles.formGroup}>
+                <Text style={modalStyles.label}>Visit Date</Text>
+                <TouchableOpacity
+                  accessibilityRole="button"
+                  accessibilityLabel="Select visit date"
+                  accessibilityValue={{ text: formatManilaDate(walkInDate) }}
+                  style={[
+                    modalStyles.dateInput,
+                    walkInDatePickerVisible && modalStyles.dateInputFocused,
+                  ]}
+                  onPress={handleWalkInShowDatePicker}
+                >
+                  <Text style={modalStyles.dateText}>
+                    {formatManilaDate(walkInDate)}
                   </Text>
-                  <TouchableOpacity
-                    accessibilityRole="checkbox"
-                    accessibilityLabel="Confirm walk-in visit without prior booking"
-                    accessibilityState={{ checked: walkInConsent }}
-                    style={[
-                      modalStyles.checkboxContainer,
-                      walkInConsent && modalStyles.checkboxChecked,
-                    ]}
-                    onPress={() => setWalkInConsent(!walkInConsent)}
-                  >
-                    <View style={modalStyles.checkboxInner} />
-                  </TouchableOpacity>
-                </View>
-
-                {/* Error message */}
-                {walkInError && (
-                  <Text style={modalStyles.errorText}>{walkInError}</Text>
-                )}
-
-                {/* Success state */}
-                {walkInSuccess && (
-                  <View style={modalStyles.successState}>
-                    <Text style={modalStyles.successText}>
-                      Walk-in visit reported successfully!
-                    </Text>
-                    <Text style={modalStyles.successSubtext}>
-                      A pending appointment has been created. The clinic will review and approve it.
-                    </Text>
-                  </View>
-                )}
-
-                {/* Submit button */}
-                {(!walkInSuccess && !walkInError) || walkInSuccess && !walkInModalVisible && !walkInError && !walkInSubmitting && (
-                  <TouchableOpacity
-                    style={[
-                      modalStyles.submitButton,
-                      walkInSubmitting && modalStyles.submitButtonDisabled,
-                    ]}
-                    onPress={walkInSubmitting ? undefined : handleWalkInSubmit}
-                    disabled={walkInSubmitting}
-                  >
-                    {walkInSubmitting ? (
-                      <Text style={modalStyles.submitButtonText}>Submitting...</Text>
-                    ) : (
-                      <Text style={modalStyles.submitButtonText}>Submit Walk-in Visit</Text>
-                    )}
-                  </TouchableOpacity>
-                )}
-
-                {/* Close button */}
-                {(!walkInSuccess || walkInError) && (
-                  <TouchableOpacity
-                    style={modalStyles.closeButton}
-                    onPress={handleWalkInModalClose}
-                  >
-                    <Text style={modalStyles.closeButtonText}>Close</Text>
-                  </TouchableOpacity>
-                )}
+                  {walkInDatePickerVisible && (
+                    <DateTimePicker
+                      testID="walkInDateTimePicker"
+                      value={walkInDate}
+                      mode="date"
+                      is24Hour={true}
+                      display="default"
+                      onChange={(event, selectedDate) => {
+                        handleWalkInDateChange(event, selectedDate);
+                      }}
+                    />
+                  )}
+                </TouchableOpacity>
               </View>
+
+              {/* Notes field */}
+              <View style={modalStyles.formGroup}>
+                <TextField
+                  label="Notes"
+                  textAlignVertical="top"
+                  placeholder="Enter any notes about your visit..."
+                  value={walkInNotes}
+                  onChangeText={(text) => setWalkInNotes(text)}
+                  multiline
+                  style={modalStyles.textField}
+                  error={walkInError?.includes('Notes') ? walkInError : undefined}
+                />
+              </View>
+
+              {/* Consent checkbox */}
+              <View style={modalStyles.formGroup}>
+                <Text style={modalStyles.checkboxLabel}>
+                  <Text style={modalStyles.checkboxText}>
+                    I was seen without prior booking
+                  </Text>
+                </Text>
+                <TouchableOpacity
+                  accessibilityRole="checkbox"
+                  accessibilityLabel="Confirm walk-in visit without prior booking"
+                  accessibilityState={{ checked: walkInConsent }}
+                  style={[
+                    modalStyles.checkboxContainer,
+                    walkInConsent && modalStyles.checkboxChecked,
+                  ]}
+                  onPress={() => setWalkInConsent(!walkInConsent)}
+                >
+                  <View style={modalStyles.checkboxInner} />
+                </TouchableOpacity>
+              </View>
+
+              {/* Error message */}
+              {walkInError && (
+                <Text style={modalStyles.errorText}>{walkInError}</Text>
+              )}
+
+              {/* Success state */}
+              {walkInSuccess && (
+                <View style={modalStyles.successState}>
+                  <Text style={modalStyles.successText}>
+                    Walk-in visit reported successfully!
+                  </Text>
+                  <Text style={modalStyles.successSubtext}>
+                    A pending appointment has been created. The clinic will review and approve it.
+                  </Text>
+                </View>
+              )}
+
+              {/* Submit button */}
+              {(!walkInSuccess && !walkInError) || walkInSuccess && !walkInModalVisible && !walkInError && !walkInSubmitting && (
+                <TouchableOpacity
+                  style={[
+                    modalStyles.submitButton,
+                    walkInSubmitting && modalStyles.submitButtonDisabled,
+                  ]}
+                  onPress={walkInSubmitting ? undefined : handleWalkInSubmit}
+                  disabled={walkInSubmitting}
+                >
+                  {walkInSubmitting ? (
+                    <Text style={modalStyles.submitButtonText}>Submitting...</Text>
+                  ) : (
+                    <Text style={modalStyles.submitButtonText}>Submit Walk-in Visit</Text>
+                  )}
+                </TouchableOpacity>
+              )}
+
+              {/* Close button */}
+              {(!walkInSuccess || walkInError) && (
+                <TouchableOpacity
+                  style={modalStyles.closeButton}
+                  onPress={handleWalkInModalClose}
+                >
+                  <Text style={modalStyles.closeButtonText}>Close</Text>
+                </TouchableOpacity>
+              )}
             </Modal>
           )}
 
@@ -706,16 +705,11 @@ const styles = StyleSheet.create({
 
 // Walk-in modal styles
 const modalStyles = StyleSheet.create({
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    padding: spacing.lg,
-  },
   formGroup: {
     marginBottom: spacing.md,
   },
   label: {
-    fontSize: typography.caption.fontSize,
+    ...typography.small,
     fontWeight: '600',
     color: Colors.text,
     marginBottom: spacing.xs,
@@ -727,33 +721,21 @@ const modalStyles = StyleSheet.create({
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    color: Colors.text,
+    justifyContent: 'center',
     minHeight: 48,
   },
   formSelectFocused: {
     borderColor: Colors.primary,
   },
   selectText: {
-    fontSize: typography.caption.fontSize,
+    ...typography.body,
     color: Colors.text,
   },
-  pickerOverlay: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
+  serviceOptions: {
     marginTop: spacing.xs,
-    backgroundColor: Colors.background,
-    borderWidth: 1,
     borderColor: Colors.border,
+    borderWidth: 1,
     borderRadius: radius.md,
-    maxHeight: 200,
-    elevation: 4,
-    shadowColor: Colors.shadow,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    zIndex: 10,
   },
   pickerItem: {
     paddingHorizontal: spacing.md,
@@ -763,7 +745,7 @@ const modalStyles = StyleSheet.create({
     minHeight: 48,
   },
   pickerItemText: {
-    fontSize: typography.caption.fontSize,
+    ...typography.body,
     color: Colors.text,
   },
   pickerItemTextSelected: {
@@ -777,6 +759,8 @@ const modalStyles = StyleSheet.create({
     marginVertical: spacing.lg,
   },
   dateInput: {
+    minHeight: size.tapTarget,
+    justifyContent: 'center',
     backgroundColor: Colors.background,
     borderWidth: 1,
     borderColor: Colors.border,
@@ -788,19 +772,10 @@ const modalStyles = StyleSheet.create({
     borderColor: Colors.primary,
   },
   dateText: {
-    fontSize: typography.caption.fontSize,
+    ...typography.body,
     color: Colors.text,
   },
-  textField: {
-    minHeight: 56,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    backgroundColor: Colors.background,
-    color: Colors.text,
-    fontSize: typography.body.fontSize,
-  },
+  textField: { minHeight: 64 },
   checkboxLabel: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -867,6 +842,8 @@ const modalStyles = StyleSheet.create({
     fontWeight: '700',
   },
   closeButton: {
+    minHeight: size.tapTarget,
+    justifyContent: 'center',
     marginTop: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: radius.sm,

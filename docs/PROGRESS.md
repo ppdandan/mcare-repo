@@ -1,5 +1,9 @@
 # Progress
 
+## Phase 6 walk-in sheet
+
+Service options expand below the field. The sheet has one scrollable body, keyboard accommodation and 44-point close targets. Shared, mobile and web type checks, both linters and all 15 local tests passed before and after. Keyboard behavior on a phone is pending review.
+
 ## Phase 6 mobile Visits
 
 The Visits header, filters and appointment details now scroll together. Missing doctor and room details have explicit labels. Shared, mobile and web type checks, both linters and 15 local tests passed before and after. Phone review is pending.

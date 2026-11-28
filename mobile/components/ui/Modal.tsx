@@ -4,11 +4,14 @@ import {
   Text,
   StyleSheet,
   Modal as RNModal,
-  TouchableWithoutFeedback,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { spacing, typography, radius, colors as Colors } from '@/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { spacing, typography, radius, size, colors as Colors } from '@/theme';
 
 export interface ModalProps {
   visible: boolean;
@@ -29,6 +32,7 @@ export function Modal({
   animationType = 'slide',
   style,
 }: ModalProps) {
+  const insets = useSafeAreaInsets();
   return (
     <RNModal
       visible={visible}
@@ -37,41 +41,26 @@ export function Modal({
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      {/* Tapping the dimmed backdrop closes; tapping the sheet does not. */}
-      <TouchableWithoutFeedback onPress={onClose} accessible={false}>
-        <View style={styles.overlay}>
-          <View style={styles.backdrop} pointerEvents="none" />
-          <TouchableWithoutFeedback onPress={() => {}} accessible={false}>
-            <View style={[styles.container, style]}>
-              {title ? (
-                <View style={styles.header}>
-                  <Text style={styles.title}>{title}</Text>
-                  <TouchableWithoutFeedback
-                    onPress={onClose}
-                    accessibilityLabel="Close"
-                  >
-                    <View
-                      style={styles.closeButton}
-                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                    >
-                      <Ionicons name="close" size={24} color={Colors.textSecondary} />
-                    </View>
-                  </TouchableWithoutFeedback>
-                </View>
-              ) : null}
-              {/* Body scrolls so tall forms are never clipped on small screens. */}
-              <ScrollView
-                style={styles.content}
-                contentContainerStyle={styles.contentInner}
-                keyboardShouldPersistTaps="handled"
-                showsVerticalScrollIndicator
-              >
-                {children}
-              </ScrollView>
+      <KeyboardAvoidingView style={styles.overlay} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <Pressable accessible={false} style={styles.backdrop} onPress={onClose} />
+        <View style={[styles.container, style]}>
+          {title ? (
+            <View style={styles.header}>
+              <Text accessibilityRole="header" style={styles.title}>{title}</Text>
+              <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={onClose} style={styles.closeButton}>
+                <Ionicons name="close" size={24} color={Colors.text} />
+              </Pressable>
             </View>
-          </TouchableWithoutFeedback>
+          ) : null}
+          <ScrollView
+            style={styles.content}
+            contentContainerStyle={[styles.contentInner, { paddingBottom: Math.max(insets.bottom, spacing.lg) }]}
+            keyboardShouldPersistTaps="handled"
+          >
+            {children}
+          </ScrollView>
         </View>
-      </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </RNModal>
   );
 }
@@ -108,18 +97,20 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
   },
   title: {
-    fontSize: typography.heading.fontSize,
+    flex: 1,
+    ...typography.title,
     fontWeight: '700',
     color: Colors.text,
   },
   closeButton: {
-    padding: spacing.xs,
+    minWidth: size.tapTarget,
+    minHeight: size.tapTarget,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  content: {
+  content: { flexGrow: 0, flexShrink: 1 },
+  contentInner: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.md,
-  },
-  contentInner: {
-    paddingBottom: spacing['3xl'],
   },
 });
