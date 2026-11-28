@@ -10,7 +10,6 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
@@ -223,7 +222,7 @@ export default function BookScreen() {
       }
 
       Alert.alert(
-        'Booking Request Submitted! 🎉',
+        'Booking request submitted',
         'Your appointment request is pending approval. Clinic staff will review it shortly.',
         [
           {
@@ -253,17 +252,16 @@ export default function BookScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top','left','right']}>
       <View style={styles.container}>
-        {/* Header with Step Indicator */}
-        <View style={styles.header}>
-          <ScreenHeader title="Book Clinic Visit" subtitle={`Step ${step} of 4`} />
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: `${(step / 4) * 100}%` }]} />
-          </View>
-        </View>
-
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+          <View style={styles.header}>
+            <ScreenHeader title="Book Clinic Visit" subtitle={`Step ${step} of 4`} />
+            <View style={styles.progressBar}>
+              <View style={[styles.progressFill, { width: `${(step / 4) * 100}%` }]} />
+            </View>
+          </View>
+
           {loading ? (
             <LoadingState label="Loading clinic directory..." />
           ) : catalogError ? (
@@ -273,10 +271,8 @@ export default function BookScreen() {
               {/* STEP 1: SELECT SERVICE */}
               {step === 1 && (
                 <View>
-                  <Text style={styles.sectionHeading}>Select Clinic Service</Text>
-                  <Text style={styles.sectionSub}>
-                    Choose the medical procedure or consultation you require.
-                  </Text>
+                  <Text style={styles.sectionHeading}>Choose a service</Text>
+
                   {services.length === 0 ? (
                     <EmptyState title="No services are available" description="Please retry or contact the clinic.">
                       <Button variant="outline" onPress={loadCatalog}>Retry</Button>
@@ -285,14 +281,14 @@ export default function BookScreen() {
                     <TouchableOpacity
                       key={svc.id}
                       accessibilityRole="button"
-                      accessibilityLabel={svc.name}
+                      accessibilityLabel={`${svc.name}, ${svc.duration_minutes} minutes`}
                       accessibilityState={{ selected: selectedService?.id === svc.id }}
                       onPress={() => setSelectedService(svc)}
                       activeOpacity={0.8}
                     >
                       <Card style={[styles.card, selectedService?.id === svc.id && styles.cardActive]}>
                       <View style={styles.serviceRow}>
-                        <View style={{ flex: 1 }}>
+                        <View>
                           <Text style={styles.cardTitle}>{svc.name}</Text>
                           <Text style={styles.cardDescription}>{svc.description}</Text>
                         </View>
@@ -307,10 +303,10 @@ export default function BookScreen() {
               {/* STEP 2: SELECT DATE; Dr. Bernice Paule is assigned automatically. */}
               {step === 2 && (
                 <View>
-                  <Text style={styles.sectionHeading}>Choose Appointment Date</Text>
+                  <Text style={styles.sectionHeading}>Choose a date</Text>
                   <Text style={styles.sectionSub}>
                     {selectedService?.name} · {selectedDoctor?.profile.full_name} · {selectedDoctor?.specialty}
-                    {'\n'}Available at {selectedDoctor?.room ?? 'Consultation Room'}
+                    {selectedDoctor?.room ? `\n${selectedDoctor.room}` : ''}
                   </Text>
                   <View style={styles.calendarHeader}>
                     <TouchableOpacity
@@ -331,10 +327,10 @@ export default function BookScreen() {
                       <Text style={styles.monthButtonText}>›</Text>
                     </TouchableOpacity>
                   </View>
-                  <Card style={styles.calendarCard}>
+                  <View style={styles.calendarCard}>
                   <View style={styles.weekdayRow}>
                     {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                      <Text key={day} style={styles.weekdayLabel}>{day}</Text>
+                      <Text key={day} style={styles.weekdayLabel} accessibilityLabel={day}>{day[0]}</Text>
                     ))}
                   </View>
                   <View style={styles.calendarGrid}>
@@ -345,13 +341,12 @@ export default function BookScreen() {
                         <TouchableOpacity
                           key={day.dateStr}
                           accessibilityRole="button"
-                          accessibilityLabel={formatManilaDate(day.dateStr, { dateStyle: 'full' })}
+                          accessibilityLabel={`${day.isToday ? 'Today, ' : ''}${formatManilaDate(day.dateStr, { dateStyle: 'full' })}`}
                           accessibilityState={{ disabled, selected: active }}
                           disabled={disabled}
                           style={[
                             styles.calendarDay,
                             disabled && styles.calendarDayDisabled,
-                            day.isToday && !disabled && styles.calendarDayToday,
                             active && styles.calendarDayActive,
                           ]}
                           onPress={() => {
@@ -363,13 +358,14 @@ export default function BookScreen() {
                           <Text style={[styles.calendarDayText, disabled && styles.calendarDayTextDisabled, active && styles.calendarDayTextActive]}>
                             {day.dayNumber}
                           </Text>
+                          {day.isToday && <View style={[styles.todayMark, active && styles.todayMarkActive]} />}
                         </TouchableOpacity>
                       );
                     })}
                   </View>
-                  </Card>
+                  </View>
                   <Text style={styles.calendarHint}>
-                    Greyed-out days are unavailable. The clinic books weekdays only; today is outlined.
+                    Maroon outlines show available weekdays. A line under a date marks today.
                   </Text>
                 </View>
               )}
@@ -377,7 +373,7 @@ export default function BookScreen() {
               {/* STEP 3: SELECT AVAILABLE TIME SLOT */}
               {step === 3 && (
                 <View>
-                  <Text style={styles.sectionHeading}>Available Time Slots</Text>
+                  <Text style={styles.sectionHeading}>Choose a time</Text>
                   <Text style={styles.sectionSub}>
                     Date: {formatManilaDate(selectedDate, { dateStyle: 'full' })}
                     {'\n'}
@@ -391,7 +387,7 @@ export default function BookScreen() {
                   {slotError ? (
                     <ErrorState title="Could not load time slots" message={slotError} onRetry={() => setSlotRetry((count) => count + 1)} />
                   ) : loadingSlots ? (
-                    <LoadingState label="Calculating free clinic slots..." />
+                    <LoadingState label="Loading appointment times…" />
                   ) : slots.length === 0 ? (
                     <EmptyState title="No Clinic Hours" description="No appointment hours are scheduled for this weekday. Please select another date.">
                       <Button variant="outline" onPress={() => setStep(2)}>Choose Another Date</Button>
@@ -433,28 +429,24 @@ export default function BookScreen() {
               {/* STEP 4: REVIEW & CONFIRM */}
               {step === 4 && (
                 <View>
-                  <Text style={styles.sectionHeading}>Review & Confirm Visit</Text>
+                  <Text style={styles.sectionHeading}>Review your visit</Text>
                   <Text style={styles.sectionSub}>
-                    Please review your booking details before submission.
+                    The clinic will review your appointment request.
                   </Text>
 
                   <Card style={styles.summaryCard}>
-                    <View style={styles.summaryRow}>
-                      <Text style={styles.summaryLabel}>Patient</Text>
-                      <Text style={styles.summaryValue}>{patient?.profile_id ? 'Your Profile' : 'Patient'}</Text>
-                    </View>
                     <View style={styles.summaryRow}>
                       <Text style={styles.summaryLabel}>Service</Text>
                       <Text style={styles.summaryValue}>{selectedService?.name}</Text>
                     </View>
                     <View style={styles.summaryRow}>
-                      <Text style={styles.summaryLabel}>Attending Doctor</Text>
+                      <Text style={styles.summaryLabel}>Doctor</Text>
                       <Text style={styles.summaryValue}>{selectedDoctor?.profile.full_name}</Text>
                     </View>
-                    <View style={styles.summaryRow}>
-                      <Text style={styles.summaryLabel}>Room / Clinic</Text>
+                    {Boolean(selectedDoctor?.room) && <View style={styles.summaryRow}>
+                      <Text style={styles.summaryLabel}>Room</Text>
                       <Text style={styles.summaryValue}>{selectedDoctor?.room}</Text>
-                    </View>
+                    </View>}
                     <View style={styles.summaryRow}>
                       <Text style={styles.summaryLabel}>Date</Text>
                       <Text style={styles.summaryValue}>
@@ -471,7 +463,7 @@ export default function BookScreen() {
 
                   <View style={styles.notesGroup}>
                     <TextField
-                      label="Notes or Symptoms (Optional):"
+                      label="Notes or symptoms (optional)"
                       value={notes}
                       onChangeText={setNotes}
                       multiline
@@ -483,37 +475,32 @@ export default function BookScreen() {
                     <ErrorState title="Booking failed" message={bookingError} onRetry={handleConfirmBooking} retryLabel={submitting ? 'Retrying…' : 'Retry'} />
                   )}
 
-                  <View style={styles.exclusionNote}>
-                    <Text style={styles.exclusionText}>
-                      🔒 Protected by PostgreSQL double-booking prevention. Once submitted, your slot is locked in real-time.
-                    </Text>
-                  </View>
+
                 </View>
               )}
             </>
           )}
+          {/* Bottom Navigation Buttons */}
+          <View style={styles.bottomBar}>
+            {step > 1 && (
+              <Button variant="outline" style={styles.previousAction} onPress={() => setStep((s) => (s - 1) as 1 | 2 | 3 | 4)} disabled={submitting}>Back</Button>
+            )}
+
+            {step < 4 ? (
+              <Button
+                style={styles.nextAction}
+                disabled={
+                  (step === 1 && !selectedService) ||
+                  (step === 2 && (!selectedDate || !selectedDoctor)) ||
+                  (step === 3 && !selectedSlot)
+                }
+                onPress={() => setStep((s) => (s + 1) as 1 | 2 | 3 | 4)}
+              >Next</Button>
+            ) : (
+              <Button style={styles.nextAction} onPress={handleConfirmBooking} loading={submitting} disabled={submitting}>Request appointment</Button>
+            )}
+          </View>
         </ScrollView>
-
-        {/* Bottom Navigation Buttons */}
-        <View style={styles.bottomBar}>
-          {step > 1 && (
-            <Button variant="outline" style={styles.previousAction} onPress={() => setStep((s) => (s - 1) as 1 | 2 | 3 | 4)} disabled={submitting}>Back</Button>
-          )}
-
-          {step < 4 ? (
-            <Button
-              style={styles.nextAction}
-              disabled={
-                (step === 1 && !selectedService) ||
-                (step === 2 && (!selectedDate || !selectedDoctor)) ||
-                (step === 3 && !selectedSlot)
-              }
-              onPress={() => setStep((s) => (s + 1) as 1 | 2 | 3 | 4)}
-            >Next</Button>
-          ) : (
-            <Button style={styles.nextAction} onPress={handleConfirmBooking} loading={submitting} disabled={submitting}>Confirm & Book</Button>
-          )}
-        </View>
       </View>
     </SafeAreaView>
   );
@@ -528,12 +515,7 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
   },
-  header: {
-    padding: spacing.xl,
-    backgroundColor: Colors.background,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.brandSoft,
-  },
+  header: { gap: spacing.xs },
   headerTitle: {
     fontSize: typography.title.fontSize,
     fontWeight: '700',
@@ -557,10 +539,7 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: Colors.primary,
   },
-  scrollContent: {
-    padding: spacing.xl,
-    paddingBottom: spacing['3xl'],
-  },
+  scrollContent: { padding: spacing.lg, gap: spacing.lg, paddingBottom: spacing.xl },
   centerBox: {
     padding: spacing['4xl'],
     alignItems: 'center',
@@ -598,11 +577,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.primary,
     backgroundColor: Colors.brandWash,
   },
-  serviceRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
+  serviceRow: { gap: spacing.sm },
   cardTitle: {
     fontSize: typography.small.fontSize,
     fontWeight: '700',
@@ -661,7 +636,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: spacing.md,
   },
-  calendarCard: { padding: spacing.sm, marginBottom: spacing.lg },
+  calendarCard: { marginHorizontal: -spacing.md },
   monthButton: {
     minWidth: 48,
     minHeight: 48,
@@ -676,61 +651,21 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     lineHeight: typography.title.lineHeight,
   },
-  monthTitle: {
-    color: Colors.text,
-    fontSize: typography.body.fontSize,
-    fontWeight: '700',
-  },
+  monthTitle: { flex: 1, textAlign: 'center', ...typography.body, fontWeight: '700', color: Colors.text },
   weekdayRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: spacing.xs,
   },
-  weekdayLabel: {
-    width: '13.5%',
-    textAlign: 'center',
-    fontSize: typography.caption.fontSize,
-    fontWeight: '700',
-    color: Colors.textSecondary,
-  },
-  calendarGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    rowGap: spacing.xs,
-  },
-  calendarDay: {
-    width: '13.5%',
-    minWidth: 44,
-    minHeight: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: radius.md,
-    backgroundColor: Colors.background,
-    borderWidth: 1.5,
-    borderColor: Colors.border,
-  },
-  calendarDayDisabled: {
-    backgroundColor: Colors.surface,
-    borderColor: Colors.divider,
-  },
-  calendarDayToday: {
-    borderWidth: 2,
-    borderColor: Colors.secondary,
-  },
-  calendarDayActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  calendarDayText: {
-    fontSize: typography.caption.fontSize,
-    color: Colors.text,
-    fontWeight: '600',
-  },
-  calendarDayTextDisabled: {
-    color: Colors.textLight,
-    opacity: 0.55,
-  },
+  weekdayLabel: { width: '14.2857%', textAlign: 'center', ...typography.small, color: Colors.textSecondary },
+  calendarGrid: { flexDirection: 'row', flexWrap: 'wrap', rowGap: spacing.xs },
+  calendarDay: { width: '14.2857%', minHeight: 48, paddingVertical: spacing.xs, alignItems: 'center', justifyContent: 'center', borderRadius: radius.sm, backgroundColor: Colors.brandSoft, borderWidth: 1, borderColor: Colors.secondary },
+  calendarDayDisabled: { backgroundColor: Colors.surface, borderColor: Colors.divider },
+  todayMarkActive: { backgroundColor: Colors.textOnPrimary },
+  todayMark: { backgroundColor: Colors.text, width: spacing.md, height: 2 },
+  calendarDayActive: { backgroundColor: Colors.primary, borderColor: Colors.primaryDark },
+  calendarDayText: { fontSize: typography.small.fontSize, fontWeight: '600', color: Colors.primaryDark },
+  calendarDayTextDisabled: { color: Colors.textSecondary },
   calendarDayTextActive: {
     color: Colors.background,
   },
@@ -771,13 +706,8 @@ const styles = StyleSheet.create({
   textActive: {
     color: Colors.background,
   },
-  slotsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
+  slotsGrid: { gap: spacing.sm },
   slotChip: {
-    width: '31%',
     minHeight: 48,
     backgroundColor: Colors.background,
     borderRadius: radius.md,
@@ -794,11 +724,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
     backgroundColor: Colors.border,
   },
-  slotTime: {
-    fontSize: typography.caption.fontSize,
-    fontWeight: '700',
-    color: Colors.text,
-  },
+  slotTime: { ...typography.body, fontWeight: '700', textAlign: 'center', color: Colors.text },
   slotTimeActive: {
     color: Colors.background,
   },
@@ -887,22 +813,12 @@ const styles = StyleSheet.create({
     borderColor: Colors.brandSoft,
     marginBottom: spacing.lg,
   },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.surface,
-  },
+  summaryRow: { gap: spacing.xs, paddingVertical: spacing.xs },
   summaryLabel: {
     fontSize: typography.caption.fontSize,
     color: Colors.textSecondary,
   },
-  summaryValue: {
-    fontSize: typography.caption.fontSize,
-    fontWeight: '600',
-    color: Colors.text,
-  },
+  summaryValue: { ...typography.body, fontWeight: '600', color: Colors.text },
   notesGroup: {
     marginBottom: spacing.lg,
   },
@@ -923,28 +839,9 @@ const styles = StyleSheet.create({
     height: 70,
     textAlignVertical: 'top',
   },
-  exclusionNote: {
-    backgroundColor: Colors.successBackground,
-    padding: spacing.md,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: Colors.successBackground,
-  },
-  exclusionText: {
-    fontSize: typography.caption.fontSize,
-    color: Colors.success,
-    lineHeight: typography.caption.lineHeight,
-  },
-  bottomBar: {
-    flexDirection: 'row',
-    padding: spacing.lg,
-    backgroundColor: Colors.background,
-    borderTopWidth: 1,
-    borderTopColor: Colors.brandSoft,
-    gap: spacing.md,
-  },
-  previousAction: { flex: 1 },
-  nextAction: { flex: 2 },
+  bottomBar: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  previousAction: { flexGrow: 1, flexBasis: 104 },
+  nextAction: { flexGrow: 2, flexBasis: 144 },
   prevButton: {
     flex: 1,
     height: 48,

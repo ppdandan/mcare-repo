@@ -1,5 +1,9 @@
 # Progress
 
+## Phase 6 Book Clinic Visit
+
+All four booking steps use wrapping content and scrollable navigation. The seven-column calendar marks today and distinguishes selectable, unavailable and selected dates. All four steps passed a 320-point browser layout check at twice the text size. Type checks, both linters and all 15 local tests passed before and after. Native phone review is pending.
+
 ## Phase 6 walk-in Submit
 
 The Submit button appears on a fresh walk-in form and after a validation or submission error. It stays disabled while sending. Type checks, both linters and all 15 local tests passed before and after.
