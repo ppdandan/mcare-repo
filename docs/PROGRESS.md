@@ -1,5 +1,9 @@
 # Progress
 
+## Phase 6 mobile Visits
+
+The Visits header, filters and appointment details now scroll together. Missing doctor and room details have explicit labels. Shared, mobile and web type checks, both linters and 15 local tests passed before and after. Phone review is pending.
+
 ## Phase 5 dashboard layout
 
 The shared dashboard layout keeps desktop navigation beside the scrollable content and remembers the sidebar setting. Small screens use a navigation drawer. Review screenshots are in docs/reviews/phase5.

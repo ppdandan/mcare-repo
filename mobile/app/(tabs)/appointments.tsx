@@ -18,7 +18,6 @@ import { supabase } from '@/lib/supabase';
 import { formatManilaDate, formatManilaDateTime } from '@m-care/shared';
 import type { AppointmentWithDetails, AppointmentStatus } from '@m-care/shared';
 import { Badge, Button, Card, EmptyState, ErrorState, LoadingState, ScreenHeader, Modal, TextField } from '@/components/ui';
-import { Ionicons } from '@expo/vector-icons';
 
 export default function AppointmentsScreen() {
   const router = useRouter();
@@ -286,25 +285,29 @@ const [servicesLoading, setServicesLoading] = useState(false);
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={Colors.primary}
+            />
+          }
+        >
         {/* Header */}
         <View style={styles.header}>
-          <ScreenHeader
-  title="My Clinic Visits"
-  subtitle="Live appointment tracking & consultation history"
-  action={
-    <Button
-      variant="outline"
-      onPress={() => setWalkInModalVisible(true)}
-      disabled={walkInSubmitting}
-      loading={walkInSubmitting}
-    >
-      <Ionicons name="person-add" size={18} />
-      Report Walk-in
-    </Button>
-  }
- />
+          <ScreenHeader title="My visits" />
+          <Button
+            variant="outline"
+            onPress={() => setWalkInModalVisible(true)}
+            disabled={walkInSubmitting}
+            loading={walkInSubmitting}
+          >
+            Report a walk-in visit
+          </Button>
 
           {/* Walk-in Modal */}
           {walkInModalVisible && (
@@ -491,7 +494,7 @@ const [servicesLoading, setServicesLoading] = useState(false);
               <Text
                 style={[styles.tabText, activeTab === 'upcoming' && styles.tabTextActive]}
               >
-                Upcoming & Active
+                Upcoming
               </Text>
             </TouchableOpacity>
 
@@ -504,39 +507,27 @@ const [servicesLoading, setServicesLoading] = useState(false);
               <Text
                 style={[styles.tabText, activeTab === 'history' && styles.tabTextActive]}
               >
-                Visit History
+                History
               </Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Content List */}
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              tintColor={Colors.primary}
-            />
-          }
-        >
           {loading ? (
-            <LoadingState label="Syncing appointments with clinic..." />
+            <LoadingState label="Loading visits…" />
           ) : loadError ? (
             <ErrorState title="Appointments unavailable" message={loadError} onRetry={() => { setLoading(true); void fetchAppointments(); }} />
           ) : filteredAppointments.length === 0 ? (
             <EmptyState
               title={activeTab === 'upcoming'
-                ? 'No Upcoming Appointments'
-                : 'No Past Appointments Found'}
+                ? 'No upcoming visits'
+                : 'No past visits'}
               description={activeTab === 'upcoming'
-                ? 'You currently have no active or pending appointments booked with M-Care Clinic.'
-                : 'Your completed or archived clinic consultations will be listed here.'}
+                ? 'Your pending and scheduled visits appear here.'
+                : 'Past visits appear here.'}
             >
               {activeTab === 'upcoming' && (
-                <Button onPress={() => router.push('/(tabs)/book')}>Book an Appointment Now</Button>
+                <Button onPress={() => router.push('/(tabs)/book')}>Book a clinic visit</Button>
               )}
             </EmptyState>
           ) : (
@@ -552,16 +543,16 @@ const [servicesLoading, setServicesLoading] = useState(false);
                   </View>
 
                   <Text style={styles.doctorName}>
-                    {appt.doctor?.profile?.full_name ?? 'Dr. Bernice Paule'}
+                    {appt.doctor?.profile?.full_name ?? 'Doctor not recorded'}
                   </Text>
                   <Text style={styles.roomText}>
-                      {appt.doctor?.room ?? 'Room 201'}
+                      {appt.doctor?.room ?? 'Room not recorded'}
                   </Text>
 
                   <View style={styles.divider} />
 
                   <View style={styles.timeRow}>
-                    <Text style={styles.timeLabel}>Date & Time:</Text>
+                    <Text style={styles.timeLabel}>Date and time</Text>
                     <Text style={styles.timeValue}>
                       {formatManilaDateTime(appt.start_time, {
                         weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
@@ -584,7 +575,7 @@ const [servicesLoading, setServicesLoading] = useState(false);
                         loading={cancellingId === appt.id}
                         disabled={cancellingId === appt.id}
                       >
-                        Cancel Booking
+                        Cancel booking
                       </Button>
                     </View>
                   )}
@@ -593,7 +584,6 @@ const [servicesLoading, setServicesLoading] = useState(false);
             })
           )}
         </ScrollView>
-      </View>
     </SafeAreaView>
   );
 }
@@ -603,25 +593,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.brandWash,
   },
-  container: {
-    flex: 1,
-  },
   header: {
-    padding: spacing.xl,
-    paddingBottom: spacing.lg,
-    backgroundColor: Colors.background,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.brandSoft,
-  },
-  headerTitle: {
-    fontSize: typography.title.fontSize,
-    fontWeight: '700',
-    color: Colors.text,
-  },
-  headerSubtitle: {
-    fontSize: typography.caption.fontSize,
-    color: Colors.textSecondary,
-    marginTop: spacing.xs,
+    gap: spacing.md,
     marginBottom: spacing.lg,
   },
   tabContainer: {
@@ -634,89 +607,26 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 48,
     paddingVertical: spacing.sm,
+    justifyContent: 'center',
     alignItems: 'center',
     borderRadius: radius.md,
   },
-  tabButtonActive: {
-    backgroundColor: Colors.background,
-    shadowColor: Colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
+  tabButtonActive: { backgroundColor: Colors.primary },
   tabText: {
-    fontSize: typography.caption.fontSize,
+    ...typography.small,
+    textAlign: 'center',
     fontWeight: '600',
     color: Colors.textSecondary,
   },
   tabTextActive: {
-    color: Colors.primaryDark,
+    color: Colors.textOnPrimary,
     fontWeight: '700',
   },
   scrollContent: {
     padding: spacing.xl,
     paddingBottom: spacing['4xl'],
   },
-  centerBox: {
-    padding: spacing['4xl'],
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: spacing.md,
-    fontSize: typography.caption.fontSize,
-    color: Colors.textSecondary,
-  },
-  emptyCard: {
-    backgroundColor: Colors.background,
-    borderRadius: radius.xl,
-    padding: 0,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.surfaceAlt,
-    marginTop: spacing.sm,
-  },
-  emptyIcon: {
-    fontSize: typography.largeTitle.fontSize,
-    marginBottom: spacing.md,
-  },
-  emptyTitle: {
-    fontSize: typography.body.fontSize,
-    fontWeight: '700',
-    color: Colors.text,
-    marginBottom: spacing.sm,
-  },
-  emptyText: {
-    fontSize: typography.caption.fontSize,
-    color: Colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: typography.caption.lineHeight,
-    marginBottom: spacing.xl,
-  },
-  bookCTA: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    borderRadius: radius.md,
-  },
-  bookCTAText: {
-    color: Colors.background,
-    fontSize: typography.small.fontSize,
-    fontWeight: '700',
-  },
-  card: {
-    backgroundColor: Colors.background,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    marginBottom: spacing.lg,
-    borderWidth: 1,
-    borderColor: Colors.brandSoft,
-    shadowColor: Colors.primaryDark,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
-  },
+  card: { marginBottom: spacing.md },
   cardHeader: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -756,28 +666,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surfaceAlt,
     marginVertical: spacing.md,
   },
-  timeRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  timeLabel: {
-    fontSize: typography.caption.fontSize,
-    color: Colors.textSecondary,
-  },
-  timeValue: {
-    flexShrink: 1,
-    fontSize: typography.caption.fontSize,
-    fontWeight: '700',
-    color: Colors.primaryDark,
-  },
-  notesBox: {
-    backgroundColor: Colors.surface,
-    borderRadius: radius.sm,
-    padding: spacing.sm,
-    marginTop: spacing.sm,
-  },
+  timeRow: { gap: spacing.xs },
+  timeLabel: { ...typography.small, color: Colors.textSecondary },
+  timeValue: { ...typography.body, fontWeight: '600', color: Colors.text },
+  notesBox: { marginTop: spacing.sm },
   notesLabel: {
     fontSize: typography.caption.fontSize,
     fontWeight: '600',
