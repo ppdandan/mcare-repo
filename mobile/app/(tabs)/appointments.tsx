@@ -453,7 +453,7 @@ const [servicesLoading, setServicesLoading] = useState(false);
               )}
 
               {/* Submit button */}
-              {(!walkInSuccess && !walkInError) || walkInSuccess && !walkInModalVisible && !walkInError && !walkInSubmitting && (
+              {!walkInSuccess && (
                 <TouchableOpacity
                   style={[
                     modalStyles.submitButton,

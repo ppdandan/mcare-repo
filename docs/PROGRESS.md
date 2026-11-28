@@ -1,5 +1,9 @@
 # Progress
 
+## Phase 6 walk-in Submit
+
+The Submit button appears on a fresh walk-in form and after a validation or submission error. It stays disabled while sending. Type checks, both linters and all 15 local tests passed before and after.
+
 ## Phase 6 walk-in sheet
 
 Service options expand below the field. The sheet has one scrollable body, keyboard accommodation and 44-point close targets. Shared, mobile and web type checks, both linters and all 15 local tests passed before and after. Keyboard behavior on a phone is pending review.
