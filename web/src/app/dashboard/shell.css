@@ -1,0 +1,27 @@
+.dashboard-shell {
+  --shell-gutter: clamp(1rem, 2.5vw, 2rem);
+  --shell-gap: theme('spacing.3');
+  --shell-control-radius: var(--mcare-radius-control);
+  --shell-label-size: theme('fontSize.sm');
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--mcare-canvas);
+  color: var(--mcare-text);
+}
+.shell-sidebar { @apply hidden min-h-0 shrink-0 flex-col border-r border-base-300 bg-base-100 md:flex; }
+.shell-header { @apply flex min-h-16 shrink-0 items-center border-b border-base-300 bg-base-100; gap: var(--shell-gap); padding-inline: var(--shell-gutter); }
+.shell-main { @apply min-h-0 min-w-0 flex-1 overflow-auto; padding: var(--shell-gutter); }
+.shell-brand { @apply flex h-16 shrink-0 items-center px-4; gap: var(--shell-gap); }
+.shell-nav { @apply min-h-0 flex-1 overflow-y-auto p-2; }
+.shell-section { @apply px-3 pb-1 pt-3 text-xs font-semibold text-base-content/75; }
+.shell-link, .shell-control { @apply min-h-11 items-center font-medium; border-radius: var(--shell-control-radius); font-size: var(--shell-label-size); }
+.shell-link { @apply flex px-3; gap: var(--shell-gap); }
+.shell-control { @apply min-w-11 shrink-0 justify-center; }
+.shell-link:hover, .shell-control:hover { @apply bg-base-200; }
+.shell-link[aria-current="page"] { background: var(--mcare-brand); color: var(--mcare-surface); }
+.shell-account { @apply shrink-0 border-t border-base-300 px-5 py-3; font-size: var(--shell-label-size); }
+.shell-drawer { @apply fixed inset-y-0 left-0 m-0 w-72 max-w-[85vw] max-h-none border-0 bg-base-100 p-0 text-base-content; height: 100dvh; }
+.shell-drawer::backdrop { background: rgb(24 17 21 / 45%); }
+.shell-tooltip { @apply pointer-events-none fixed z-50 -translate-y-1/2 whitespace-nowrap px-3 py-2; background: var(--mcare-text); color: var(--mcare-surface); border-radius: var(--shell-control-radius); font-size: var(--shell-label-size); }

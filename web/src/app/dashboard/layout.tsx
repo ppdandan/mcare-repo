@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@m-care/shared";
 import Icon, { type IconName } from "@/components/Icon";
+import "./shell.css";
 import { LoadingState } from "@/components/ui/AsyncStates";
 
 interface NavItem {
@@ -39,7 +40,10 @@ export default function DashboardLayout({
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [expanded, setExpanded] = useState(true);
+  const [tip, setTip] = useState<{ label: string; top: number; left: number } | null>(null);
+  const drawer = useRef<HTMLDialogElement>(null);
+  const main = useRef<HTMLElement>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -72,6 +76,33 @@ export default function DashboardLayout({
     getSessionProfile();
   }, [router, supabase]);
 
+  useEffect(() => {
+    const restore = () => {
+      try { setExpanded(localStorage.getItem("mcare_sidebar_open") !== "0"); } catch {}
+    };
+    restore();
+    const desktop = window.matchMedia("(min-width: 768px)");
+    const onResize = () => { drawer.current?.close(); setTip(null); };
+    desktop.addEventListener("change", onResize);
+    window.addEventListener("storage", restore);
+    return () => {
+      desktop.removeEventListener("change", onResize);
+      window.removeEventListener("storage", restore);
+    };
+  }, []);
+
+  useEffect(() => {
+    main.current?.scrollTo(0, 0);
+    drawer.current?.close();
+    setTip(null);
+  }, [pathname]);
+
+  function toggleSidebar() {
+    setTip(null);
+    setExpanded(!expanded);
+    try { localStorage.setItem("mcare_sidebar_open", expanded ? "0" : "1"); } catch {}
+  }
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.replace("/login");
@@ -79,114 +110,82 @@ export default function DashboardLayout({
 
   const pageTitle = navItems.find((item) => item.href === pathname)?.label ?? "M-Care Dashboard";
   const visibleItems = navItems.filter((item) => !item.roles || (profile?.role && item.roles.includes(profile.role)));
-  const renderNavigation = () => {
-    let previousSection = "";
-    return visibleItems.map((item) => {
-      const firstOfSection = item.section !== previousSection;
-      previousSection = item.section;
-      const isActive = pathname === item.href;
-      const isActiveClass = isActive ? "bg-primary text-primary-content" : "text-base-content hover:bg-base-200";
-      return <React.Fragment key={item.href}>
-        {firstOfSection && sidebarOpen && <p className="px-3 pt-5 pb-2 text-xs font-bold uppercase tracking-wider text-base-content/60">{item.section}</p>}
-        {firstOfSection && !sidebarOpen && item !== visibleItems[0] && <div className="mx-auto my-3 h-px w-10 bg-base-300" aria-hidden />}
-        <Link href={item.href} onClick={() => setSidebarOpen(false)} aria-current={isActive ? "page" : undefined} className={`flex min-h-11 items-center rounded-btn text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${sidebarOpen ? "gap-3 px-3" : "justify-center px-2"} ${isActiveClass}`}>
-          {sidebarOpen ? (
-            <>
-              <Icon name={item.icon} size={18} />
-              <span>{item.label}</span>
-            </>
-          ) : (
-            <span className="tooltip tooltip-right" data-tip={item.label}><Icon name={item.icon} size={18} /></span>
-          )}
-        </Link>
-      </React.Fragment>;
-    });
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
-        <div className="w-full max-w-md"><LoadingState label="Loading M-Care Portal..." /></div>
-      </div>
-    );
+  function renderNavigation(labels: boolean, mobile = false) {
+    return <nav aria-label="Clinic navigation" className="shell-nav" onScroll={() => setTip(null)}>
+      {visibleItems.map((item, index) => {
+        const sectionStart = item.section !== visibleItems[index - 1]?.section;
+        const showTip = (anchor: HTMLAnchorElement) => {
+          if (labels) return;
+          const bounds = anchor.getBoundingClientRect();
+          setTip({ label: item.label, top: bounds.top + bounds.height / 2, left: bounds.right + 12 });
+        };
+        return <React.Fragment key={item.href}>
+          {sectionStart && (labels
+            ? <p className="shell-section">{item.section}</p>
+            : index > 0 && <hr className="mx-2 my-2 border-base-300" />)}
+          <Link href={item.href} aria-label={item.label} aria-current={pathname === item.href ? "page" : undefined}
+            className={`shell-link ${labels ? "" : "justify-center"}`}
+            onFocus={e => showTip(e.currentTarget)} onBlur={() => setTip(null)}
+            onMouseEnter={e => showTip(e.currentTarget)} onMouseLeave={() => setTip(null)}
+            onKeyDown={e => { if (e.key === "Escape") setTip(null); }}
+            onClick={() => { setTip(null); if (mobile) drawer.current?.close(); }}>
+            <Icon name={item.icon} size={18} className="shrink-0" />
+            {labels && <span>{item.label}</span>}
+          </Link>
+        </React.Fragment>;
+      })}
+    </nav>;
   }
 
-  const roleColors: Record<string, string> = {
-    doctor: "bg-primary-100 text-primary-800",
-    nurse: "bg-primary-50 text-primary-700",
-    receptionist: "bg-base-200 text-base-content",
-    admin: "bg-primary-100 text-primary-800",
-  };
+  function brand(labels: boolean) {
+    return <div className="shell-brand">
+      <img src="/logo.png" alt={labels ? "" : "M-Care"} width={32} height={38} className="h-9 w-8 shrink-0 object-contain" />
+      {labels && <div><strong className="block text-lg leading-tight">M-Care</strong>
+        <span className="text-xs text-base-content/75">OB-GYN Clinic</span></div>}
+    </div>;
+  }
 
-  // Determine sidebar classes based on state:
-  // - Mobile: off-canvas drawer, hidden when closed, slides over content when open.
-  // - Desktop (lg+): fixed rail that stays in place; toggling swaps between a
-  //   full-width (w-64) expanded state and a slim (w-16) icon-only rail.
-  const sidebarAsideClass = sidebarOpen
-    ? "fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col border-r border-base-300 bg-base-100 shadow-xl transition-all duration-200 lg:translate-x-0 lg:shadow-none lg:w-64"
-    : "fixed inset-y-0 left-0 z-50 flex w-16 -translate-x-full flex-col items-center border-r border-base-300 bg-base-100 shadow-sm transition-all duration-200 lg:translate-x-0 lg:shadow-none lg:w-16";
-
-  const navClass = sidebarOpen ? "min-h-0 flex-1 overflow-y-auto px-3 pb-4" : "min-h-0 flex-1 overflow-y-auto px-2 pb-4";
-
-  const mainMainClass = `min-w-0 p-4 sm:p-6 lg:p-8 transition-all duration-200 ${sidebarOpen ? "lg:ml-64" : "lg:ml-16"}`;
-
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  if (loading) return <div className="grid min-h-screen place-items-center bg-base-200 p-4">
+    <LoadingState label="Loading dashboard…" />
+  </div>;
 
   return (
-    <div className="min-h-screen bg-base-200">
-      <header className={`sticky top-0 z-30 flex min-h-16 items-center justify-between gap-3 border-b border-base-300 bg-base-100 px-4 sm:px-6 lg:pr-8 transition-all duration-200 ${sidebarOpen ? "lg:pl-64" : "lg:pl-16"}`}>
-        <div className="flex min-w-0 items-center gap-3">
-          <button type="button" onClick={toggleSidebar} aria-label="Toggle navigation" className="btn btn-ghost btn-square lg:hidden"><Icon name="menu" size={20} /></button>
-          <h1 className="truncate text-lg font-bold text-base-content">{pageTitle}</h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <button type="button" onClick={toggleSidebar} aria-label="Toggle sidebar" className="btn btn-ghost btn-square hidden lg:flex"><Icon name={sidebarOpen ? "chevron-left" : "chevron-right"} size={20} /></button>
-          <button type="button" onClick={handleSignOut} className="btn btn-outline btn-sm min-h-11 shrink-0"><Icon name="logout" size={16} /><span className="hidden sm:inline">Sign out</span></button>
-        </div>
-      </header>
-
-      {sidebarOpen && <button type="button" aria-label="Close navigation" onClick={toggleSidebar} className="fixed inset-0 z-40 bg-neutral/50 lg:hidden" />}
-
-      <aside className={sidebarAsideClass}>
-        <div className="flex h-16 shrink-0 items-center gap-3 border-b border-base-300 px-4">
-          <img src="/logo.png" alt="M-Care" width={36} height={42} className="h-10 w-9 object-contain" />
-          {sidebarOpen ? (
-            <div className="min-w-0 flex-1">
-              <span className="block text-base font-extrabold tracking-tight text-base-content">M-CARE</span>
-              <span className="block text-xs font-semibold uppercase tracking-wider text-primary">OB-GYN Clinic</span>
-            </div>
-          ) : (
-            <div className="hidden lg:block">
-              <span className="block text-xs font-semibold uppercase tracking-wider text-primary">M-CARE</span>
-            </div>
-          )}
-          <button type="button" onClick={toggleSidebar} aria-label="Toggle navigation" className="btn btn-ghost btn-square btn-sm ml-auto lg:hidden"><Icon name={sidebarOpen ? "close" : "menu"} size={18} /></button>
-        </div>
-        <nav className={navClass} aria-label="Clinic navigation">{renderNavigation()}</nav>
-        <div className="shrink-0 border-t border-base-300 p-3">
-          {sidebarOpen ? (
-            <>
-              <div className="mb-3 flex min-w-0 items-center justify-between gap-2 rounded-box border border-base-300 bg-base-200 p-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-bold text-base-content">{profile?.full_name}</p>
-                  <span className={`badge mt-1 ${profile?.role ? roleColors[profile.role] : "badge-ghost"}`}>{profile?.role}</span>
-                </div>
-                <Icon name="shield-check" size={18} className="shrink-0 text-success" aria-label="Clinic staff account" />
-              </div>
-              <p className="text-center text-xs text-base-content/70">RA 10173 · DPA 2012 Protected</p>
-            </>
-          ) : (
-            <div className="flex justify-center">
-              <span className={`badge tooltip tooltip-right ${profile?.role ? roleColors[profile.role] : "badge-ghost"}`} data-tip={`${profile?.full_name} · ${profile?.role}`}>
-                <Icon name="shield-check" size={14} className="text-success" />
-              </span>
-            </div>
-          )}
-        </div>
+    <div className="dashboard-shell">
+      <aside id="desktop-navigation" aria-label="Sidebar" className={`shell-sidebar ${expanded ? "w-64" : "w-16"}`}>
+        {brand(expanded)}
+        {renderNavigation(expanded)}
+        {expanded && profile && <div className="shell-account">
+          <span className="block truncate font-semibold">{profile.full_name}</span>
+          <span className="capitalize text-base-content/75">{profile.role}</span>
+        </div>}
       </aside>
-
-      <main className={mainMainClass}>{children}</main>
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <header className="shell-header">
+          <button className="shell-control hidden md:inline-flex" onClick={toggleSidebar}
+            aria-controls="desktop-navigation" aria-expanded={expanded} aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}>
+            <Icon name={expanded ? "chevron-left" : "chevron-right"} size={20} />
+          </button>
+          <button className="shell-control inline-flex md:hidden" aria-label="Open navigation" aria-haspopup="dialog"
+            onClick={() => drawer.current?.showModal()}><Icon name="menu" size={20} /></button>
+          <h1 className="min-w-0 flex-1 text-lg font-semibold leading-tight">{pageTitle}</h1>
+          <button className="shell-control inline-flex gap-2 px-3" onClick={handleSignOut} aria-label="Sign out">
+            <Icon name="logout" size={18} /><span className="hidden sm:inline">Sign out</span>
+          </button>
+        </header>
+        <main ref={main} className="shell-main">{children}</main>
+      </div>
+      <dialog ref={drawer} className="shell-drawer" aria-label="Clinic menu"
+        onClick={event => { if (event.clientX > event.currentTarget.getBoundingClientRect().right) drawer.current?.close(); }}>
+        <div className="flex h-full flex-col">
+          <div className="flex shrink-0 items-center justify-between border-b border-base-300 pr-2">
+            {brand(true)}
+            <button className="shell-control inline-flex" aria-label="Close navigation" onClick={() => drawer.current?.close()}>
+              <Icon name="close" size={20} /></button>
+          </div>
+          {renderNavigation(true, true)}
+        </div>
+      </dialog>
+      {tip && <span role="tooltip" className="shell-tooltip" style={{ top: tip.top, left: tip.left }}>{tip.label}</span>}
     </div>
   );
 }
-

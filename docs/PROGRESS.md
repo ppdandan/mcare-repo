@@ -1,5 +1,9 @@
 # Progress
 
+## Phase 5 dashboard layout
+
+The shared dashboard layout keeps desktop navigation beside the scrollable content and remembers the sidebar setting. Small screens use a navigation drawer. Review screenshots are in docs/reviews/phase5.
+
 ## Phase 2 item 3. Demographics chart labels
 
 The age chart labels missing dates of birth as “No birth date recorded”. The sex chart displays “Not recorded” separately from “Prefer not to say”. Both charts use horizontal bars and show every category label. All type checks, both linters, the web build and the local tests passed before and after.
