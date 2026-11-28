@@ -161,7 +161,7 @@ export default function AnalyticsPage() {
           "35 to 44",
           "45 or older",
           "Unknown",
-        ].map((g) => ({ age_group: g, count: grouped[g] ?? 0 }));
+        ].map((g) => ({ age_group: g === "Unknown" ? "No birth date recorded" : g, count: grouped[g] ?? 0 }));
         setAgeGroupData(ordered);
       }
 
@@ -454,12 +454,12 @@ export default function AnalyticsPage() {
         <div className="h-64 w-full">
           {isMounted && ageGroupData.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={ageGroupData}>
+              <BarChart data={ageGroupData} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke={designTokens.color.divider} />
-                <XAxis dataKey="age_group" stroke={designTokens.color.textMuted} fontSize={typography.caption.fontSize} />
-                <YAxis stroke={designTokens.color.textMuted} fontSize={typography.caption.fontSize} allowDecimals={false} />
+                <YAxis type="category" width={145} interval={0} dataKey="age_group" stroke={designTokens.color.textMuted} fontSize={typography.caption.fontSize} />
+                <XAxis type="number" stroke={designTokens.color.textMuted} fontSize={typography.caption.fontSize} allowDecimals={false} />
                 <Tooltip />
-                <Bar dataKey="count" name="Patients" fill={designTokens.color.brandStrong} radius={[6, 6, 0, 0]} />
+                <Bar dataKey="count" name="Patients" fill={designTokens.color.brandStrong} radius={[0, 6, 6, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : <div className="h-full flex items-center justify-center text-xs text-base-content/60">No age data available for this period.</div>}
@@ -472,12 +472,12 @@ export default function AnalyticsPage() {
         <div className="h-64 w-full">
           {isMounted && sexData.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={sexData}>
+              <BarChart data={sexData} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke={designTokens.color.divider} />
-                <XAxis dataKey="label" stroke={designTokens.color.textMuted} fontSize={typography.caption.fontSize} />
-                <YAxis stroke={designTokens.color.textMuted} fontSize={typography.caption.fontSize} allowDecimals={false} />
+                <YAxis type="category" width={145} interval={0} dataKey="label" stroke={designTokens.color.textMuted} fontSize={typography.caption.fontSize} />
+                <XAxis type="number" stroke={designTokens.color.textMuted} fontSize={typography.caption.fontSize} allowDecimals={false} />
                 <Tooltip />
-                <Bar dataKey="count" name="Patients" fill={designTokens.color.brandStrong} radius={[6, 6, 0, 0]} />
+                <Bar dataKey="count" name="Patients" fill={designTokens.color.brandStrong} radius={[0, 6, 6, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : <div className="h-full flex items-center justify-center text-xs text-base-content/60">No demographic data available.</div>}

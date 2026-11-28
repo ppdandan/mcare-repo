@@ -1,5 +1,9 @@
 # Progress
 
+## Phase 2 item 3. Demographics chart labels
+
+The age chart labels missing dates of birth as “No birth date recorded”. The sex chart displays “Not recorded” separately from “Prefer not to say”. Both charts use horizontal bars and show every category label. All type checks, both linters, the web build and the local tests passed before and after.
+
 ## Phase 2 item 2. Inventory consumption
 
 Analytics shows daily stock usage for a selected item among the five most consumed in the last seven Manila calendar days. A day without stock usage shows zero. The chart uses the existing inventory consumption function. All type checks, both linters, the web build and the local tests passed before and after.
