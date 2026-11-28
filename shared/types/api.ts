@@ -25,6 +25,7 @@ export interface RegisterData {
   full_name: string;
   phone?: string;
   date_of_birth?: string;
+  sex?: import('./database').Sex | null;
 }
 
 // ─── Appointments ────────────────────────────────────────────────────────────

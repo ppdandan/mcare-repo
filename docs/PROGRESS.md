@@ -1,5 +1,9 @@
 # Progress
 
+## Phase 1.5 patient demographics
+
+Migration 00041 adds optional sex on profiles and patient-only counts. Existing rows retain null. Signup fixes the role to patient and self-update preserves the stored role. Staff can change patient sex through a narrow function. Registration, profile and walk-in forms use the same choices. Local checks passed before and after, including the demographics and role protection tests on retry.
+
 ## Weekend booking error
 
 The original 35-migration Docker baseline failed the Saturday assertion. Migration 00033 replaced the explicit Manila weekend rejection from 00024 with a generic availability error. Migration 00040 restores the earlier message. Saturday, Sunday and Sunday midnight now run independently through both the booking function and the insert trigger. Before and after the fix, all three type checks, both linters and the web build passed. The full local test run went from one failure to zero.

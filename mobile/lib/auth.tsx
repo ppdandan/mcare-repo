@@ -9,6 +9,7 @@ import React, {
 import { Alert } from 'react-native';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from './supabase';
+import { sexOptions } from '@m-care/shared';
 import type { Profile, Patient } from '@m-care/shared';
 
 export interface RegisterPatientParams {
@@ -16,6 +17,7 @@ export interface RegisterPatientParams {
   password: string;
   fullName: string;
   phone: string;
+  sex?: Profile['sex'];
   dateOfBirth?: string;
   address?: string;
   emergencyContactName?: string;
@@ -75,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         authUser.email?.split('@')[0] ??
         'Patient',
       phone: (metadata.phone as string | undefined) ?? null,
+      sex: sexOptions.find(option => option.value === metadata.sex)?.value ?? null,
       date_of_birth: (metadata.date_of_birth as string | undefined) ?? null,
       address: (metadata.address as string | undefined) ?? null,
     };
@@ -323,6 +326,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           data: {
             full_name: params.fullName.trim(),
             phone: params.phone.trim(),
+            sex: params.sex ?? null,
             date_of_birth: params.dateOfBirth || null,
             address: params.address?.trim() || null,
             emergency_contact_name: params.emergencyContactName?.trim() || null,

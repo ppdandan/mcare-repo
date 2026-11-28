@@ -1,3 +1,5 @@
+import SexSelector from '@/components/SexSelector';
+import type { Sex } from '@m-care/shared';
 import { spacing, typography, radius } from '@/theme';
 import { userFacingErrorMessage } from '@m-care/shared';
 import React, { useState } from 'react';
@@ -26,6 +28,7 @@ export default function RegisterScreen() {
   // Basic Account
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [sex, setSex] = useState<Sex | null>(null);
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -82,6 +85,7 @@ export default function RegisterScreen() {
         password,
         fullName,
         phone,
+        sex,
         dateOfBirth: dateOfBirth.trim() || undefined,
         address: address.trim() || undefined,
         emergencyContactName: emergencyContactName.trim() || undefined,
@@ -146,6 +150,7 @@ export default function RegisterScreen() {
           <Card style={styles.sectionCard}>
             <Text style={styles.sectionTitle}>2. Personal Profile</Text>
 
+            <SexSelector value={sex} onChange={setSex} />
             <TextField label="Date of Birth (YYYY-MM-DD)" containerStyle={styles.inputGroup} value={dateOfBirth} onChangeText={setDateOfBirth} />
 
             <TextField label="Home Address" containerStyle={styles.inputGroup} value={address} onChangeText={setAddress} />

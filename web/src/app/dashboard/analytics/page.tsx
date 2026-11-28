@@ -45,6 +45,7 @@ export default function AnalyticsPage() {
   const [direction, setDirection] = useState<"past" | "future">("past");
   const [dateRange, setDateRange] = useState<"7d" | "30d" | "90d" | "all">("30d");
   const [isMounted, setIsMounted] = useState(false);
+  const [sexData, setSexData] = useState<Array<{ label: string; count: number }>>([]);
   const [ageGroupData, setAgeGroupData] = useState<Array<{ age_group: string; count: number }>>([]);
   const [paymentData, setPaymentData] = useState<{
     revenueByService: Array<{ service_name: string; revenue: number }>;
@@ -140,6 +141,9 @@ export default function AnalyticsPage() {
         ].map((g) => ({ age_group: g, count: grouped[g] ?? 0 }));
         setAgeGroupData(ordered);
       }
+
+      const { data: breakdown } = await supabase.rpc("patient_sex_breakdown").throwOnError();
+      setSexData(breakdown ?? []);
 
       // Fetch payment analytics from the new SQL functions
       const { data: paymentData, error: paymentError } = await supabase
@@ -436,6 +440,24 @@ export default function AnalyticsPage() {
               </BarChart>
             </ResponsiveContainer>
           ) : <div className="h-full flex items-center justify-center text-xs text-base-content/60">No age data available for this period.</div>}
+        </div>
+      </section>
+      {/* Demographics: Sex distribution */}
+      <section className="bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm" aria-labelledby="demographics-sex-chart-title">
+        <h2 id="demographics-sex-chart-title" className="text-base font-bold text-base-content mb-1">Patient Sex</h2>
+        <p className="text-xs text-base-content/60 mb-4">Registered patients by recorded sex</p>
+        <div className="h-64 w-full">
+          {isMounted && sexData.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={sexData}>
+                <CartesianGrid strokeDasharray="3 3" stroke={designTokens.color.divider} />
+                <XAxis dataKey="label" stroke={designTokens.color.textMuted} fontSize={typography.caption.fontSize} />
+                <YAxis stroke={designTokens.color.textMuted} fontSize={typography.caption.fontSize} allowDecimals={false} />
+                <Tooltip />
+                <Bar dataKey="count" name="Patients" fill={designTokens.color.brandStrong} radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : <div className="h-full flex items-center justify-center text-xs text-base-content/60">No demographic data available.</div>}
         </div>
       </section>
 

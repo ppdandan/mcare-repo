@@ -1,5 +1,6 @@
 "use client";
 
+import { sexOptions, type Sex } from "@m-care/shared";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Icon from "@/components/Icon";
@@ -26,6 +27,7 @@ export default function PatientsPage() {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [sex, setSex] = useState<Sex | null>(null);
   const [dob, setDob] = useState("");
   const [address, setAddress] = useState("");
   const [emergencyName, setEmergencyName] = useState("");
@@ -121,6 +123,7 @@ export default function PatientsPage() {
           data: {
             full_name: fullName.trim(),
             phone: phone.trim() || null,
+            sex,
             date_of_birth: dob || null,
             address: address.trim() || null,
             emergency_contact_name: emergencyName.trim() || null,
@@ -156,6 +159,7 @@ export default function PatientsPage() {
 
     setSaving(true);
     try {
+      await supabase.rpc("staff_set_patient_sex", { p_profile_id: editingPatient.profile_id, p_sex: sex }).throwOnError();
       // Update Profile
       await supabase
         .from("profiles")
@@ -233,6 +237,7 @@ export default function PatientsPage() {
   const openEditModal = (p: PatientWithProfile) => {
     setEditingPatient(p);
     setFullName(p.profile?.full_name || "");
+    setSex(p.profile?.sex ?? null);
     setPhone(p.profile?.phone || "");
     setAddress(p.profile?.address || "");
     setEmergencyName(p.emergency_contact_name || "");
@@ -246,6 +251,7 @@ export default function PatientsPage() {
     setFullName("");
     setPhone("");
     setEmail("");
+    setSex(null);
     setDob("");
     setAddress("");
     setEmergencyName("");
@@ -667,6 +673,13 @@ export default function PatientsPage() {
               </div>
 
               <div>
+                <label className="block mb-3">Sex (optional)
+                  <select className="select select-bordered w-full" value={sex ?? ""}
+                    onChange={event => setSex(sexOptions.find(option => option.value === event.target.value)?.value ?? null)}>
+                    <option value="">Not recorded</option>
+                    {sexOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+                  </select>
+                </label>
                 <label className="font-bold text-base-content block mb-1">Home Address</label>
                 <input
                   type="text"

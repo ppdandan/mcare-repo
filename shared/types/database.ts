@@ -1,11 +1,20 @@
 import type { UserRole, AppointmentStatus } from './enums';
 
 // ─── 1. Profiles ─────────────────────────────────────────────────────────────
+export const sexOptions = [
+  { value: 'female', label: 'Female' },
+  { value: 'male', label: 'Male' },
+  { value: 'prefer_not_to_say', label: 'Prefer not to say' },
+] as const;
+
+export type Sex = typeof sexOptions[number]['value'];
+
 export interface Profile {
   id: string;
   role: UserRole;
   full_name: string;
   phone: string | null;
+  sex: Sex | null;
   date_of_birth: string | null;
   address: string | null;
   created_at: string;

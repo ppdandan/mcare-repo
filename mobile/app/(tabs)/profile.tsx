@@ -1,3 +1,5 @@
+import SexSelector from '@/components/SexSelector';
+import type { Sex } from '@m-care/shared';
 import { spacing, typography, radius } from '@/theme';
 import { userFacingErrorMessage } from '@m-care/shared';
 import React, { useState, useEffect } from 'react';
@@ -27,6 +29,7 @@ export default function ProfileScreen() {
   const { profile, patient, refreshProfile, signOut } = useAuth();
 
   const [fullName, setFullName] = useState('');
+  const [sex, setSex] = useState<Sex | null>(null);
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [emergencyName, setEmergencyName] = useState('');
@@ -41,6 +44,7 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     if (profile) {
+      setSex(profile.sex ?? null);
       setFullName(profile.full_name || '');
       setPhone(profile.phone || '');
       setAddress(profile.address || '');
@@ -62,6 +66,7 @@ export default function ProfileScreen() {
       const { error: profileErr } = await supabase
         .from('profiles')
         .update({
+          sex,
           full_name: fullName.trim(),
           phone: phone.trim(),
           address: address.trim() || null,
@@ -148,6 +153,7 @@ export default function ProfileScreen() {
 
             <TextField label="Mobile Phone" containerStyle={styles.inputGroup} value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
 
+            <SexSelector value={sex} onChange={setSex} />
             <TextField label="Home Address" containerStyle={styles.inputGroup} value={address} onChangeText={setAddress} />
 
 {/* Add clinic finder button */}
