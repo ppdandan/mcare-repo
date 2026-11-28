@@ -61,6 +61,16 @@ try {
     p_slot_duration_minutes: service.duration_minutes,
   }).throwOnError();
   assert.ok(slots.length >= 2, 'Two open weekday slots are required');
+  const third = slots[2];
+  assert.ok(third, 'An additional open slot is required for ordinary booking');
+  const ordinary = { p_doctor_id: doctor.id, p_service_id: service.id, p_start_time: third.slot_start };
+  const flagged = await first.client.rpc('book_appointment', { ...ordinary, p_is_walk_in: true });
+  if (flagged.data) appointmentIds.push(flagged.data);
+  assert.equal(flagged.error?.code, 'PGRST202');
+  const { data: regularId } = await first.client.rpc('book_appointment', ordinary).throwOnError();
+  appointmentIds.push(regularId);
+  const regular = await admin.from('appointments').select('is_walk_in').eq('id', regularId).single().throwOnError();
+  assert.equal(regular.data.is_walk_in, false);
   const args = {
     p_doctor_id: doctor.id, p_service_id: service.id, p_start_time: slots[0].slot_start,
     p_end_time: slots[0].slot_end, p_notes: 'Patient walk-in test',

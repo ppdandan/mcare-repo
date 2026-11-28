@@ -1,5 +1,9 @@
 # Progress
 
+## Phase 1.5 ordinary patient booking
+
+Migration 00042 removes the walk-in parameter from patient booking and always stores false. Staff booking and patient walk-in reporting retain their separate entry points. All type checks, both linters, the web build and 15 local tests passed before and after.
+
 ## Phase 1.5 patient demographics
 
 Migration 00041 adds optional sex on profiles and patient-only counts. Existing rows retain null. Signup fixes the role to patient and self-update preserves the stored role. Staff can change patient sex through a narrow function. Registration, profile and walk-in forms use the same choices. Local checks passed before and after, including the demographics and role protection tests on retry.
