@@ -9,6 +9,7 @@ import {
   AreaChart,
   Area,
   Line,
+  LineChart,
   BarChart,
   Bar,
   PieChart,
@@ -33,6 +34,27 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const CHART_PALETTE = [colors.brand, colors.brandStrong, colors.info, colors.success, colors.warning, colors.brandMid];
+
+const compactPeso = new Intl.NumberFormat("en-PH", { notation: "compact", maximumFractionDigits: 1 });
+const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP", currencyDisplay: "code" });
+const monthLabel = new Intl.DateTimeFormat("en-PH", { month: "short", year: "2-digit", timeZone: "UTC" });
+const paymentAxis = { stroke: colors.textMuted, fontSize: typography.caption.fontSize };
+const formatPesoTick = (value: number) => `PHP ${compactPeso.format(value)}`;
+const formatMonth = (key: string) => monthLabel.format(new Date(`${key}-01T00:00:00Z`));
+
+function PaymentChart({ title, description, empty, height = 240, children }: {
+  title: string; description: string; empty: string; height?: number; children: React.ReactNode;
+}) {
+  return (
+    <section className="min-w-0 rounded-2xl border border-base-300 bg-base-100 p-6 shadow-sm">
+      <h2 className="mb-1 text-base font-bold text-base-content">{title}</h2>
+      <p className="mb-4 text-xs text-base-content/70">{description}</p>
+      {children ? <div style={{ height }}>{children}</div> : (
+        <p className="flex h-60 items-center justify-center text-sm text-base-content/70">{empty}</p>
+      )}
+    </section>
+  );
+}
 
 export default function AnalyticsPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -175,8 +197,8 @@ export default function AnalyticsPage() {
 
       setPaymentData({
         revenueByService,
-        voidRateOverTime,
-        monthlyTotals,
+        voidRateOverTime: voidRateOverTime.reverse(),
+        monthlyTotals: monthlyTotals.reverse(),
       });
     } catch (err) {
       console.error("Error fetching analytics data:", err);
@@ -599,6 +621,54 @@ export default function AnalyticsPage() {
           )}
         </div>
       </div>
+
+      {paymentData && isMounted && (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <PaymentChart title="Revenue by service (PHP)" description="All recorded payments, excluding voids."
+            empty="No non-voided payments by service." height={Math.max(240, paymentData.revenueByService.length * 44)}>
+            {paymentData.revenueByService.length > 0 && (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={paymentData.revenueByService} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke={colors.divider} horizontal={false} />
+                  <XAxis type="number" {...paymentAxis} tickFormatter={formatPesoTick} minTickGap={20} />
+                  <YAxis type="category" dataKey="service_name" {...paymentAxis} width={110} interval={0}
+                    tickFormatter={(name: string) => name.length > 17 ? name.slice(0, 16) + "…" : name} />
+                  <Tooltip formatter={value => peso.format(Number(value))} />
+                  <Bar dataKey="revenue" name="Revenue" fill={colors.brand} radius={[0, 6, 6, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </PaymentChart>
+          <PaymentChart title="Monthly revenue (PHP)" description="Latest 12 months with non-voided payments."
+            empty="No non-voided payments to total by month.">
+            {paymentData.monthlyTotals.length > 0 && (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={paymentData.monthlyTotals}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={colors.divider} />
+                  <XAxis dataKey="month_key" {...paymentAxis} tickFormatter={formatMonth} minTickGap={20} />
+                  <YAxis {...paymentAxis} width={80} tickFormatter={formatPesoTick} />
+                  <Tooltip labelFormatter={key => formatMonth(String(key))} formatter={value => peso.format(Number(value))} />
+                  <Bar dataKey="total_revenue" name="Revenue" fill={colors.brandStrong} radius={[6, 6, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </PaymentChart>
+          <PaymentChart title="Monthly void rate" description="Percentage of transactions recorded each month that were voided."
+            empty="No transactions to calculate a void rate.">
+            {paymentData.voidRateOverTime.length > 0 && (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={paymentData.voidRateOverTime}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={colors.divider} />
+                  <XAxis dataKey="month_key" {...paymentAxis} tickFormatter={formatMonth} minTickGap={20} />
+                  <YAxis {...paymentAxis} domain={[0, 100]} tickFormatter={value => `${value}%`} />
+                  <Tooltip labelFormatter={key => formatMonth(String(key))} formatter={value => `${value}%`} />
+                  <Line dataKey="void_rate" name="Void rate" stroke={colors.brandStrong} strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </PaymentChart>
+        </div>
+      )}
 
       {/* Row 3: Busiest Days & Hours */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

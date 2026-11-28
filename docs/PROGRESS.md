@@ -1,5 +1,9 @@
 # Progress
 
+## Phase 2 item 1. Payment analytics
+
+The dashboard shows revenue by service, monthly revenue and monthly void rate. Each chart has its own empty state. Revenue totals exclude voided transactions. Shared, mobile and web type checks, both linters, the web build and all 15 local tests passed before and after. Checks ran sequentially.
+
 ## Phase 1.5 ordinary patient booking
 
 Migration 00042 removes the walk-in parameter from patient booking and always stores false. Staff booking and patient walk-in reporting retain their separate entry points. All type checks, both linters, the web build and 15 local tests passed before and after.
