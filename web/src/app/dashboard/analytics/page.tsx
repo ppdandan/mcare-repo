@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { registeredPatients } from "@/lib/registered-patients";
 import { createClient } from "@/lib/supabase/client";
 import Icon from "@/components/Icon";
 import InventoryConsumptionChart from "./InventoryConsumptionChart";
@@ -68,6 +69,7 @@ export default function AnalyticsPage() {
   const [direction, setDirection] = useState<"past" | "future">("past");
   const [dateRange, setDateRange] = useState<"7d" | "30d" | "90d" | "all">("30d");
   const [isMounted, setIsMounted] = useState(false);
+  const [sexUnavailable, setSexUnavailable] = useState(false);
   const [sexData, setSexData] = useState<Array<{ label: string; count: number }>>([]);
   const [ageGroupData, setAgeGroupData] = useState<Array<{ age_group: string; count: number }>>([]);
   const [paymentData, setPaymentData] = useState<{
@@ -135,10 +137,8 @@ export default function AnalyticsPage() {
       }
 
       // Fetch total patient count
-      const { count } = await supabase.from("patients").select("id", { count: "exact", head: true });
-      if (count !== null) setPatientCount(count);
-
-      const { data: patientRows } = await supabase.from("patients").select("profile:profiles!inner(created_at)");
+      const { count, data: patientRows } = await registeredPatients(supabase).throwOnError();
+      setPatientCount(count ?? 0);
       setPatientRegistrationDates((patientRows ?? []).map((row) => {
         const profile = Array.isArray(row.profile) ? row.profile[0] : row.profile;
         return profile?.created_at;
@@ -165,7 +165,8 @@ export default function AnalyticsPage() {
         setAgeGroupData(ordered);
       }
 
-      const { data: breakdown } = await supabase.rpc("patient_sex_breakdown").throwOnError();
+      const { data: breakdown, error: sexError } = await supabase.rpc("patient_sex_breakdown");
+      setSexUnavailable(Boolean(sexError));
       setSexData(breakdown ?? []);
 
       // Fetch payment analytics from the new SQL functions
@@ -419,7 +420,7 @@ export default function AnalyticsPage() {
         <div className="bg-base-100 p-5 rounded-xl border border-base-300 shadow-sm">
           <p className="text-xs font-bold text-base-content/60 uppercase tracking-wider">Total Patients</p>
           <p className="text-3xl font-extrabold text-purple-600 mt-2">{patientCount}</p>
-          <p className="text-xs text-purple-700 mt-1">DPA 2012 Registered</p>
+          <p className="text-xs text-purple-700 mt-1">Active patient accounts</p>
         </div>
 
         <div className="bg-base-100 p-5 rounded-xl border border-base-300 shadow-sm">
@@ -480,7 +481,7 @@ export default function AnalyticsPage() {
                 <Bar dataKey="count" name="Patients" fill={designTokens.color.brandStrong} radius={[0, 6, 6, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          ) : <div className="h-full flex items-center justify-center text-xs text-base-content/60">No demographic data available.</div>}
+          ) : <div className="h-full flex items-center justify-center text-xs text-base-content/60">{sexUnavailable ? "The patient sex breakdown is unavailable." : "No demographic data available."}</div>}
         </div>
       </section>
 

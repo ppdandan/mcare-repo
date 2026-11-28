@@ -5,6 +5,7 @@ import type { NextConfig } from "next";
  * transpilePackages allows us to import from the shared types package.
  */
 const nextConfig: NextConfig = {
+  devIndicators: false,
   transpilePackages: ["@m-care/shared"],
   async redirects() {
     return ["/book", "/appointments", "/transactions", "/profile"].map((source) => ({

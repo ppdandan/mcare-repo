@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { registeredPatients } from "@/lib/registered-patients";
 import { createClient } from "@/lib/supabase/client";
 import type { AppointmentWithDetails } from "@m-care/shared";
 import { formatManilaDateTime } from "@m-care/shared";
@@ -10,7 +11,7 @@ import { userFacingErrorMessage } from "@m-care/shared";
 
 export default function DashboardOverviewPage() {
   const [appointments, setAppointments] = useState<AppointmentWithDetails[]>([]);
-  const [patientCount, setPatientCount] = useState<number>(0);
+  const [patientCount, setPatientCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
 
@@ -35,11 +36,12 @@ export default function DashboardOverviewPage() {
             service:services (*)
           `)
           .order("start_time", { ascending: true }),
-        supabase.from("patients").select("id", { count: "exact", head: true }),
+        registeredPatients(supabase, { head: true }),
       ]);
 
       if (apptRes.data) setAppointments(apptRes.data as unknown as AppointmentWithDetails[]);
-      if (patRes.count !== null) setPatientCount(patRes.count);
+      if (patRes.error) throw patRes.error;
+      setPatientCount(patRes.count);
     } catch (err) {
       console.error("Error loading dashboard overview:", err);
       setLoadError(userFacingErrorMessage(err, "We couldn’t load the clinic overview."));
@@ -146,9 +148,9 @@ export default function DashboardOverviewPage() {
             <Icon name="users" size={18} />
           </div>
           <p className="text-3xl font-extrabold text-base-content">
-            {loading ? "..." : patientCount}
+            {loading ? "..." : patientCount ?? "Unavailable"}
           </p>
-          <p className="text-xs text-base-content/70 mt-1">DPA 2012 Consent Logged</p>
+          <p className="text-xs text-base-content/70 mt-1">Active patient accounts</p>
         </div>
       </div>
 
