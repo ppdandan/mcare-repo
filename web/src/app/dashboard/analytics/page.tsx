@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Icon from "@/components/Icon";
+import InventoryConsumptionChart from "./InventoryConsumptionChart";
 import type { Profile, AppointmentWithDetails } from "@m-care/shared";
 import { designTokens, formatManilaDate, manilaDateKey, manilaTimeKey, weekdayForDateKey, typography, userFacingErrorMessage } from "@m-care/shared";
 import {
@@ -669,6 +670,8 @@ export default function AnalyticsPage() {
           </PaymentChart>
         </div>
       )}
+
+      <InventoryConsumptionChart />
 
       {/* Row 3: Busiest Days & Hours */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

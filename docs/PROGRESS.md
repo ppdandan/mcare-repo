@@ -1,5 +1,9 @@
 # Progress
 
+## Phase 2 item 2. Inventory consumption
+
+Analytics shows daily stock usage for a selected item among the five most consumed in the last seven Manila calendar days. A day without stock usage shows zero. The chart uses the existing inventory consumption function. All type checks, both linters, the web build and the local tests passed before and after.
+
 ## Phase 2 item 1. Payment analytics
 
 The dashboard shows revenue by service, monthly revenue and monthly void rate. Each chart has its own empty state. Revenue totals exclude voided transactions. Shared, mobile and web type checks, both linters, the web build and all 15 local tests passed before and after. Checks ran sequentially.
