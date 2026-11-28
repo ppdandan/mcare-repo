@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomBytes, randomUUID } from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
@@ -54,34 +55,40 @@ try {
   const { error: signInError } = await client.auth.signInWithPassword({ email, password });
   if (signInError) throw signInError;
 
-  for (const { name, day } of [{ name: 'Saturday', day: 6 }, { name: 'Sunday', day: 0 }]) {
-    const date = nextManilaDateForDay(day);
-    const start = new Date(`${date}T10:00:00+08:00`);
-    const startTime = start.toISOString();
-    const endTime = new Date(start.getTime() + services[0].duration_minutes * 60_000).toISOString();
+  for (const { name, day, time } of [
+    { name: 'Saturday', day: 6, time: '10:00:00' },
+    { name: 'Sunday', day: 0, time: '10:00:00' },
+    { name: 'Sunday midnight in Manila', day: 0, time: '00:00:00' },
+  ]) {
+    await test(name, async () => {
+      const date = nextManilaDateForDay(day);
+      const start = new Date(`${date}T${time}+08:00`);
+      const startTime = start.toISOString();
+      const endTime = new Date(start.getTime() + services[0].duration_minutes * 60_000).toISOString();
 
-    const { data: bookingId, error: bookingError } = await client.rpc('book_appointment', {
-      p_doctor_id: doctors[0].id,
-      p_service_id: services[0].id,
-      p_start_time: startTime,
+      const { data: bookingId, error: bookingError } = await client.rpc('book_appointment', {
+        p_doctor_id: doctors[0].id,
+        p_service_id: services[0].id,
+        p_start_time: startTime,
+      });
+      if (bookingId) createdAppointmentIds.push(bookingId);
+      assert.ok(bookingError, `${name} RPC booking unexpectedly succeeded`);
+      assert.match(bookingError.message, /weekend/i, `${name} RPC failed for an unrelated reason`);
+      report(`${name} booking RPC is rejected`);
+
+      const { data: inserted, error: insertError } = await admin.from('appointments').insert({
+        patient_id: patient.id,
+        doctor_id: doctors[0].id,
+        service_id: services[0].id,
+        start_time: startTime,
+        end_time: endTime,
+        status: 'pending',
+      }).select('id').single();
+      if (inserted?.id) createdAppointmentIds.push(inserted.id);
+      assert.ok(insertError, `${name} direct database insert unexpectedly succeeded`);
+      assert.match(insertError.message, /weekend/i, `${name} direct insert failed for an unrelated reason`);
+      report(`${name} direct database insert is rejected`);
     });
-    if (bookingId) createdAppointmentIds.push(bookingId);
-    assert.ok(bookingError, `${name} RPC booking unexpectedly succeeded`);
-    assert.match(bookingError.message, /weekend/i, `${name} RPC failed for an unrelated reason`);
-    report(`${name} booking RPC is rejected`);
-
-    const { data: inserted, error: insertError } = await admin.from('appointments').insert({
-      patient_id: patient.id,
-      doctor_id: doctors[0].id,
-      service_id: services[0].id,
-      start_time: startTime,
-      end_time: endTime,
-      status: 'pending',
-    }).select('id').single();
-    if (inserted?.id) createdAppointmentIds.push(inserted.id);
-    assert.ok(insertError, `${name} direct database insert unexpectedly succeeded`);
-    assert.match(insertError.message, /weekend/i, `${name} direct insert failed for an unrelated reason`);
-    report(`${name} direct database insert is rejected`);
   }
 } catch (error) {
   failure = error;
@@ -102,6 +109,4 @@ try {
 if (failure) {
   console.error(`FAIL ${failure.message}`);
   process.exitCode = 1;
-} else {
-  console.log('All weekend booking protections passed.');
 }

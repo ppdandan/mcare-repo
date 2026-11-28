@@ -1,5 +1,9 @@
 # Progress
 
+## Weekend booking error
+
+The original 35-migration Docker baseline failed the Saturday assertion. Migration 00033 replaced the explicit Manila weekend rejection from 00024 with a generic availability error. Migration 00040 restores the earlier message. Saturday, Sunday and Sunday midnight now run independently through both the booking function and the insert trigger. Before and after the fix, all three type checks, both linters and the web build passed. The full local test run went from one failure to zero.
+
 ## Phase 1 item 10
 
 | Check | Before | After |
